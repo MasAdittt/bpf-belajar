@@ -1,0 +1,114 @@
+.personal-container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.breadcrumb-personal {
+    font-size: 14px;
+    color: #717171;
+    margin-bottom: 20px;                                              
+  }
+  .breadcrumb-personal span {
+    cursor: pointer;
+    color: #008489;
+  }
+
+.personal-title {
+    font-size: 32px;
+    margin-bottom: 50px;
+}
+
+.personal-content {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+}
+
+.personal-details {
+    width: 60%;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.info-item h3 {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.info-item p {
+    color: #717171;
+    font-size: 14px;
+}
+
+.edit-btn, .add-btn {
+    background: none;
+    border: 1px solid #222;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.info-sidebar {
+    width: 90%;
+}
+
+.info-card {
+    background-color: #f7f7f7;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.info-card h3 {
+    font-size: 18px;
+    margin: 10px 0;
+}
+.profile-photo-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin-left: 50px;
+   
+  }
+  
+  .profile-photo, .profile-photo-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .profile-photo-placeholder {
+    background-color: #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+    color: white;
+  }
+  
+  .photo-upload-label {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: white;
+    padding: 5px;
+    border-radius: 10%;
+    border: 1px solid #008489;  
+    cursor: pointer;
+    padding: 10px;
+  }
+  
+  .photo-upload-label:hover {
+    color: #F8F8F8;
+    background-color: #008489;
+  }

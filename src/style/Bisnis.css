@@ -1,0 +1,80 @@
+.business-hours {
+    font-family: Arial, sans-serif;
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .hours-list {
+    margin-bottom: 20px;
+  }
+  
+  .day-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .day {
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+    color: grey;
+  }
+  
+  .remove-btn {
+    background: none;
+    border: none;
+    color: #ff6b6b;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  .add-hours {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-family: Arial, sans-serif;
+  }
+  
+  .day-select {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 20%;
+  }
+  
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .add-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .add-btn:hover {
+    background-color: #45a049;
+  }
+
+  .time-select {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 20%;
+    background-color: #f0f0f0; /* Warna latar belakang */
+    color: #333; /* Warna teks */
+}
+
+.time {
+    color: grey;
+    font-family: Arial, sans-serif;
+}

@@ -1,0 +1,133 @@
+.account-container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+  
+  .account-title {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .account-subtitle {
+    font-size: 16px;
+    color: #484848;
+    margin-bottom: 40px;
+  }
+  
+  .account-subtitle a {
+    color: #008489;
+    text-decoration: none;
+  }
+  
+  .account-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+  }
+  
+  .account-item {
+    background: #fff;
+    border: 1px solid #e4e4e4;
+    border-radius: 12px;
+    padding: 24px;
+    transition: box-shadow 0.2s ease;
+  }
+  
+  .account-item:hover {
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  }
+  
+  .account-icon {
+    font-size: 24px;
+    color: #484848;
+    margin-bottom: 16px;
+  }
+  
+  .account-item h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  
+  .account-item p {
+    font-size: 14px;
+    color: #717171;
+  }
+
+  .personal-tombol {
+    font-family: 'Quicksand';
+    color: #0000008A;
+    line-height: 24px;
+    font-weight: 500;
+    font-size: 20px;
+    position: relative; /* Dibutuhkan untuk posisi garis */
+    padding-bottom: 11px; /* Tambahkan jarak agar tidak terlalu dekat */
+}
+
+.personal-tombol::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px; /* Ketebalan garis */
+    left: 0;
+    bottom: 0;
+    /* background-color: #008489;
+    transition: width 0.3s ease;  */
+}
+
+.personal-tombol:hover::after {
+    width: 100%;
+    color: #008489;
+}
+
+.personal-tombol:hover{
+  color: #008489;
+}
+
+.personal-tombol.active {
+  color: #008489; /* Warna font untuk tombol aktif */
+  border-bottom: 2px solid #008489; /* Garis bawah untuk menunjukkan tombol aktif */
+}
+.input-container {
+  position: relative;
+  justify-content: center;
+  align-items: center;
+    width: 350px;
+    height: 60px;
+    margin-bottom: 20px;
+}
+
+.personal-input {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  font-size: 18px;
+  padding: 0 15px;
+  border: 2px solid #ccc;
+  background: transparent;
+  color: #333;
+  outline: none;  
+  z-index: 1111;
+}
+
+.isi-input {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #008489;
+  font-size: 18px;
+  pointer-events: none;
+  transition: 0.3s ease;
+  pointer-events: none;
+}
+
+.personal-input:focus ~ .isi-input{
+  top: 0;
+  left: 15px;
+  font-size: 16px;
+  padding: 0 2px;
+  background-color: #F2F2F2;
+}

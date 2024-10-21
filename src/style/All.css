@@ -1,0 +1,161 @@
+.all-listings-container {
+  /* max-width: 1200px; */
+  margin: 0 auto;
+  padding-left: 135px;
+  padding-right: 135px;
+  padding-top: 48px;
+  background-color: #F2F2F2;
+  padding-bottom: 50px;
+}
+.listings-layout {
+  display: flex;
+  margin-top: 16px;
+  gap: 20px;
+}
+
+.filter-sidebar {
+  width: 183px;
+  background-color: #fff;
+  padding: 34px 28px 34px 28px;
+  border-radius: 8px;
+  gap: 24px;
+  display: flex;
+  height: 490px;
+  font-family: 'Quicksand', sans-serif;
+  
+}
+
+.sidebar-personal {
+  width: 183px;
+  background-color: #ff0000;
+  padding: 34px 28px 34px 28px;
+  border-radius: 8px;
+  gap: 24px;
+  display: flex;
+  height: 490px;
+  font-family: 'Quicksand', sans-serif;
+  
+}
+
+
+.listings-main {
+  flex: 1;  
+}
+
+.listings-grid {
+  display: grid;
+  flex-direction: column;
+  gap: 10px;
+}
+/* .all-listings-container .filters {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+} */
+
+.listing-card {
+  display: flex;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 931px;
+  height: 252px;
+  
+}
+
+.listing-gambar {
+  width: 480px;
+  flex-shrink: 0;
+  border-radius: 8px;
+}
+
+.listing-gambar img {
+  width: 408px;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.listing-info {
+  flex: 1;
+  margin-left: -50px; 
+  font-family: 'Quicksand', sans-serif;
+  padding-right: 41px;
+  
+}
+
+.listing-info h3{
+  color: #3A3A3A;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  size: 20px;
+  line-height: 24px;
+}
+
+.judul-all {
+  height: 47px;
+  padding-bottom: 80px;  
+}
+.judul-all h1 {
+  font-family: 'ADELIA', sans-serif;
+  text-align: center;
+  font-weight: 400;
+  font-size: 39px !important;
+  line-height: 46.8px;
+  color: #3A3A3A;   
+}
+
+.all-listings-container .filter-dropdown {
+  flex: 1;
+  margin-right: 20px;
+}
+
+.all-listings-container .filter-dropdown:last-child {
+  margin-right: 0;
+}
+
+.all-listings-container .filter-dropdown label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.see-more-container {
+  position: relative; /* Set the parent to relative */
+  margin-top: 20px; /* Adjust as necessary */
+}
+
+.see-more-btn {
+  background-color: #1DA19E;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 4px 16px 4px 16px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: 'Quicksand', sans-serif;
+  line-height: 24px;
+  letter-spacing: 0.15px;
+  transition: background-color 0.3s, transform 0.1s;
+  margin-left: auto; /* Tambahkan ini */
+  right: 0; /* Tambahkan ini */
+}
+
+
+
+
+
+
+@media (max-width: 768px) {
+  .all-listings-container .filters {
+    flex-direction: column;
+  }
+
+  .all-listings-container .filter-dropdown {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+}

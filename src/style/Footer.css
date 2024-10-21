@@ -1,0 +1,73 @@
+.footer {
+    width: 100%;
+    padding-top: 32px;
+    height: 100px;
+    background-color: transparent;
+    padding-bottom: 32px;
+  }
+  
+  .footer-content {
+    max-width: 1440px; /* Atur lebar maksimal */
+    margin: 0 auto; /* Buat elemen berada di tengah */
+    display: flex;
+    justify-content: space-between; /* Elemen kiri dan kanan terpisah */
+    align-items: center;
+    padding: 0 20px; /* Tambah padding di kiri dan kanan */
+  }
+  
+  /* Flex container for the left side */
+  .footer-left {
+    display: flex;
+    align-items: center;
+    margin-left: 135px;
+  }
+  
+  /* Style the logo */
+  .footer-logo {
+    height: 36px;
+    margin-right: 20px;
+  }
+  
+  /* Flexbox navigation items next to the logo */
+  .footer-nav a {
+    color: #333;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 14px;
+  }
+  
+  .footer-nav a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Style for copyright text */
+  .footer-copyright {
+    color: #666;
+    font-size: 12px;
+    margin-right: 133px;
+    letter-spacing: 0.15px;
+    line-height: 16.5px;
+    font-weight: 600;
+  }
+  
+  @media (max-width: 768px) {
+    .footer-content {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .footer-left {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .footer-nav {
+      margin-top: 10px;
+    }
+  
+    .footer-nav a {
+      margin-left: 0;
+      margin-right: 20px;
+    }
+  }
+  

@@ -1,0 +1,223 @@
+/* ListingTemplate.css */
+
+.listing-template-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .listing-template-container h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+  }
+  
+  .listing-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    padding: 20px;
+    transition: transform 0.3s ease;
+  }
+  
+  .listing-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  
+  .business-logo {
+    max-width: 200px;
+    height: auto;
+    margin-bottom: 15px;
+    border-radius: 4px;
+  }
+  
+  .listing-card p {
+    margin-bottom: 10px;
+    color: #34495e;
+  }
+  
+  .listing-card strong {
+    color: #2c3e50;
+  }
+  
+  .listing-card a {
+    color: #3498db;
+    text-decoration: none;
+  }
+  
+  .listing-card a:hover {
+    text-decoration: underline;
+  }
+  
+  .social-media, .faqs, .business-video, .image-gallery {
+    margin-top: 20px;
+    border-top: 1px solid #ecf0f1;
+    padding-top: 20px;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .social-media h3, .faqs h3, .business-video h3, .image-gallery h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+  }
+  
+  .faqs div {
+    margin-bottom: 15px;
+  }
+  
+  .business-video iframe {
+    max-width: 100%;
+    border-radius: 4px;
+    justify-content: center;
+  }
+  
+  .image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .listing-image {
+    width: calc(33.33% - 10px);
+    height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+    transition: transform 0.3s ease;
+  }
+  
+  .listing-image:hover {
+    transform: scale(1.05);
+  }
+
+  .judul-template {
+    font-size: 2rem;
+    color: #4F5685 !important; 
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: left;
+    margin-top: 20px;
+    font-family: 'ADELIA', sans-serif;
+}
+  
+.image-gallery {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .main-image {
+    flex: 2;
+    max-width: 60%;
+  }
+  
+  .main-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+  
+  .secondary-images {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .secondary-image {
+    flex: 1 0 calc(50% - 5px);
+    max-width: calc(50% - 5px);
+  }
+  
+  .secondary-image img {
+    width: 100%;
+    height: 195px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .faq-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9; /* Warna latar belakang yang lembut */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Bayangan untuk tampilan elegan */
+}
+
+.faq-item {
+    margin-bottom: 15px; /* Jarak antar FAQ item */
+    border-bottom: 1px solid #ddd; /* Garis bawah untuk pemisah */
+    padding-bottom: 10px;
+}
+
+.faq-item h4 {
+    font-weight: bold;
+    color: #333; /* Warna teks pertanyaan */
+    cursor: pointer; /* Menunjukkan bahwa teks bisa diklik */
+    transition: color 0.3s; /* Animasi saat hover */
+}
+
+.faq-item h4:hover {
+    color: #007bff; /* Warna teks saat dihover */
+}
+
+.faq-item p {
+    padding-left: 20px; /* Jarak indent untuk jawaban */
+    color: #555; /* Warna teks jawaban */
+    margin-top: 5px;
+}
+.Edit, .Hapus, .Posting{
+  padding: 10px;
+  font-size: 0.9rem;
+  color: rgb(255, 255, 255);
+  border: none;
+  border-radius: 5px;
+  height: 40px;
+  margin-right: 5px;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+.Hapus{
+  background-color: red;
+}
+
+.Edit {
+  background-color: #3498db;
+}
+
+.Posting {
+  background-color: darkgreen;
+}
+
+.Edit:hover, .Hapus:hover, .Posting:hover {
+  opacity: 0.8;
+}
+
+
+.lurus {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 20px;
+}
+
+.lurus-button{
+  display: flex;
+}
+  
+  @media (max-width: 768px) {
+    .listing-image {
+      width: calc(50% - 10px);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .listing-image {
+      width: 100%;
+    }
+  }

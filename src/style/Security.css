@@ -1,0 +1,158 @@
+/* Security.css */
+
+.security-container {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+  
+  .breadcrumb {
+    font-size: 14px;
+    color: #717171;
+    margin-bottom: 20px;
+  }
+  
+  .breadcrumb span {
+    cursor: pointer;
+    color: #008489;
+  }
+  
+  .security-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #484848;
+    margin-bottom: 30px;
+  }
+  
+  .security-content {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .security-main {
+    width: 65%; /* Adjust as needed */
+  }
+  
+  .security-tabs {
+    display: flex;
+    border-bottom: 1px solid #DDDDDD;
+    margin-bottom: 30px;
+  }
+  
+  .tab {
+    padding: 15px 20px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .tab.active {
+    border-bottom: 2px solid #008489;
+    color: #008489;
+  }
+  
+  .security-section h2 {
+    font-size: 22px;
+    color: #484848;
+    margin-bottom: 20px;
+  }
+  
+  .security-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid #DDDDDD;
+  }
+  
+  .security-item h3 {
+    font-size: 16px;
+    color: #484848;
+    margin-bottom: 5px;
+  }
+  
+  .security-item p {
+    font-size: 14px;
+    color: #717171;
+  }
+  
+  .update-btn {
+    padding: 10px 20px;
+    border: 1px solid #008489;
+    border-radius: 4px;
+    background: none;
+    color: #008489;
+    cursor: pointer;
+  }
+
+  .disconnect-btn{
+    padding: 10px 20px;
+    border: 1px solid red;
+    border-radius: 4px;
+    background: none;
+    color: red;
+    cursor: pointer;
+  }
+
+    .disconnect-btn:hover {
+    color: #F8F8F8;
+    background-color: crimson;
+  }
+
+  .update-btn:hover{
+    color: #F8F8F8;
+    background-color: #008489;
+  }
+  
+  .security-info {
+    width: 30%; /* Adjust as needed */
+    background-color: #F8F8F8;
+    border: 1px solid #DDDDDD;
+    border-radius: 4px;
+    padding: 20px;
+    align-self: flex-start;
+    margin-top: 50px;
+    position: sticky;
+    margin-left: 50px;
+  }
+  
+ 
+  .security-info h3 {
+    font-size: 18px;
+    color: #484848;
+    margin: 10px 0;
+  }
+  
+  .security-info p {
+    font-size: 14px;
+    color: #717171;
+    line-height: 1.5;
+  }
+  
+  .security-info a {
+    color: #008489;
+    text-decoration: none;
+  }
+  
+  .security-info a:hover {
+    text-decoration: underline;
+  }
+  
+  
+  @media (max-width: 768px) {
+    .security-content {
+      flex-direction: column;
+    }
+  
+    .security-main,
+    .security-info {
+      width: 100%;
+    }
+  
+    .security-info {
+      margin-top: 30px;
+      width: 100%;
+      margin-left: -10px;
+    }
+  }
