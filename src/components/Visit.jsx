@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
 import { MoveRight, MoveLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Tanah from '../assets/image/tnahlot.jpg';
+import Lovina from '../assets/image/lovina.jpg';
+import Kuta from '../assets/image/kutabagus.jpg';
+import pengli from '../assets/image/pengli.jpg';
+import Denpasar from '../assets/image/Denpasar.jpeg';
+import Tirta from '../assets/image/tirta.jpg';
+import Nusa from '../assets/image/nusa.jpg';
+import Ubud from '../assets/image/ubudgianyar.jpg';
+import Barat from '../assets/image/barat.jpg';
+import Bedugul from '../assets/image/bedugul.jpg';
 
 const Visit = () => {
   const navigate = useNavigate();
@@ -8,61 +18,61 @@ const Visit = () => {
 
   const areas = [
     {
-      imageUrl: './src/assets/image/tnahlot.jpg',
+      imageUrl: Tanah,
       title: 'Tanah Lot',
       location: 'Tabanan',
       description: 'Visit this iconic sea temple during sunset'
     },
     {
-      imageUrl: './src/assets/image/lovina.jpg',
+      imageUrl: Lovina,
       title: 'Pantai Lovina',
       location: 'Buleleng',
       description: 'Visit this iconic sea temple during sunset'
     },
     {
-      imageUrl: './src/assets/image/kutabagus.jpg',
+      imageUrl: Kuta,
       title: 'Kuta',
       location: 'Badung',
       description: 'Enjoy the pristine white sand beaches'
     },
     {
-      imageUrl: './src/assets/image/pengli.jpg',
+      imageUrl: pengli,
       title: 'Penglipuran Village',
       location: 'Bangli',
       description: 'Enjoy the pristine white sand beaches'
     },
     {
-      imageUrl: './src/assets/image/Denpasar.jpeg',
+      imageUrl: Denpasar,
       title: 'Renon',
       location: 'Denpasar',
       description: 'Enjoy the pristine white sand beaches'
     },
     {
-      imageUrl: './src/assets/image/tirta.jpg',
+      imageUrl: Tirta ,
       title: 'Tirta Empul ',
       location: 'Karangasem',
       description: 'Enjoy the pristine white sand beaches'
     },
     {
-      imageUrl: './src/assets/image/nusa.jpg',
+      imageUrl: Nusa,
       title: 'Nusa Penida ',
       location: 'Klungkung',
       description: 'Enjoy the pristine white sand beaches'
     },
     {
-      imageUrl: './src/assets/image/ubudgianyar.jpg',
+      imageUrl: Ubud,
       title: 'Ubud',
       location: 'Gianyar',
       description: 'Enjoy the pristine white sand beaches'
     },
     {
-      imageUrl: './src/assets/image/barat.jpg',
+      imageUrl: Barat,
       title: 'Taman Nasiobal Bali barat',
       location: 'Jembrana',
       description: 'Enjoy the pristine white sand beaches'
     },
     {
-      imageUrl: './src/assets/image/bedugul.jpg',
+      imageUrl: Bedugul,
       title: 'Bedugul',
       location: 'Tabanan',
       description: 'Enjoy the pristine white sand beaches'
