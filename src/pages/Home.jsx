@@ -1,57 +1,84 @@
-import React, { useEffect } from 'react';
-import Navbar from '../components/Navbar'
-import Area from '../components/Area'
-import Atas from '../components/Atas'
-import Start from '../components/Start'
-import Bawah from '../components/Bawah'
-import AOS from 'aos';
-import 'aos/dist/aos.css';
+  import React, { useEffect, useState } from 'react';
+  import Navbar from '../components/Navbar';
+  import Area from '../components/Area';
+  import Atas from '../components/Atas';
+  import Start from '../components/Start';
+  import Bawah from '../components/Bawah';
+  import AOS from 'aos';
+  import 'aos/dist/aos.css';
+  import Visit from '../components/Visit';
+  import parse from 'html-react-parser';
+  import '../style/Home.css';
 
-import { AreaSection, AreaList } from '../data/AreaSection'
-import { StartSection, StartList } from '../data/StartSection'
+  // Pastikan import data section dengan benar
+  import { StartSection, StartList } from '../data/StartSection';
 
-import parse from 'html-react-parser'
-import '../style/Home.css'
-import Visit from '../components/Visit';
+  function Home() {
+    const [isLoaded, setIsLoaded] = useState(false);
 
-function Home() {
-  useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      once: false,
-      mirror: true,
-      offset: 120,
-      easing: 'ease-in-out',
-    });
-  }, []);
+    useEffect(() => {
+      // Prevent animation glitches on initial load
+      const timer = setTimeout(() => {
+        setIsLoaded(true);
+      }, 100);
 
-  return (
-    <>
-      <Navbar />
-      <Atas />
-     
-      <section id='Area'>
-        <div className='tengah' data-aos="fade-up">
-          <div className='kolom' data-aos="fade-right" data-aos-delay="200">
-            {parse(AreaSection.Area)}
+      // Initialize AOS with optimized settings
+      AOS.init({
+        duration: 800,
+        once: true,
+        mirror: false,
+        offset: 50,
+        easing: 'ease-out',
+        delay: 0,
+        startEvent: 'DOMContentLoaded',
+        disableMutationObserver: false,
+      });
+
+      // Clean up function
+      return () => {
+        clearTimeout(timer);
+        AOS.refresh();
+      };
+    }, []);
+
+    // Memastikan data section valid sebelum parsing
+    const renderAreaSection = () => {
+      if (typeof AreaSection?.Area === 'string') {
+        return parse(AreaSection.Area);
+      }
+      return null;
+    };
+
+    const renderStartSection = () => {
+      if (typeof StartSection?.Start === 'string') {
+        return parse(StartSection.Start);
+      }
+      return null;
+    };
+
+    return (
+      <div className={`home-container ${isLoaded ? 'loaded' : ''}`}>
+        <Navbar />
+        <main className="content-wrapper">
+          <Atas />
+          
+         <Area />
+          
+          {/* Visit Section */}
+          <Visit />
+       
+          
+              <Start />
+          
+          
+          
+          {/* Bottom Section */}
+          <div data-aos="fade-up">
+            <Bawah />
           </div>
-          <Area AreaList={AreaList}/>
-        </div>
-      </section>
-      <Visit />
-      <section id='Start'>
-        <div className='atas' data-aos="fade-up">
-          <div className='bawah' data-aos="fade-left" data-aos-delay="200">
-            {parse(StartSection.Start)}
-          </div>
-          <Start StartList={StartList} />
-        </div>
-      </section>
-      <div data-aos="fade-up">
-      <Bawah />
+        </main>
       </div>
-    </>
-  )
-}
+    );
+  }
 
-export default Home
+  export default Home;

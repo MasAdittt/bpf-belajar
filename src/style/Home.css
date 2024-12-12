@@ -76,6 +76,22 @@
     width: 100%;
   }
   
+  .scroll-section {
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+  
+  /* Optional: Add a transition to the active state of navigation links */
+  .nav-link {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .nav-link.active {
+    transform: scale(1.05);
+  }
+
   @media screen and (max-width: 991.98px) {
     section {
       display: block;
@@ -87,3 +103,4 @@
       height: auto;
     }
   }
+  

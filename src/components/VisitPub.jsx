@@ -6,8 +6,9 @@ import '../style/Visit.css';
 const VisitPub = () => {
   const [startIndex, setStartIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [visibleCards, setVisibleCards] = useState(4);
   const navigate = useNavigate();
-  
+
   const cards = [
     { imageUrl: './src/assets/image/Denpasar.jpeg', title: 'DENPASAR', category: 'Denpasar' },
     { imageUrl: './src/assets/image/Kuta.jpg', title: 'KUTA', category: 'Kuta' },
@@ -17,7 +18,24 @@ const VisitPub = () => {
     { imageUrl: './src/assets/image/Sanur.jpg', title: 'SANUR', category: 'Sanur' },
   ];
 
-  const visibleCards = 4;
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 1024) {
+        setVisibleCards(3);
+      } else {
+        setVisibleCards(4);
+      }
+    };
+
+    // Set initial value
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const nextSlide = () => {
     if (!isAnimating) {
@@ -29,7 +47,7 @@ const VisitPub = () => {
   const prevSlide = () => {
     if (!isAnimating) {
       setIsAnimating(true);
-      setStartIndex((prevIndex) => 
+      setStartIndex((prevIndex) =>
         prevIndex === 0 ? cards.length - 1 : prevIndex - 1
       );
     }
@@ -56,10 +74,17 @@ const VisitPub = () => {
   };
 
   return (
-    <div className="perks-section" style={{ backgroundColor:'#F2F2F2' }}>
+    <div className="perks-section" style={{backgroundColor:'#F2F2F2'}}>
       <h1 className="visit-judul">Popular areas to visit</h1>
       <div className="cards-container relative overflow-hidden">
-        <div 
+        <button
+          onClick={prevSlide}
+          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg z-10 sm:hidden"
+          disabled={isAnimating}
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <div
           className="cards-wrapper flex transition-transform duration-300 ease-in-out"
           style={{ gap: '10px' }}
         >
@@ -68,15 +93,8 @@ const VisitPub = () => {
           ))}
         </div>
         <button
-          onClick={prevSlide}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg z-10"
-          disabled={isAnimating}
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <button
           onClick={nextSlide}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg z-10"
+          className="next-button absolute right-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg z-10"
           disabled={isAnimating}
         >
           <ChevronRight size={24} />

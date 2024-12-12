@@ -1,9 +1,3 @@
-body, html {
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
-}
-
 .hero {
     position: relative;
     height: 400px;
@@ -11,6 +5,7 @@ body, html {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    margin-bottom: 0; /* Menghilangkan margin bottom */
 }
 
 .overlay {
@@ -19,18 +14,28 @@ body, html {
     left: 0;
     width: 100%;
     height: 100%;
-    /* background-color: rgba(0, 0, 0, 0.5); */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding: 0; /* Menghilangkan padding */
+}
+
+.content-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0; /* Menghilangkan margin */
 }
 
 .content {
     text-align: center;
-    color: white;
     font-family: 'Poppins', sans-serif;
     margin-top: 60px;
+    margin-bottom: 0; /* Menghilangkan margin bottom */
+    padding-bottom: 0; /* Menghilangkan padding bottom */
 }
 
 h1 {
@@ -39,12 +44,9 @@ h1 {
     font-weight: 400;
     line-height: 30px;
     font-family: 'ADELIA', sans-serif;
+    color: #F2F2F2;
 }
 
-p {
-    font-size: 1.5rem;
-    margin: 10px 0 20px 0;
-}
 .search-bar {
     display: flex;
     max-width: 600px;
@@ -53,109 +55,92 @@ p {
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 24px;
-  }
-  
-  .search-bar input {
+    margin-top: 90px;
+}
+
+.search-bar input {
     flex-grow: 1;
     padding: 15px 20px;
     border: none;
     font-size: 1rem;
-  }
-  
-  .search-bar input:focus {
+}
+
+.search-bar input:focus {
     outline: none;
-  }
-  
-  .search-bar button {
+}
+
+.search-bar button {
     background-color: white;
     color: #6B6B6B;
     border: none;
     padding: 15px 25px;
     cursor: pointer;
     transition: background-color 0.3s ease;
-  }
-  
-  .search-bar button:hover {
+}
+
+.search-bar button:hover {
     background-color: #168f8c;
-  }
-
-.categories {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
 }
 
-.categories button {
-    margin: 0;
-    padding: 30px 50px;
-    font-size: 1rem;
-    border: none;
-    /* border-radius: 5px; */
-    cursor: pointer;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    
+/* Mobile styles */
+@media (max-width: 768px) {
+    .hero {
+        height: 300px;
+        margin-bottom: 0; /* Memastikan tidak ada margin di mobile */
+    }
+
+    .content {
+        margin-top: 30px;
+        padding: 0 20px;
+        margin-bottom: 0; /* Menghilangkan margin bottom di mobile */
+    }
+
+    .content-container {
+        padding: 0; /* Menghilangkan padding di mobile */
+    }
+
+    h1 {
+        font-size: 20px !important;
+        line-height: 25px;
+        padding: 0 15px;
+    }
+
+    .search-bar {
+        max-width: 90%;
+        margin: 20px auto 0;
+    }
 }
 
-.categories button:hover {
-    background-color: #f28b21;
+/* Small mobile devices */
+@media (max-width: 480px) {
+    .hero {
+        height: 250px;
+    }
+
+    .content {
+        margin-top: 20px;
+        margin-bottom: 0; /* Memastikan tidak ada margin di mobile kecil */
+    }
+
+    h1 {
+        font-size: 14px !important;
+        line-height: 22px;
+    }
+
+    .search-bar {
+        max-width: 95%;
+        margin-bottom: 0; /* Menghilangkan margin bottom search bar */
+    }
 }
 
-.bungkus {
-    background-color: white; /* Warna latar belakang putih */
-    padding: 10px; /* Jarak di dalam kotak */
-    border-radius: 5px; /* Sudut kotak melengkung */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Efek bayangan */
-    width: 100%; /* Sesuaikan lebar sesuai kebutuhan */
-    margin: 0 auto 20px 0; /* Mengatur margin untuk menempatkan di kiri */
-    padding-left: 3%;
-    display: flex; /* Mengatur agar menjadi flex container */
-    flex-direction: row; /* Mengatur agar konten di dalamnya sejajar secara horizontal */
-    margin-top: 30px;
-    align-items: center; /* Mengatur agar konten sejajar di tengah secara vertikal */
-    gap: 10px; /* Memberikan jarak antara <h3> dan <select> */
+/* Additional mobile styles for other elements */
+@media (max-width: 768px) {
+    .categories {
+        padding: 0 10px;
+        margin-top: 0; /* Menghilangkan margin top categories */
+    }
+
+    .bungkus {
+        margin-top: 0; /* Menghilangkan margin top bungkus */
+    }
 }
-
-h3 {
-    color: #4F5685;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 500;
-}
-
-.dropdown-select {
-    padding: 10px 70px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    background-color: white;
-    color: #333;
-    cursor: pointer;
-    width: 100%; 
-    transform: translateX();
-    transition: 0.2s;
-    z-index: 1;
-}
-
-.dropdown-select option[value=""] {
-    color: #999; /* Warna placeholder */
-}
-
-.cari {
-    border-radius: 5px;
-    background-color: #f28b21;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: bold;
-    padding: 15px 15px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    border: none;
-    margin-right: 10px; 
-
-    display: flex; /* Mengatur tombol sebagai flex container */
-    align-items: center; /* Menjaga teks dan ikon berada di tengah secara vertikal */
-    gap: 5px; /* Memberikan jarak antara ikon dan teks */
-}
-
-

@@ -17,32 +17,97 @@ import Admin from './pages/Admin.jsx'
 import { AuthProvider } from './config/Auth.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx'
 import Listingbaru from './pages/Listingbaru.jsx'
+import Stalking from './pages/Stalking.jsx'
+import UsersPage from './components/UserPage.jsx'
+import PubAdmin from './pages/PubAdmin.jsx'
+import FavoriteListings from './pages/Favorite.jsx'
+import ListingForm from './pages/Form.jsx'
+import ContactForm from './pages/Contat.jsx'
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
+          {/* Public Routes */}
           <Route path='/' element={<Home />}/>
           <Route path='/Coba' element={<Login />}/>
           <Route path='/Daftar' element={<Register />}/>
           <Route path='/Lupa' element={<Lupa />}/>
-          <Route path='/Listing' element={<Listing />}/>
-          <Route path='/Template/:id' element={<ListingTemplate />}/>
-          <Route path='/All' element={<AllListings />}/>
-          <Route path="/Public" element={<PublicListing />} />
-          {/* Route untuk menangani pencarian */}
-          <Route path="/public-listing" element={<PublicListing />} />
-          <Route path='/edit-listing/:id' element={<EditListing />}/>
+          <Route path='/Public' element={<PublicListing />} />
+          <Route path='/public-listing' element={<PublicListing />} />
           <Route path='/PubTemplate/:id' element={<PublicTemplate />}/>
-          <Route path='/pubtemplate/:id' element={<PublicTemplate />} /> {/* Tambahan route dengan huruf kecil */}
-          <Route path='/Profil/:id' element={<Profil />}/>
-          <Route path="/account/security" element={<Security />} />  
-          <Route path="/personal" element={<Personal />} /> 
-          <Route path="/baru/:id" element={<Listingbaru />} />          
-          <Route path='/admin' element={
+          <Route path='/pubtemplate/:id' element={<PublicTemplate />} />
+          <Route path='/Contact' element={<ContactForm />}/>
+          <Route path='/Form' element={<ListingForm />}/>
+
+          {/* Protected Routes - Requires Authentication */}
+          <Route path='/Listing' element={
             <PrivateRoute>
+              <Listing />
+            </PrivateRoute>
+          }/>
+        
+          <Route path='/Template/:id' element={
+            <PrivateRoute>
+              <ListingTemplate />
+            </PrivateRoute>
+          }/>
+          <Route path='/All' element={
+            <PrivateRoute>
+              <AllListings />
+            </PrivateRoute>
+          }/>
+          <Route path='/edit-listing/:id' element={
+            <PrivateRoute>
+              <EditListing />
+            </PrivateRoute>
+          }/>
+          <Route path='/Profil/:id' element={
+            <PrivateRoute>
+              <Profil />
+            </PrivateRoute>
+          }/>
+          <Route path="/account/security" element={
+            <PrivateRoute>
+              <Security />
+            </PrivateRoute>
+          }/>
+          <Route path="/personal/:userId" element={
+            <PrivateRoute>
+              <Personal />
+            </PrivateRoute>
+          }/>
+          <Route path="/baru/:id" element={
+            <PrivateRoute>
+              <Listingbaru />
+            </PrivateRoute>
+          }/>
+          <Route path="/favorite" element={
+            <PrivateRoute>
+              <FavoriteListings />
+            </PrivateRoute>
+          }/>
+          <Route path="/Stalking/:userId" element={
+            <PrivateRoute>
+              <Stalking />
+            </PrivateRoute>
+          }/>
+
+          {/* Admin Only Routes */}
+          <Route path='/admin' element={
+            <PrivateRoute adminOnly={true}>
               <Admin />
+            </PrivateRoute>
+          }/>
+          <Route path='/pubadmin/:id' element={
+            <PrivateRoute adminOnly={true}>
+              <PubAdmin />
+            </PrivateRoute>
+          }/>
+          <Route path="/users" element={
+            <PrivateRoute adminOnly={true}>
+              <UsersPage />
             </PrivateRoute>
           }/>
         </Routes>

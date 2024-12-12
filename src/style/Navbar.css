@@ -1,195 +1,382 @@
-nav {
-  width: 100%;
-  background-color: transparent;
-  box-shadow: none;
-  position: absolute;
-  top: 13px;
-  left: 0;
-  z-index: 1000;
-}
+  nav {
+    width: 100%;
+    background-color: transparent;
+    box-shadow: none;
+    position: absolute;
+    top: 13px;
+    left: 0;
+    z-index: 1000;
+  }
 
-.navbaru {
-  width: 100%;
-  background-color: #F2F2F2;
-  box-shadow: none;
-   top: 13px;
-  left: 0;
-  z-index: 1000;
- 
-
-}
-
-.search-nav {
-  display: flex;
-  max-width: 600px;
-  margin: 0 auto;
-  background-color: white;
-  border-radius: 57px;
-  overflow: hidden;
-}
-
-.search-nav input {
-  flex-grow: 1;
-  padding: 8px 16px 8px 8px;
-  border: none;
-  font-size: 16px;
-  width: 578px;
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 400;
-  line-height: 24px;
-  letter-spacing: 0.15px;
-}
-
-.search-nav input:focus {
-  outline: none;
-}
-
-.search-nav button {
-  background-color: transparent;
-  color: #6B6B6B;
-  border: none;
-  padding: 15px 20px 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-.wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.gambar img {
-  width: 109.93px;
-  height: 36px;
-  cursor: pointer;
-}
-
-.nav-buttons {
-  display: flex;
-  gap: 30px;
-  align-items: center;
-}
-
-.Add, .Sign {
-  background-color: #1DA19E;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 300;
-  line-height: 24px;
-  letter-spacing: 0.15px;
-  cursor: pointer;
-  font-family: 'Quicksand', sans-serif;
-
-}
-
-.Sign {
-  background-color: #EC8E2E;
-}
-
-.user-info {
-  position: relative;
-}
-
-.profile-image {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 8px 0;
-  min-width: 200px;
-  margin-top: 10px;
-}
-
-.dropdown-header {
-  display: flex;
-  align-items: center;
-  padding: 8px 16px;
-  border-bottom: 1px solid #eee;
-  font-family: 'Quicksand', sans-serif;
-  color: #6B6B6B;
-}
-
-.dropdown-header span {
-  color: #6B6B6B;
-  font-size: 16px;
-
-}
-
-.profile-photo-placeholder {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #ccc;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  color: #fff;
-  font-size: 18px;
-  font-family: 'Quicksand', sans-serif;
-
-}
-
-.profile-image-small.profile-photo-placeholder {
-  width: 30px;
-  height: 30px;
-  font-size: 14px;
-}
-.profile-image-small {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  margin-right: 12px;
-}
-
-.dropdown-menu button {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 8px 16px;
-  border: none;
-  background: none;
-  text-align: left;
-  cursor: pointer;
-  font-size: 16px;
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 400;
-  letter-spacing: 0.15px;
-  color: #6B6B6B;
   
-}
+  
+  .navbaru.scrolled {
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
 
-.dropdown-menu button:hover {
-  background-color: #f5f5f5;
-}
+  .navbaru {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    background-color: transparent;
+    padding: 15px 0;
+  }
 
-.dropdown-menu i {
-  margin-right: 8px;
-  width: 16px;
-}
 
-@media (max-width: 768px) {
+
+  .search-nav {
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 57px;
+    overflow: hidden;
+  }
+
+  .search-nav input {
+    flex-grow: 1;
+    padding: 8px 16px 8px 8px;
+    border: none;
+    font-size: 16px;
+    width: 578px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0.15px;
+  }
+
+  .search-nav input:focus {
+    outline: none;
+  }
+
+  .search-nav button {
+    background-color: transparent;
+    color: #6B6B6B;
+    border: none;
+    padding: 15px 20px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .gambar img {
+    width: 109.93px;
+    height: 36px;
+    cursor: pointer;
+  }
+
   .nav-buttons {
-    gap: 10px;
+    display: flex;
+    gap: 30px;
+    align-items: center;
+  }
+
+  .Add, .Sign {
+    background-color: #1DA19E;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.15px;
+    cursor: pointer;
+    font-family: 'Lexend';
+
+
+  }
+
+  .Sign {
+    background-color: #EC8E2E;
+  }
+
+  .user-info {
+    position: relative;
+  }
+
+  .profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 8px 0;
+    min-width: 200px;
+    margin-top: 10px;
+  }
+
+  .dropdown-header {
+    display: flex;
+    align-items: center;
+    padding: 8px 16px;
+    border-bottom: 1px solid #eee;
+    font-family: 'Quicksand', sans-serif;
+    color: #6B6B6B;
+    /* Add these properties for proper text truncation */
+    width: 100%;
+  }
+
+  .dropdown-header span {
+    color: #6B6B6B;
+    font-size: 16px;
+    /* Add these properties for text truncation */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Ensure the text doesn't take full width by accounting for the profile image */
+    max-width: calc(100% - 44px); /* 32px for image + 12px margin */
+  }
+
+  .profile-photo-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: #fff;
+    font-size: 18px;
+    font-family: 'Quicksand', sans-serif;
+
+  }
+
+  .profile-image-small.profile-photo-placeholder {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+  .profile-image-small {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 12px;
+  }
+
+  .dropdown-menu button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.15px;
+    color: #6B6B6B;
+
+  }
+
+  .dropdown-menu button:hover {
+    background-color: #f5f5f5;
+  }
+
+  .dropdown-menu i {
+    margin-right: 8px;
+    width: 16px;
+  }
+
+  /* Keep all your existing CSS and add these new styles */
+
+  /* Mobile menu button */
+  .mobile-menu-button {
+    display: none;
+    background: none;
+    border: none;
+    color: #1DA19E;
+    cursor: pointer;
+    padding: 8px;
+  }
+
+  /* Desktop navigation */
+  .desktop-nav {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+  }
+
+  /* Mobile menu */
+  .mobile-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 50px;
+    left: 50px;
+    background-color: white;
+    padding: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    flex-direction: column;
+  }
+
+  /* Mobile menu buttons container */
+  .mobile-menu-buttons {
+    display: flex;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .mobile-menu-buttons .Add,
+  .mobile-menu-buttons .Sign {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+    padding: 10px 16px;
+    margin: 0;
+  }
+
+  /* User menu content in mobile */
+  .mobile-menu .user-menu-content {
+    width: 100%;
+    z-index: 1000;
+  }
+
+  .mobile-menu .user-menu-content button {
+    padding: 12px 16px;
+  }
+
+  /* Media queries for mobile devices */
+  @media (max-width: 855px) {
+    .wrapper {
+      padding: 0.5rem;
+    }
+
+    .desktop-nav {
+      display: none;
+    }
+
+    .mobile-menu-button {
+      display: block;
+    }
+
+    .mobile-menu {
+      display: flex;
+    }
+
+    .gambar img {
+      width: 70px;
+      height: auto;
+    }
+
+    nav {
+      position: absolute;
+      top: 0;
+      background-color: transparent;
+    }
+    
+    .Add, .Sign {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+    .mobile-menu {
+      z-index: 1001;
+    }
+  }
+
+  /* Additional mobile optimizations */
+  @media (max-width: 480px) {
+    .wrapper {
+      padding: 8px 12px;
+    }
+
+    .mobile-menu button {
+      font-size: 14px;
+    }
+
+    .mobile-menu-buttons .Add,
+    .mobile-menu-buttons .Sign {
+      padding: 8px 12px;
+    }
+  }
+
+  .mobile-sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    height: 100vh;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
   }
   
-  .Add {
-    font-size: 14px;
-    padding: 6px 12px;
+  .mobile-sidebar.open {
+    right: 0;
   }
+  
+  .sidebar-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .close-sidebar {
+    align-self: flex-end;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .sidebar-menu {
+    margin-top: 20px;
+  }
+  
+  .sidebar-menu .Add,
+  .sidebar-menu .Sign {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+/* Animation for sidebar */
+.transform {
+  transform: translateX(100%);
+}
+
+.translate-x-0 {
+  transform: translateX(0);
+}
+
+.translate-x-full {
+  transform: translateX(100%);
+}
+
+.transition-transform {
+  transition-property: transform;
+}
+
+.duration-300 {
+  transition-duration: 300ms;
+}
+
+.ease-in-out {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }

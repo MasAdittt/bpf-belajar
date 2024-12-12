@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -7,9 +7,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        quicksand: ['Quicksand', 'sans-serif'], // Add Quicksand font here
+        lexend: ['Lexend', 'system-ui', '-apple-system', 'sans-serif'],
+        quicksand: ['Quicksand', 'system-ui', '-apple-system', 'sans-serif'],
       },
-    
     },
   },
   plugins: [],

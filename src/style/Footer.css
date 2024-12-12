@@ -1,73 +1,152 @@
+/* CSS Styles */
 .footer {
-    width: 100%;
-    padding-top: 32px;
-    height: 100px;
-    background-color: transparent;
-    padding-bottom: 32px;
+  width: 100%;
+  padding-top: 32px;
+  height: 100px;
+  background-color: transparent;
+  padding-bottom: 32px;
+}
+
+.footer-content {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  margin-left: 135px;
+}
+
+.footer-logo {
+  height: 36px;
+  margin-right: 20px;
+}
+
+.footer-nav a {
+  color: #333;
+  text-decoration: none;
+  margin-left: 20px;
+  font-size: 14px;
+}
+
+.footer-nav a:hover {
+  text-decoration: underline;
+}
+
+.footer-copyright {
+  color: #666;
+  font-size: 12px;
+  margin-right: 133px;
+  letter-spacing: 0.15px;
+  line-height: 16.5px;
+  font-weight: 600;
+}
+
+/* Tablet and medium devices */
+@media (max-width: 768px) {
+  .footer {
+    height: auto;
+    padding: 20px 0;
   }
-  
+
   .footer-content {
-    max-width: 1440px; /* Atur lebar maksimal */
-    margin: 0 auto; /* Buat elemen berada di tengah */
-    display: flex;
-    justify-content: space-between; /* Elemen kiri dan kanan terpisah */
-    align-items: center;
-    padding: 0 20px; /* Tambah padding di kiri dan kanan */
+    flex-direction: column;
+    padding: 0 15px;
+    gap: 20px;
   }
-  
-  /* Flex container for the left side */
+
   .footer-left {
-    display: flex;
-    align-items: center;
-    margin-left: 135px;
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;  /* Memastikan semua item termasuk logo berada di tengah */
   }
-  
-  /* Style the logo */
+
   .footer-logo {
-    height: 36px;
-    margin-right: 20px;
+    height: 30px;
+    margin-right: 0;
+    display: block;  /* Memastikan logo adalah block element */
+    margin: 0 auto;  /* Memberikan margin auto di kiri dan kanan */
   }
-  
-  /* Flexbox navigation items next to the logo */
+
+  .footer-nav {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+  }
+
   .footer-nav a {
-    color: #333;
-    text-decoration: none;
-    margin-left: 20px;
-    font-size: 14px;
+    margin: 0;
+    font-size: 13px;
   }
-  
-  .footer-nav a:hover {
-    text-decoration: underline;
-  }
-  
-  /* Style for copyright text */
+
   .footer-copyright {
-    color: #666;
+    margin-right: 0;
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .footer {
+    padding: 15px 0;
+  }
+
+  .footer-content {
+    gap: 15px;
+  }
+
+  .footer-left {
+    gap: 12px;
+  }
+
+  .footer-logo {
+    height: 25px;
+  }
+
+  .footer-nav {
+    gap: 15px;
+  }
+
+  .footer-nav a {
     font-size: 12px;
-    margin-right: 133px;
-    letter-spacing: 0.15px;
-    line-height: 16.5px;
-    font-weight: 600;
   }
-  
-  @media (max-width: 768px) {
-    .footer-content {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    .footer-left {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    .footer-nav {
-      margin-top: 10px;
-    }
-  
-    .footer-nav a {
-      margin-left: 0;
-      margin-right: 20px;
-    }
+
+  .footer-copyright {
+    font-size: 11px;
   }
-  
+}
+
+/* Extra small devices */
+@media (max-width: 320px) {
+  .footer {
+    padding: 12px 0;
+  }
+
+  .footer-content {
+    gap: 12px;
+  }
+
+  .footer-logo {
+    height: 22px;
+  }
+
+  .footer-nav {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-nav a {
+    font-size: 11px;
+  }
+}

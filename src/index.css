@@ -2,3 +2,22 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+@layer base {
+    :root {
+      /* Definisikan font-family dengan fallback */
+      --font-lexend: 'Lexend', system-ui, -apple-system, sans-serif;
+      --font-quicksand: 'Quicksand', system-ui, -apple-system, sans-serif;
+    }
+  }
+  
+  /* Definisikan utility classes untuk font */
+  @layer utilities {
+    .font-lexend {
+      font-family: var(--font-lexend);
+    }
+    
+    .font-quicksand {
+      font-family: var(--font-quicksand);
+    }
+  }

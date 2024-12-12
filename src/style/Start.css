@@ -1,5 +1,5 @@
 #Start {
-    background-color: #fbfbfb;
+    background-color: none;
     padding: 20px;
     text-align: center;
 }
@@ -38,14 +38,7 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.gatau:hover img {
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    bottom: -100%;
-}
 
-.gatau:hover::before {
-   bottom: -100%;
-}
 
 .gatau h1 {
     position: absolute;

@@ -6,50 +6,57 @@
   import '../style/Listing.css';
   import { useNavigate } from 'react-router-dom';
   import Footer from '../components/Footer';
-  import Bisnis from '../components/Bisnis';
   import { useAuth } from '../config/Auth.jsx';
   import { toast, ToastContainer } from 'react-toastify';
   import Swal from 'sweetalert2';
 import 'react-toastify/dist/ReactToastify.css';
+import { Box, TextField, Button, Typography, Card, CardContent } from '@mui/material';
 
-  function Listing() {
-    const { user } = useAuth();
-    const navigate = useNavigate(); 
-    const [socialMedia, setSocialMedia] = useState([{ platform: 'Instagram', url: '' }]);
-    const [faqs, setFaqs] = useState([{ question: '', answer: '' }]);
-    const [businessVideo, setBusinessVideo] = useState('');
-    const [images, setImages] = useState([]);
-    const [businessLogo, setBusinessLogo] = useState(null);
-    const [businessHours, setBusinessHours] = useState([
-      { day: 'Monday', start: '09:00 AM', end: '05:00 PM' },
-      { day: 'Tuesday', start: '09:00 AM', end: '05:00 PM' },
-      { day: 'Wednesday', start: '09:00 AM', end: '05:00 PM' },
-      { day: 'Thursday', start: '09:00 AM', end: '05:00 PM' },
-    ]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
 
-    const [formData, setFormData] = useState({
-      title: '',
-      address: '',
-      city: '',
-      phone: '',
-      website: '',
-      category: '',
-      priceRange: '',
-      priceFrom: '',
-      priceTo: '',
-      description: '',
-      tags: '',
-    });
+function Listing() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [instagram, setInstagram] = useState(''); // Changed to single Instagram state
+  const [businessVideo, setBusinessVideo] = useState('');
+  const [images, setImages] = useState([]);
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
 
-    const handleInputChange = (e) => {
-      const { name, value } = e.target;
-      setFormData(prevState => ({
-        ...prevState,
-        [name]: value
-      }));
+  const [formData, setFormData] = useState({
+    title: '',
+    address: '',
+    city: '',
+    phone: '',
+    website: '',
+    category: '',
+    priceRange: '',
+    priceFrom: '',
+    priceTo: '',
+    description: '',
+    tags: '',
+  });
+
+    const countWords = (text) => {
+      if (!text) return 0;
+      return text.trim().split(/\s+/).length;
     };
+   // Update the handleInputChange function to add real-time title validation
+   const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    
+    if (name === 'title') {
+      if (value.length > 50) {
+        toast.warning(`Title must not exceed 50 characters (currently: ${value.length} characters)`);
+        return; // Prevent updating state if character limit is exceeded
+      }
+    }
+  
+  setFormData(prevState => ({
+    ...prevState,
+    [name]: value
+  }));
+};
 
     useEffect(() => {
       // Membersihkan URL objek ketika komponen unmount
@@ -75,57 +82,10 @@ import 'react-toastify/dist/ReactToastify.css';
     }, [user, navigate, location]);
   
 
-    const handleAddSocialMedia = () => {
-      const availablePlatforms = ['Instagram', 'Facebook', 'Twitter', 'LinkedIn', 'Youtube'];
-      const unusedPlatform = availablePlatforms.find(platform => 
-        !socialMedia.some(social => social.platform === platform)
-      );
-      
-      if (unusedPlatform) {
-        setSocialMedia([...socialMedia, { platform: unusedPlatform, url: '' }]);
-      } else {
-        alert("Semua platform media sosial yang tersedia sudah ditambahkan.");
-      }
-    };
-
-    const handleRemoveSocialMedia = (index) => {
-      const newSocialMedia = [...socialMedia];
-      newSocialMedia.splice(index, 1);
-      setSocialMedia(newSocialMedia);
-    };
-
-    const handleSocialMediaChange = (index, field, value) => {
-      if (field === 'platform') {
-        const platformExists = socialMedia.some((social, i) => 
-          i !== index && social.platform === value
-        );
-        
-        if (platformExists) {
-          alert("Platform media sosial ini sudah ditambahkan.");
-          return;
-        }
-      }
-      
-      const newSocialMedia = [...socialMedia];
-      newSocialMedia[index][field] = value;
-      setSocialMedia(newSocialMedia);
-    };
-
-    const handleAddFaq = () => {
-      setFaqs([...faqs, { question: '', answer: '' }]);
-    };
-
-    const handleRemoveFaq = (index) => {
-      const newFaqs = [...faqs];
-      newFaqs.splice(index, 1);
-      setFaqs(newFaqs);
-    };
-
-    const handleFaqChange = (index, field, value) => {
-      const newFaqs = [...faqs];
-      newFaqs[index][field] = value;
-      setFaqs(newFaqs);
-    };
+     // Handle Instagram URL change
+  const handleInstagramChange = (e) => {
+    setInstagram(e.target.value);
+  };
 
     const handleBusinessVideoChange = (e) => {
       setBusinessVideo(e.target.value);
@@ -139,40 +99,19 @@ import 'react-toastify/dist/ReactToastify.css';
     const removeImage = (index) => {
       setImages((prevImages) => prevImages.filter((_, i) => i !== index));
     };
-
-    const handleLogoUpload = (e) => {
-      const file = e.target.files[0];
-      setBusinessLogo(file);
-    };
-
-    const handleBusinessHoursChange = (newHours) => {
-      setBusinessHours(newHours);
-    };
-
-    const validateForm = () => {
-      const errors = {};
-      if (!formData.title.trim()) errors.title = "Title is required";
-      if (!formData.address.trim()) errors.address = "Address is required";
-      if (!formData.city) errors.city = "City is required";
-      if (!formData.phone.trim()) errors.phone = "Phone is required";
-      if (!formData.website.trim()) errors.website = "Website is required";
-      if (!formData.category) errors.category = "Category is required";
-      if (!formData.priceRange) errors.priceRange = "Price range is required";
-      if (!formData.description.trim()) errors.description = "Description is required";
-
-      return Object.keys(errors).length === 0 ? null : errors;
-    };
-
     const handleSubmit = async (e) => {
       e.preventDefault();
+      
       if (!user) {
-        toast.error("Silakan login terlebih dahulu untuk membuat listing.");
+        toast.error("Please login first to create a listing.");
+        navigate('/Coba');
         return;
       }
+    
       const errors = validateForm();
       if (errors) {
         console.log('Form validation errors:', errors);
-        toast.warning("Mohon isi semua field yang diperlukan.");
+        toast.warning("Please fill in all required fields.");
         return;
       }
       
@@ -180,82 +119,156 @@ import 'react-toastify/dist/ReactToastify.css';
       setIsSubmitDisabled(true);
       
       try {
-        console.log('Mulai proses penyimpanan');
-        
+        // Create normalized title (lowercase, remove special characters)
+        const normalizedTitle = formData.title
+          .toLowerCase()
+          .replace(/[^a-z0-9\s]/g, '')
+          .trim()
+          .replace(/\s+/g, '-');
+    
         // Upload images
         const storage = getStorage();
         const imageUrls = await Promise.all(
           images.map(async (image) => {
-            const imageRef = storageRef(storage, `listings/${Date.now()}_${image.name}`);
+            const imagePath = `listings/${Date.now()}_${image.name}`;
+            const imageRef = storageRef(storage, imagePath);
             await uploadBytes(imageRef, image);
             return getDownloadURL(imageRef);
           })
         );
-        console.log('Gambar berhasil diupload');
+        // Prepare listing data with all required fields
+        const listingData = {
+          ...formData,
+          normalizedTitle,  // Required field as per rules
+          instagram,
+          businessVideo,
+          imageUrls,
+          userId: user.uid,
+          userEmail: user.email, // Required field as per rules
+          username: user.displayName || 'Anonymous User',
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          recommendations: 0, // Initialize recommendations as per rules
+          reviews: {} // Initialize empty reviews object
+        };
     
-        // Upload logo
-        let logoUrl = null;
-        if (businessLogo) {
-          const logoRef = storageRef(storage, `logos/${Date.now()}_${businessLogo.name}`);
-          await uploadBytes(logoRef, businessLogo);
-          logoUrl = await getDownloadURL(logoRef);
-          console.log('Logo berhasil diupload');
+        // Validate required fields as per rules
+        const requiredFields = {
+          title: listingData.title,
+          description: listingData.description,
+          userEmail: listingData.userEmail,
+          normalizedTitle: listingData.normalizedTitle
+        };
+    
+        // Check if all required fields are present and valid
+        const missingFields = Object.entries(requiredFields)
+          .filter(([key, value]) => !value)
+          .map(([key]) => key);
+    
+        if (missingFields.length > 0) {
+          throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
         }
     
         // Save to Realtime Database
         const listingsRef = ref(database, 'listings');
         const newListingRef = push(listingsRef);
-        await set(newListingRef, {
-          ...formData,
-          socialMedia,
-          faqs,
-          businessVideo,
-          imageUrls,
-          logoUrl,
-          businessHours,
-          userId: user.uid,
-          userEmail: user.email, 
-          username: user.displayName || 'Anonymous User',
-          createdAt: Date.now()
-        });
-    
-        console.log("Listing berhasil disimpan dengan ID:", newListingRef.key);
-        toast.success("Listing berhasil disimpan!");
         
-        // Reset form (Anda bisa memindahkan kode reset form ke sini jika diperlukan)
-        setFormData({
-          title: '',
-          address: '',
-          city: '',
-          phone: '',
-          website: '',
-          category: '',
-          priceRange: '',
-          priceFrom: '',
-          priceTo: '',
-          description: '',
-          tags: '',
-        });
-        setSocialMedia([{ platform: 'Instagram', url: '' }]);
-        setFaqs([{ question: '', answer: '' }]);
-        setBusinessVideo('');
-        setImages([]);
-        setBusinessLogo(null);
-        setBusinessHours([
-          { day: 'Monday', start: '09:00 AM', end: '05:00 PM' },
-          { day: 'Tuesday', start: '09:00 AM', end: '05:00 PM' },
-          { day: 'Wednesday', start: '09:00 AM', end: '05:00 PM' },
-          { day: 'Thursday', start: '09:00 AM', end: '05:00 PM' },
-        ]);
+        await set(newListingRef, listingData);
+        
+        console.log("Listing saved successfully with ID:", newListingRef.key);
+        toast.success("Listing saved successfully!");
+        
+        // Reset form after successful submission
+        resetForm();
         
       } catch (error) {
-        console.error("Error saat menyimpan listing:", error);
-        toast.error("Terjadi kesalahan saat menyimpan listing. Silakan coba lagi.");
+        console.error("Error saving listing:", error);
+        
+        // Handle specific error types
+        if (error.code === 'PERMISSION_DENIED') {
+          toast.error("Permission denied. Please make sure you're logged in.");
+        } else if (error.code === 'STORAGE_QUOTA_EXCEEDED') {
+          toast.error("Storage quota exceeded. Please try uploading smaller images.");
+        } else if (error.message?.includes('Missing required fields')) {
+          toast.error(error.message);
+        } else {
+          toast.error("An error occurred while saving the listing. Please try again.");
+        }
       } finally {
-        console.log('Proses penyimpanan selesai');
         setIsLoading(false);
-        setIsSubmitDisabled(false); // Mengaktifkan kembali tombol submit
+        setIsSubmitDisabled(false);
       }
+    };
+    
+    const validateForm = () => {
+      const errors = {};
+      
+      if (!formData.title?.trim()) {
+        errors.title = "Title is required";
+      } else if (formData.title.length > 20) {
+        errors.title = `Title must not exceed 50 characters (currently: ${formData.title.length} characters)`;
+      }
+      
+      if (!formData.description?.trim()) {
+        errors.description = "Description is required";
+      }
+      
+      if (!formData.address?.trim()) {
+        errors.address = "Address is required";
+      }
+      
+      if (!formData.city) {
+        errors.city = "City is required";
+      }
+      
+      if (!formData.phone?.trim()) {
+        errors.phone = "Phone is required";
+      }
+      
+      if (!formData.website?.trim()) {
+        errors.website = "Website is required";
+      }
+      
+      if (!formData.category) {
+        errors.category = "Category is required";
+      }
+      
+      if (!formData.priceRange) {
+        errors.priceRange = "Price range is required";
+      }
+    
+      // User validation
+      if (!user?.email) {
+        errors.userEmail = "User email is required";
+      } else {
+        // Validate email format
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        if (!emailRegex.test(user.email)) {
+          errors.userEmail = "Invalid email format";
+        }
+      }
+    
+      return Object.keys(errors).length === 0 ? null : errors;
+    };
+    // Helper function to reset form (unchanged)
+    const resetForm = () => {
+      setFormData({
+        title: '',
+        address: '',
+        city: '',
+        phone: '',
+        website: '',
+        category: '',
+        priceRange: '',
+        priceFrom: '',
+        priceTo: '',
+        description: '',
+        tags: '',
+      });
+      setInstagram('');
+      setBusinessVideo('');
+      setImages([]);
+     
     };
   
     
@@ -291,9 +304,11 @@ import 'react-toastify/dist/ReactToastify.css';
                   name="title" 
                   placeholder='Staple & Fancy Hotel' 
                   value={formData.title}
+                  maxLength={50}
                   onChange={handleInputChange}
                 />
                 <p className='kontex'>Full Address (Geolocation)<span> *</span></p>
+                
                 <input 
                   type='text' 
                   name="address" 
@@ -308,10 +323,11 @@ import 'react-toastify/dist/ReactToastify.css';
                   value={formData.city}
                   onChange={handleInputChange}
                 >
-                  <option value="" disabled hidden>Ex: Villa, Cafe, Hotel</option>
+                  <option value="" disabled hidden>Ex: Canggu, Denpasar, Kintamani</option>
                   <option value="Canggu">Canggu</option>
                   <option value="Denpasar">Denpasar</option>
                   <option value="Kintamani">Kintamani</option>
+                  <option value="Kuta">Kuta</option>
                   <option value="Sanur">Sanur</option>
                   <option value="Ubud">Ubud</option>
                   <option value="Uluwatu">Uluwatu</option>
@@ -320,10 +336,11 @@ import 'react-toastify/dist/ReactToastify.css';
                 <input 
                   type='text' 
                   name="phone" 
-                  placeholder='Your Phone Number' 
+                  placeholder='Example : +6281782....' 
                   value={formData.phone}
                   onChange={handleInputChange}
                 />
+               
                 <p className='kontex'>Website <span> *</span></p>
                 <input 
                   type='url' 
@@ -357,32 +374,7 @@ import 'react-toastify/dist/ReactToastify.css';
               </label>
             </div>
 
-            <div className='Listing-form'>
-              <label>
-                <h1 className='Primary'>FREQUENTLY ASKED QUESTIONS</h1>
-                <hr className="custom-hr" />
-                {faqs.map((faq, index) => (
-                  <div key={index} className="faq-input-group">
-                    <input
-                      type='text'
-                      name="faq-question"
-                      placeholder='FAQ'
-                      value={faq.question}
-                      onChange={(e) => handleFaqChange(index, 'question', e.target.value)}
-                    />
-                    <input
-                      type='text'
-                      name="faq-answer"
-                      placeholder='Answer'
-                      value={faq.answer}
-                      onChange={(e) => handleFaqChange(index, 'answer', e.target.value)}
-                    />
-                    <button type='button' className='Faq-hapus' onClick={() => handleRemoveFaq(index)}>Hapus</button>
-                  </div>
-                ))}
-                <button type='button' className="Faq-tambah" onClick={handleAddFaq}>Add FAQ</button>
-              </label>
-            </div>
+           
 
             <div className='Listing-form'>
               <label>
@@ -429,9 +421,7 @@ import 'react-toastify/dist/ReactToastify.css';
               </label>
             </div>
             
-            <div className='Listing-form'>
-          <Bisnis hours={businessHours} onHoursChange={handleBusinessHoursChange} />
-        </div>
+            
             <div className='Listing-form'>
               <label>
                 <h1 className='Primary'>MORE INFO</h1>
@@ -458,41 +448,20 @@ import 'react-toastify/dist/ReactToastify.css';
             </div>
 
   <div className='Listing-form'>
-    <label>
-      <h1 className='Primary'>SOCIAL MEDIA</h1>
-      <hr className="custom-hr" />
-      {socialMedia.map((social, index) => (
-        <div key={index} className="social-media-input">
-          <select 
-            className='kotak-social'
-            value={social.platform}
-            onChange={(e) => handleSocialMediaChange(index, 'platform', e.target.value)}
-          >
-            {['Instagram', 'Facebook', 'Twitter', 'LinkedIn', 'Youtube'].map(platform => (
-              <option 
-                key={platform} 
-                value={platform}
-                disabled={socialMedia.some((s, i) => i !== index && s.platform === platform)}
-              >
-                {platform}
-              </option>
-            ))}
-          </select>
-          <input
-            type='url'
-            placeholder='Enter your profile URL'
-            value={social.url}
-            onChange={(e) => handleSocialMediaChange(index, 'url', e.target.value)}
-          />
-          <button className="button-happus" type="button" onClick={() => handleRemoveSocialMedia(index)}>✖</button>
-        </div>
-      ))}
-      <button className="button-tambah" type="button" onClick={handleAddSocialMedia}>+</button>
-    </label>
+  <label>
+            <h1 className='Primary'>SOCIAL MEDIA</h1>
+            <hr className="custom-hr" />
+            <div className="social-media-input">
+              <p className='kontex'>Instagram Profile URL</p>
+              <input
+                type='url'
+                placeholder='Enter your Instagram profile URL'
+                value={instagram}
+                onChange={handleInstagramChange}
+              />
+            </div>
+          </label>
   </div>
-
-
-
             <div className='Listing-form'>
               <label>
                 <h1 className='Primary'>MEDIA</h1>
@@ -548,21 +517,7 @@ import 'react-toastify/dist/ReactToastify.css';
           ))}
         </div>
       </div>
-                <div>
-                  <p className='kontex'>Upload Business Logo</p>
-                  <div className="logo-upload-area">
-                    <input 
-                      type="file" 
-                      onChange={handleLogoUpload} 
-                      style={{display: 'none'}} 
-                      id="logo-upload"
-                    />
-                    <label htmlFor="logo-upload" className="browser-btn">Browser</label>
-                      <span className="file-name">
-                      {businessLogo ? businessLogo.name : 'Choose A File...'}
-                    </span>
-                  </div>
-                </div>
+                
               </label>
             </div>
             <button className="tombol-listing" type="submit" disabled={isSubmitDisabled}>

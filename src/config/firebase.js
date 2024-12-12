@@ -1,11 +1,13 @@
+// src/config/firebase.js
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getDatabase } from "firebase/database"; // Import Realtime Database
+import { getDatabase } from "firebase/database";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCW6uiwKmqbtm8zH3dmCoBYI9cmrqE8Bt0",
   authDomain: "bpet-4dfb4.firebaseapp.com",
-  databaseURL: "https://bpet-4dfb4-default-rtdb.firebaseio.com", // URL untuk Realtime Database
+  databaseURL: "https://bpet-4dfb4-default-rtdb.firebaseio.com",
   projectId: "bpet-4dfb4",
   storageBucket: "bpet-4dfb4.appspot.com",
   messagingSenderId: "668904938187",
@@ -14,6 +16,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const firebaseAuthentication = getAuth(app);
-const database = getDatabase(app); // Menggunakan Realtime Database
+export const database = getDatabase(app);
+export const storage = getStorage(app);
 
-export { database }; // Ekspor instance database
+export default app;

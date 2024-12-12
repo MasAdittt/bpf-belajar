@@ -27,6 +27,11 @@ function Profil() {
   }, [user]);
 
   const handleItemClick = (title) => {
+    if (!user) {
+      console.log('User not authenticated');
+      return;
+    }
+
     switch(title) {
       case "Your Listings":
         navigate('/All');
@@ -35,9 +40,8 @@ function Profil() {
         navigate('/account/security');
         break;
       case "Personal info":
-        navigate('/Personal');
+        navigate(`/personal/${user.uid}`); // Fixed: Using user.uid instead of undefined userId
         break;
-      // Tambahkan case lain untuk item-item lainnya jika diperlukan
       default:
         console.log(`No action defined for ${title}`);
     }

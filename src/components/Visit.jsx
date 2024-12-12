@@ -1,97 +1,157 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { MoveRight, MoveLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import '../style/Visit.css';
 
 const Visit = () => {
-  const [startIndex, setStartIndex] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
   const navigate = useNavigate();
-  
-  const cards = [
-    { imageUrl: './src/assets/image/Denpasar.jpeg', title: 'DENPASAR', category: 'Denpasar' },
-    { imageUrl: './src/assets/image/Kuta.jpg', title: 'KUTA', category: 'Kuta' },
-    { imageUrl: './src/assets/image/Seminyak.jpg', title: 'SEMINYAK', category: 'Seminyak' },
-    { imageUrl: './src/assets/image/Canggu.jpg', title: 'CANGGU', category: 'Canggu' },
-    { imageUrl: './src/assets/image/Ubud.jpeg', title: 'UBUD', category: 'Ubud' },
-    { imageUrl: './src/assets/image/Sanur.jpg', title: 'SANUR', category: 'Sanur' },
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const areas = [
+    {
+      imageUrl: './src/assets/image/tnahlot.jpg',
+      title: 'Tanah Lot',
+      location: 'Tabanan',
+      description: 'Visit this iconic sea temple during sunset'
+    },
+    {
+      imageUrl: './src/assets/image/lovina.jpg',
+      title: 'Pantai Lovina',
+      location: 'Buleleng',
+      description: 'Visit this iconic sea temple during sunset'
+    },
+    {
+      imageUrl: './src/assets/image/kutabagus.jpg',
+      title: 'Kuta',
+      location: 'Badung',
+      description: 'Enjoy the pristine white sand beaches'
+    },
+    {
+      imageUrl: './src/assets/image/pengli.jpg',
+      title: 'Penglipuran Village',
+      location: 'Bangli',
+      description: 'Enjoy the pristine white sand beaches'
+    },
+    {
+      imageUrl: './src/assets/image/Denpasar.jpeg',
+      title: 'Renon',
+      location: 'Denpasar',
+      description: 'Enjoy the pristine white sand beaches'
+    },
+    {
+      imageUrl: './src/assets/image/tirta.jpg',
+      title: 'Tirta Empul ',
+      location: 'Karangasem',
+      description: 'Enjoy the pristine white sand beaches'
+    },
+    {
+      imageUrl: './src/assets/image/nusa.jpg',
+      title: 'Nusa Penida ',
+      location: 'Klungkung',
+      description: 'Enjoy the pristine white sand beaches'
+    },
+    {
+      imageUrl: './src/assets/image/ubudgianyar.jpg',
+      title: 'Ubud',
+      location: 'Gianyar',
+      description: 'Enjoy the pristine white sand beaches'
+    },
+    {
+      imageUrl: './src/assets/image/barat.jpg',
+      title: 'Taman Nasiobal Bali barat',
+      location: 'Jembrana',
+      description: 'Enjoy the pristine white sand beaches'
+    },
+    {
+      imageUrl: './src/assets/image/bedugul.jpg',
+      title: 'Bedugul',
+      location: 'Tabanan',
+      description: 'Enjoy the pristine white sand beaches'
+    }
   ];
 
-  const visibleCards = 4;
+  const handleNext = () => {
+    setActiveIndex((prev) => (prev + 1) % areas.length);
+  };
 
-  const nextSlide = () => {
-    if (!isAnimating) {
-      setIsAnimating(true);
-      setStartIndex((prevIndex) => (prevIndex + 1) % cards.length);
+  const handlePrev = () => {
+    setActiveIndex((prev) => (prev - 1 + areas.length) % areas.length);
+  };
+
+  const handleThumbnailClick = (index, area) => {
+    if (index === 1) {
+      navigate(`/Public?category=${area.location}`);
     }
   };
 
-  const prevSlide = () => {
-    if (!isAnimating) {
-      setIsAnimating(true);
-      setStartIndex((prevIndex) => 
-        prevIndex === 0 ? cards.length - 1 : prevIndex - 1
-      );
-    }
-  };
-
-  useEffect(() => {
-    if (isAnimating) {
-      const timer = setTimeout(() => setIsAnimating(false), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [isAnimating]);
-
-  const getVisibleCards = () => {
-    const visibleCardsArray = [];
-    for (let i = 0; i < visibleCards; i++) {
-      const index = (startIndex + i) % cards.length;
-      visibleCardsArray.push(cards[index]);
-    }
-    return visibleCardsArray;
-  };
-
-  const handleCardClick = (category) => {
-    navigate(`/Public?category=${category}`);
+  const getVisibleAreas = () => {
+    const beforeActive = activeIndex === 0 ? areas.length - 1 : activeIndex - 1;
+    const afterActive = (activeIndex + 1) % areas.length;
+    return [beforeActive, activeIndex, afterActive].map(index => areas[index]);
   };
 
   return (
-    <div className="perks-section">
-      <h1 className="visit-judul">Popular areas to visit</h1>
-      <div className="cards-container relative overflow-hidden">
-        <div 
-          className="cards-wrapper flex transition-transform duration-300 ease-in-out"
-          style={{ gap: '10px' }}
-        >
-          {getVisibleCards().map((card, index) => (
-            <Card key={index} {...card} onClick={() => handleCardClick(card.category)} />
+    <div className="w-full bg-[#FFFFFF] py-8 lg:py-16 px-4 lg:px-8"> 
+      {/* Header */}
+      <div className="w-full lg:w-[601px] px-4 lg:px-0" style={{margin:'0 auto'}}>
+        <h2 className="text-3xl lg:text-[39px] text-center lg:text-left text-gray-800 mb-4" 
+            style={{fontFamily:'ADELIA',fontWeight:400}}>
+          POPULAR AREAS TO VISIT
+        </h2>
+        <p className="text-gray-600" 
+           style={{textAlign:'justify',fontSize:'16px',lineHeight:'24px',fontFamily:'Lexend',fontWeight:300}}>
+          Explore our most popular destinations where you'll find many pet-friendly places in Bali.
+        </p>
+      </div>
+
+      {/* Main Container for Thumbnails and Navigation */}
+      <div className="flex flex-col items-center max-w-6xl mx-auto mt-12 lg:mt-[80px]">
+        {/* Thumbnails Container */}
+        <div className="flex flex-col lg:flex-row justify-center items-center lg:items-stretch gap-6 w-full">
+          {getVisibleAreas().map((area, index) => (
+            <div
+              key={area.title}
+              className={`relative rounded-2xl overflow-hidden transition-all duration-300 shadow-xl
+                ${index === 1 ? 
+                  'w-full lg:w-[390px] h-[300px] lg:h-[400px] lg:transform lg:-translate-y-9 cursor-pointer' : 
+                  'hidden lg:block lg:w-[374px] lg:h-[361px]'}`}
+              onClick={() => handleThumbnailClick(index, area)}
+            >
+              <img
+                src={area.imageUrl}
+                alt={area.title}
+                className="w-full h-full object-cover"
+              />
+              {index === 1 && (
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent">
+                  <div className="absolute bottom-6 left-0 right-0 text-center text-white">
+                    <h3 style={{fontFamily:'Lexend',fontWeight:500,fontSize:'20px',lineHeight:'24px'}}>{area.title}</h3>
+                    <p style={{fontFamily:'Lexend',fontSize:'14px',lineHeight:'21px',fontWeight:300}}>{area.location}</p>
+                  </div>
+                </div>
+              )}
+            </div>
           ))}
         </div>
-        <button
-          onClick={prevSlide}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg z-10"
-          disabled={isAnimating}
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <button
-          onClick={nextSlide}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-lg z-10"
-          disabled={isAnimating}
-        >
-          <ChevronRight size={24} />
-        </button>
-      </div>
-    </div>
-  );
-};
 
-const Card = ({ imageUrl, title, onClick }) => {
-  return (
-    <div className="card flex-1 min-w-0 cursor-pointer" onClick={onClick}>
-      <img src={imageUrl} alt={title} className="card-image w-full h-full object-cover" />
-      <div className="card-content">
-        <h2 className="card-title">{title}</h2>
+        {/* Navigation Buttons - Now positioned below thumbnails */}
+        <div className="flex gap-[12px] justify-center mt-8">
+          <button
+            onClick={handlePrev}
+            className="w-9 h-9 bg-[#1DA19E] text-white flex items-center justify-center hover:bg-[#0ea5e9] transition-colors"
+            style={{borderRadius:'8px'}}
+            aria-label="Previous slide"
+          >
+            <MoveLeft size={16} />
+          </button>
+          <button
+            onClick={handleNext}
+            className="w-9 h-9 bg-[#1DA19E] text-white flex items-center justify-center hover:bg-[#0ea5e9] transition-colors"
+            style={{borderRadius:'8px'}}
+            aria-label="Next slide"
+          >
+            <MoveRight size={16} />
+          </button>
+        </div>
       </div>
     </div>
   );

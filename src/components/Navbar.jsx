@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../config/Auth';
 import { getDatabase, ref, onValue, off } from "firebase/database";
-import '../style/Navbar.css';
+import NotifListing from '../kebutuhan/NotifListing';
 
 function Navbar() {
   const navigate = useNavigate();
@@ -10,10 +10,13 @@ function Navbar() {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [username, setUsername] = useState('');
   const [profilePhoto, setProfilePhoto] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showNotifListing, setShowNotifListing] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
-    if (user && user.uid) {
+    if (user?.emailVerified) {
+      setIsAuthenticated(true);
       const db = getDatabase();
       const userRef = ref(db, `users/${user.uid}`);
       
@@ -28,7 +31,14 @@ function Navbar() {
         }
       });
 
-      return () => off(userRef, 'value', unsubscribe);
+      return () => {
+        off(userRef, 'value', unsubscribe);
+        setIsAuthenticated(false);
+      };
+    } else {
+      setIsAuthenticated(false);
+      setUsername('');
+      setProfilePhoto(null);
     }
   }, [user]);
 
@@ -48,6 +58,9 @@ function Navbar() {
   const handleLogout = () => {
     logout()
       .then(() => {
+        setIsAuthenticated(false);
+        setUsername('');
+        setProfilePhoto(null);
         navigate('/');
       })
       .catch((error) => {
@@ -59,79 +72,113 @@ function Navbar() {
     setDropdownVisible(!dropdownVisible);
   };
 
-  const navigateToProfile = () => {
-    if (user && user.uid) {
-      navigate(`/Profil/${user.uid}`);
-    } else {
-      console.error('User ID not available');
+  const handleAddListing = () => {
+    if (!user) {
+      setShowNotifListing(true);
+      return;
     }
+    
+    if (!user.emailVerified) {
+      alert('Please verify your email first');
+      return;
+    }
+    
+    navigate('/Form');
   };
 
-  return (
-    <nav>
-      <div className="wrapper">
-        <div className="gambar">
-          <img 
-            src="https://balipetfriendly.com/wp-content/uploads/2023/10/Logo-BPF.png.webp" 
-            alt="Bali Pet Friendly Logo"
-            onClick={() => navigate('/')}
-            style={{ cursor: 'pointer' }}
-          />
-        </div>
-        <div className="nav-buttons">
-          <button className="Add" onClick={() => navigate('/Listing')}> 
-            Add Listing
-          </button>
+  const navigateToProfile = () => {
+    if (!user) {
+      setShowNotifListing(true);
+      return;
+    }
+    
+    if (!user.emailVerified) {
+      alert('Please verify your email first');
+      return;
+    }
+    
+    navigate(`/personal/${user.uid}`);
+  };
 
-          {user ? (
-            <div className="user-info" ref={dropdownRef}>
-              {profilePhoto ? (
-                <img 
-                  src={profilePhoto} 
-                  alt="User Profile" 
-                  className="profile-image" 
-                  onClick={toggleDropdown}
-                />
-              ) : (
-                <div 
-                  className="profile-image profile-photo-placeholder" 
-                  onClick={toggleDropdown}
-                >
-                  <span>{username ? username[0].toUpperCase() : 'U'}</span>
-                </div>
-              )}
-              {dropdownVisible && (
-                <div className="dropdown-menu">
-                  <div className="dropdown-header">
-                    {profilePhoto ? (
-                      <img src={profilePhoto} alt="User Profile" className="profile-image-small" />
-                    ) : (
-                      <div className="profile-image-small profile-photo-placeholder">
-                        <span>{username ? username[0].toUpperCase() : 'U'}</span>
-                      </div>
-                    )}
-                    <span>{username}</span>
-                  </div>
-                  <button onClick={navigateToProfile}>
-                    <i className="fas fa-user"></i> Your profile
-                  </button>
-                  <button onClick={() => { /* Handle menu item click */ }}>
-                    <i className="fas fa-star"></i> Menu Item
-                  </button>
-                  <button onClick={handleLogout}>
-                    <i className="fas fa-sign-out-alt"></i> Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <button className="Sign" onClick={() => navigate('/Coba')}>
-               Sign In
-            </button>
-          )}
-        </div>
+  const UserMenu = () => (
+    <div className="user-menu-content">
+      <div className="dropdown-header">
+        {profilePhoto ? (
+          <img src={profilePhoto} alt="User Profile" className="profile-image-small" />
+        ) : (
+          <div className="profile-image-small profile-photo-placeholder">
+            <span>{username ? username[0].toUpperCase() : 'U'}</span>
+          </div>
+        )}
+        <span>{username}</span>
       </div>
-    </nav>
+      <div className="flex flex-col gap-2 menu-items-container justify-start text-start">
+        <button className='text-left' onClick={navigateToProfile} style={{color:"#3A3A3A", fontFamily:'Lexend',fontWeight:300}}>
+          <i className="fas fa-user" style={{paddingRight:'20px'}}></i> My Profile
+        </button>
+        <button className='text-left' onClick={handleLogout} style={{color:"#3A3A3A", fontFamily:'Lexend',fontWeight:300}}>
+          <i className="fas fa-sign-out-alt" style={{paddingRight:'20px'}}></i> Logout
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <nav>
+        <div className="wrapper">
+          <div className="gambar">
+            <img 
+              src='./src/assets/image/Logo.svg'
+              alt="Bali Pet Friendly Logo"
+              onClick={() => navigate('/')}
+            />
+          </div>
+
+          {/* Navigation (Desktop & Mobile) */}
+          <div className="nav-buttons">
+            <button className="Add" onClick={handleAddListing}> 
+              Add Listing
+            </button>
+
+            {isAuthenticated ? (
+              <div className="user-info" ref={dropdownRef}>
+                {profilePhoto ? (
+                  <img 
+                    src={profilePhoto} 
+                    alt="User Profile" 
+                    className="profile-image" 
+                    onClick={toggleDropdown}
+                  />
+                ) : (
+                  <div 
+                    className="profile-image profile-photo-placeholder" 
+                    onClick={toggleDropdown}
+                  >
+                    <span>{username ? username[0].toUpperCase() : 'U'}</span>
+                  </div>
+                )}
+                {dropdownVisible && (
+                  <div className="dropdown-menu">
+                    <UserMenu />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button className="Sign" onClick={() => navigate('/Coba')}>
+                Sign In
+              </button>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {/* NotifListing Modal */}
+      <NotifListing 
+        isOpen={showNotifListing} 
+        onClose={() => setShowNotifListing(false)} 
+      />
+    </>
   );
 }
 

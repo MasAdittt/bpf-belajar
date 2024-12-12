@@ -1,95 +1,146 @@
-/* Resetting default margin and padding */
+/* CSS styles */
 body, html {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    height: 100%; /* Ensure full height coverage */
-}
-
-/* Section bawah */
-.bawah-sec {
+    height: 100%;
+  }
+  
+  /* Section bawah - Desktop styles */
+  .bawah-sec {
     position: relative;
-    min-height: 320px; /* or use auto */
-    width: 100%; /* Make the section take full width */
+    min-height: 320px;
+    width: 100%;
     background-image: url('./src/assets/image/footer.jpg');
     background-position: center;
     background-repeat: no-repeat;
-    background-size: cover; /* Ensure image covers the entire area */
+    background-size: cover;
     display: flex;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
-    margin: 0; /* Remove any margin */
-    padding: 0; /* Remove padding */
-}
-
-/* Text section */
-.bawah-judul {
+    margin-top: 0; /* Remove any top margin */
+  }
+  
+  .bawah-judul {
     text-align: center;
     justify-content: center;
-}
-
-/* Heading styling */
-.pet {
+  }
+  
+  .pet {
     color: #ffffff;
     font-size: 39px;
     margin-bottom: 10px;
     font-family: 'ADELIA', sans-serif;
     font-weight: 400;
     line-height: 1.2;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-}
-
-/* Subtitle styling */
-.font-bawah {
+  }
+  
+  .font-bawah {
     color: #F1F1F1;
     font-size: 16px;
     margin-bottom: 20px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     font-family: 'Quicksand', sans-serif;
     font-weight: 400;
     letter-spacing: 0.15px;
     line-height: 25.6px;
-}
-
-/* Button styling */
-.tombol {
+  }
+  
+  .tombol {
     background-color: #1DA19E;
     color: #ffffff;
     font-size: 16px;
     font-weight: 500;
-    padding: 4px 16px 4px 16px;
+    padding: 10px 16px;
     border: none;
-    border-radius: 20px;
+    border-radius: 4px;
     cursor: pointer;
-    font-family: 'Quicksand', sans-serif;
+    font-family: 'Lexend';
     line-height: 24px;
     letter-spacing: 0.15px;
     transition: background-color 0.3s, transform 0.1s;
-}
-
-.tombol:hover {
+  }
+  
+  .tombol:hover {
     background-color: #178F8C;
-}
-
-.tombol:active {
+  }
+  
+  .tombol:active {
     transform: scale(0.98);
     background-color: #088395;
-}
-
-@media (max-width: 768px) {
+  }
+  
+  /* Mobile styles */
+  @media (max-width: 768px) {
     .bawah-sec {
-        height: auto;
-        padding: 20px;
+      min-height: 250px; /* Reduced height for mobile */
+      padding: 20px 15px; /* Added horizontal padding */
     }
+  
+    .bawah-judul {
+      width: 100%;
+      padding: 0 15px;
+      box-sizing: border-box;
+    }
+  
     .pet {
-        font-size: 30px;
+      font-size: 28px; /* Smaller font size for mobile */
+      margin-bottom: 15px;
+      padding: 0 10px;
     }
+  
     .font-bawah {
-        font-size: 16px;
+      font-size: 14px;
+      line-height: 22px;
+      margin-bottom: 25px;
+      padding: 0 20px;
     }
+  
     .tombol {
-        font-size: 14px;
-        padding: 10px 20px;
+      font-size: 14px;
+      padding: 8px 24px;
+      min-width: 160px; /* Ensure minimum touch target size */
+      height: 40px; /* Better touch target */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
-}
+  }
+  
+  /* Small mobile devices */
+  @media (max-width: 480px) {
+    .bawah-sec {
+      min-height: 220px;
+    }
+  
+    .pet {
+      font-size: 24px;
+    }
+  
+    .font-bawah {
+      font-size: 13px;
+      line-height: 20px;
+      padding: 0 15px;
+    }
+  }
+  
+  /* Custom styling for SweetAlert on mobile */
+  @media (max-width: 768px) {
+    .swal2-popup {
+      font-size: 14px !important;
+      padding: 15px !important;
+    }
+  
+    .swal2-title {
+      font-size: 20px !important;
+    }
+  
+    .swal2-content {
+      font-size: 14px !important;
+    }
+  
+    .swal2-confirm {
+      font-size: 14px !important;
+      padding: 8px 20px !important;
+    }
+  }

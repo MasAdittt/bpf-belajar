@@ -1,20 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getDatabase, ref, get, set, remove, query, orderByChild, startAt, endAt, push } from "firebase/database";
+import { getDatabase, ref, get, set, remove, query, orderByChild } from "firebase/database";
 import { useAuth } from '../config/Auth';
+import { styled } from '@stitches/react';
 
 const SearchBar = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [searchHistory, setSearchHistory] = useState([]);
-  const [recommendations, setRecommendations] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const searchRef = useRef(null);
-  const timeoutIdRef = useRef(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [searchHistory, setSearchHistory] = useState([]);
+    const [recommendations, setRecommendations] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+    const { user } = useAuth();
+    const searchRef = useRef(null);
+    const timeoutIdRef = useRef(null);
+    const formRef = useRef(null);
 
-  // Improved normalize text function to handle edge cases
   const normalizeText = (text) => {
     if (!text) return '';
     return text.toLowerCase()
@@ -23,7 +24,6 @@ const SearchBar = () => {
       .trim();
   };
 
-  // Fetch search history from Firebase
   const fetchSearchHistory = async () => {
     if (!user?.uid) return;
 
@@ -44,7 +44,7 @@ const SearchBar = () => {
     }
   };
 
-  // Modified fetchRecommendations function with improved search
+  // Modified fetchRecommendations to filter by approved status
   const fetchRecommendations = async (input) => {
     if (!input || input.length < 2) {
       setRecommendations([]);
@@ -57,17 +57,20 @@ const SearchBar = () => {
     const searchTerm = normalizeText(input);
 
     try {
-      // Get all listings and filter on client side
       const snapshot = await get(listingsRef);
       const results = [];
 
       if (snapshot.exists()) {
         snapshot.forEach((child) => {
           const listing = child.val();
-          // Validate listing data
-          if (listing && listing.title && typeof listing.title === 'string') {
+          // Validate listing data and check for approved status
+          if (
+            listing && 
+            listing.title && 
+            typeof listing.title === 'string' && 
+            listing.status === 'approved' // Add status check
+          ) {
             const normalizedListingTitle = normalizeText(listing.title);
-            // Check if the normalized title includes our search term
             if (normalizedListingTitle.includes(searchTerm)) {
               results.push({
                 id: child.key,
@@ -76,6 +79,7 @@ const SearchBar = () => {
                 city: listing.city || '',
                 imageUrls: listing.imageUrls || [],
                 category: listing.category || '',
+                status: listing.status, // Include status in results
                 normalizedTitle: normalizedListingTitle
               });
             }
@@ -89,7 +93,7 @@ const SearchBar = () => {
         const bExact = b.normalizedTitle === searchTerm;
         if (aExact && !bExact) return -1;
         if (!aExact && bExact) return 1;
-        return a.title.length - b.title.length; // Shorter titles first
+        return a.title.length - b.title.length;
       });
 
       setRecommendations(results.slice(0, 5));
@@ -101,7 +105,7 @@ const SearchBar = () => {
     }
   };
 
-  // Add data validation before saving to Firebase
+  // Modified addListing to include status
   const addListing = async (listingData) => {
     if (!listingData.title || typeof listingData.title !== 'string') {
       console.error('Invalid listing data: title is required and must be a string');
@@ -120,6 +124,7 @@ const SearchBar = () => {
       userEmail: listingData.userEmail || '',
       city: listingData.city || '',
       category: listingData.category || '',
+      status: listingData.status || 'pending', // Add default status
       normalizedTitle,
       createdAt: Date.now(),
       updatedAt: Date.now()
@@ -134,7 +139,6 @@ const SearchBar = () => {
     }
   };
 
-  // Save search term to history
   const saveToHistory = async (searchTerm) => {
     if (!user?.uid || !searchTerm.trim()) return;
 
@@ -145,11 +149,9 @@ const SearchBar = () => {
       const snapshot = await get(historyRef);
       let currentHistory = snapshot.exists() ? Object.values(snapshot.val()) : [];
 
-      // Add new term and remove duplicates
       currentHistory = [searchTerm, ...currentHistory.filter(term => term !== searchTerm)]
         .slice(0, 5);
 
-      // Save as object format for validation rules
       const historyObject = {};
       currentHistory.forEach((term, index) => {
         historyObject[`item${index}`] = term;
@@ -162,7 +164,6 @@ const SearchBar = () => {
     }
   };
 
-  // Delete single history item
   const deleteHistoryItem = async (termToDelete) => {
     if (!user?.uid) return;
 
@@ -183,7 +184,6 @@ const SearchBar = () => {
     }
   };
 
-  // Clear all search history
   const clearAllHistory = async () => {
     if (!user?.uid) return;
 
@@ -198,7 +198,6 @@ const SearchBar = () => {
     }
   };
 
-  // Handle input changes with debouncing
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
@@ -213,15 +212,11 @@ const SearchBar = () => {
     }, 300);
   };
 
-  
-
   const handleSearch = (term, id) => {
     const searchTerm = term || searchQuery;
     if (id) {
-      // Jika ID tersedia (klik suggestion), navigasi ke pubtemplate
       navigate(`/pubtemplate/${id}`);
     } else if (searchTerm.trim() && searchTerm.length >= 2) {
-      // Jika tidak ada ID (pencarian manual), navigasi ke PublicListing dengan query
       saveToHistory(searchTerm);
       setSearchQuery(searchTerm);
       navigate(`/public-listing?search=${encodeURIComponent(searchTerm.trim())}`);
@@ -229,20 +224,17 @@ const SearchBar = () => {
     setShowSuggestions(false);
   };
 
-  // Handle delete click with event propagation prevention
   const handleDeleteClick = (e, term) => {
     e.stopPropagation();
     deleteHistoryItem(term);
   };
 
-  // Effect for initial history fetch
   useEffect(() => {
     if (user?.uid) {
       fetchSearchHistory();
     }
   }, [user]);
 
-  // Effect for click outside detection
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -255,65 +247,83 @@ const SearchBar = () => {
   }, []);
 
   return (
-    <div className="relative" ref={searchRef}>
-      <form 
+<div className="relative w-full px-2 md:px-4 lg:pl-8 lg:pr-0 py-3 md:py-6">
+
+<form 
+        ref={formRef}
         onSubmit={(e) => {
           e.preventDefault();
           handleSearch();
+          className='justfy-center'
         }} 
-        className="search-nav flex items-center bg-white shadow-sm border border-gray-200"
-      >
-        <button 
-          type="submit" 
-          disabled={searchQuery.length < 2}
-          className={`p-2 ${searchQuery.length < 2 ? 'text-gray-300' : 'text-gray-500 hover:text-gray-700'}`}
-          style={{ outline: 'none' }}
-        >
-          <i className="fas fa-search"></i>
-        </button>
-        <input
-          type="text"
-          placeholder="Minimal 2 karakter untuk mencari..."
-          value={searchQuery}
-          onChange={handleInputChange}
-          onFocus={() => setShowSuggestions(true)}
-          className="w-full p-2 outline-none rounded-r-lg"
-        />
+         >
+        <div className="flex items-center w-full md:w-[586px] border rounded-lg overflow-hidden bg-white p-1 md:p-0" style={{border:"none"}}>
+          <input
+            type="text"
+            placeholder="Find your favourite place"
+            value={searchQuery}
+            onChange={handleInputChange}
+            onFocus={() => setShowSuggestions(true)}
+            className="w-full py-2 px-2 md:py-3 md:px-3 text-sm md:text-base outline-none text-[#6B6B6B] placeholder:text-[#6B6B6B4D]"
+            style={{
+              fontFamily: 'Lexend',
+              border: 'none',
+              fontWeight: 300,
+            }}
+          />
+          <button 
+            type="submit" 
+            disabled={searchQuery.length < 2}
+            className="flex items-center justify-center flex-shrink-0 bg-[#1DA19E] hover:bg-[#178784] mx-1 md:mx-4"
+            style={{ 
+              outline: 'none',
+              width: '28px',
+              height: '28px',
+              borderRadius: '8px'
+            }}
+          >
+            <i className="fas fa-search text-xs md:text-sm text-white" style={{cursor:'pointer'}}></i>
+          </button>
+        </div>
       </form>
 
       {showSuggestions && searchQuery.length >= 2 && (
-        <div className="absolute w-full bg-white mt-1 rounded-md shadow-lg border border-gray-200 max-h-96 overflow-y-auto z-50">
+        <div 
+          className="absolute bg-white mt-1 rounded-lg shadow-lg border border-gray-200 max-h-[60vh] overflow-y-auto z-50 w-[calc(100%-1rem)] md:w-[586px] left-2 md:left-4 lg:left-8"
+        >
           {isLoading ? (
-            <div className="p-4 text-center text-gray-500">
-              <span>Mencari...</span>
+            <div className="p-2 md:p-4 text-center text-gray-500">
+              <span className="text-xs md:text-sm">Mencari...</span>
             </div>
           ) : (
             <>
               {recommendations.length > 0 && (
                 <div className="p-2">
-                  <div className="text-sm text-gray-500 px-3 py-1">Saran Pencarian</div>
+                  <div className="text-xs md:text-sm text-gray-500 px-2 md:px-3 py-1">Saran Pencarian</div>
                   {recommendations.map((item) => (
                     <div
                       key={item.id}
-                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between"
-                      onClick={() => handleSearch(item.title, item.id)} // Pass both title and id
+                      className="px-2 md:px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between gap-2"
+                      onClick={() => handleSearch(item.title, item.id)}
                     >
-                      <div className="flex items-center">
-                        <i className="fas fa-search text-gray-400 mr-2"></i>
+                      <div className="flex items-center flex-1 min-w-0 gap-2">
+                        <i className="fas fa-search text-gray-400 text-xs"></i>
                         {Array.isArray(item.imageUrls) && item.imageUrls.length > 0 && (
-                                 <img 
-                  src={item.imageUrls[0]} 
-                          alt=""
-                  className="w-8 h-8 object-cover rounded mr-2"
-                  onError={(e) => e.target.style.display = 'none'}
-                        />
-                                    )}
-                        <span style={{fontFamily:'Quicksand', fontWeight:600, color:'#3A3A3A'}}>{item.title}</span>
+                          <img 
+                            src={item.imageUrls[0]} 
+                            alt=""
+                            className="w-6 h-6 md:w-8 md:h-8 object-cover rounded flex-shrink-0"
+                            onError={(e) => e.target.style.display = 'none'}
+                          />
+                        )}
+                        <span className="truncate text-xs md:text-sm" style={{fontFamily:'Quicksand', fontWeight:600, color:'#3A3A3A'}}>
+                          {item.title}
+                        </span>
                       </div>
                       {(item.city || item.category) && (
-        <span className="text-sm text-gray-400">
-          {[item.city, item.category].filter(Boolean).join(' - ')}
-        </span>
+                        <span className="hidden md:block text-xs text-gray-400 truncate flex-shrink-0">
+                          {[item.city, item.category].filter(Boolean).join(' - ')}
+                        </span>
                       )}
                     </div>
                   ))}
@@ -322,11 +332,12 @@ const SearchBar = () => {
 
               {searchHistory.length > 0 && (
                 <div className="p-2 border-t border-gray-100">
-                  <div className="flex items-center justify-between px-3 py-1">
-                    <div className="text-sm text-gray-500">Riwayat Pencarian</div>
+                  <div className="flex items-center justify-between px-2 md:px-3 py-1">
+                    <div className="text-xs md:text-sm text-gray-500" style={{fontFamily:'Quicksand'}}>History</div>
                     <button
                       onClick={clearAllHistory}
-                      className="text-sm text-blue-600 hover:text-blue-800"
+                      className="text-xs md:text-sm text-blue-600 hover:text-blue-800"
+                      style={{fontFamily:'Quicksand'}}
                     >
                       Hapus Semua
                     </button>
@@ -334,18 +345,18 @@ const SearchBar = () => {
                   {searchHistory.map((term, index) => (
                     <div
                       key={`history-${index}`}
-                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between group"
+                      className="px-2 md:px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between group"
                       onClick={() => handleSearch(term)}
                     >
-                      <div className="flex items-center flex-grow">
-                        <i className="fas fa-history text-gray-400 mr-2"></i>
-                        {term}
+                      <div className="flex items-center flex-1 min-w-0 gap-2">
+                        <i className="fas fa-history text-gray-400 text-xs md:text-sm flex-shrink-0"></i>
+                        <span className="truncate text-xs md:text-sm">{term}</span>
                       </div>
                       <button
                         onClick={(e) => handleDeleteClick(e, term)}
-                        className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity px-2"
+                        className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity px-2 flex-shrink-0"
                       >
-                        <i className="fas fa-times"></i>
+                        <i className="fas fa-times text-xs md:text-sm"></i>
                       </button>
                     </div>
                   ))}
@@ -353,8 +364,10 @@ const SearchBar = () => {
               )}
 
               {!isLoading && recommendations.length === 0 && searchQuery.trim() !== '' && (
-                <div className="p-4 text-center text-gray-500">
-                  <span>Tidak ada hasil ditemukan</span>
+                <div className="p-2 md:p-4 text-center text-gray-500">
+                  <span className="text-xs md:text-sm" style={{fontFamily:'Quicksand', color:'#6B6B6B'}}>
+                    Tidak ada hasil ditemukan
+                  </span>
                 </div>
               )}
             </>

@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
-import { ref, push, set, get, query, limitToLast, onChildAdded, onChildChanged, onChildRemoved } from 'firebase/database';
+import { 
+  ref, 
+  get, 
+  query, 
+  orderByChild, 
+  equalTo, 
+  push, 
+  set,
+  onChildAdded,
+  onChildChanged,
+  onChildRemoved,
+  limitToLast
+} from 'firebase/database';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { database } from '../config/firebase';
 import Swal from 'sweetalert2';
@@ -150,68 +162,76 @@ const ReviewComponent = ({ listingId }) => {
     : 'N/A';
 
   return (
-    <div className="h-screen flex flex-col" style={{ color:'#3A3A3A', fontFamily:'Quicksand' }}>
-      <h1 className="text-4xl font-bold mb-6">RATINGS</h1>
-      <div className="flex flex-grow overflow-hidden">
-        <div className="w-1/4 bg-white p-4 rounded-lg shadow mr-6 flex-shrink-0 h-fit max-h-60 sticky top-0">         
+    <div className="min-h-auto flex flex-col" style={{ color: '#3A3A3A', fontFamily: 'Quicksand' }}>
+      <h1 className="text-2xl md:text-4xl font-bold mb-6">RATINGS</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-white p-4 rounded-lg shadow md:sticky md:top-0 h-fit">
           <p className="text-sm font-semibold mb-2">Total Reviews</p>
           <p className="text-3xl font-bold mb-4">{reviews.length} Reviews</p>
           <p className="text-sm font-semibold mb-2">Rating</p>
           <div className="flex items-center">
-            <span className="text-3xl font-bold mr-2" style={{ color:'#3A3A3A' }}>{averageRating}</span>
+            <span className="text-3xl font-bold mr-2" style={{ color: '#3A3A3A' }}>{averageRating}</span>
             <div className="flex">{renderStars(Math.round(averageRating))}</div>
           </div>
         </div>
-        {loading ? (
-          <div>Memuat review...</div>
-        ) : (
-          <div className="w-3/4 overflow-y-auto">
-            <div className="bg-white p-4 rounded-lg shadow mb-6">
-              <h2 className="text-lg font-semibold mb-2">Tambah Rating</h2>
-              {user ? (
-                <>
-                  <div className="flex mb-2">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        size={24}
-                        className={`cursor-pointer ${star <= newRating ? "text-yellow-400 fill-current" : "text-gray-300"}`}
-                        onClick={() => setNewRating(star)}
-                      />
-                    ))}
-                  </div>
-                  <textarea
-                    className="w-full p-2 border rounded"
-                    rows="3"
-                    placeholder="Tulis review Anda di sini..."
-                    value={newReview}
-                    onChange={(e) => setNewReview(e.target.value)}
-                    style={{ backgroundColor:'#F2F2F2' }}
-                  />
-                  <button
-                    className="mt-2 bg-[#1DA19E] text-white px-4 py-2 rounded hover:bg-[#189693] "
-                    onClick={handleAddReview}
-                  >
-                    Kirim Review
-                  </button>
-                </>
-              ) : (
-                <p className="text-gray-600">Silakan login untuk memberikan review.</p>
-              )}
-            </div>
-            {reviews.map((review) => (
-              <div key={review.id} className="bg-white p-4 rounded-lg shadow mb-4">
-                <div className="flex items-center mb-2">
-                  <span className="font-semibold
-                  mr-2" style={{ color:'#3A3A3A' }}>{review.name}</span>
-                  <div className="flex">{renderStars(review.rating)}</div>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">{review.comment}</p>
-                <p className="text-xs text-gray-400">{formatDate(review.date)}</p>
+
+        <div className="md:col-span-3">
+          {loading ? (
+            <div className="bg-white p-4 rounded-lg shadow">Memuat review...</div>
+          ) : (
+            <div className="space-y-6">
+              <div className="bg-white p-4 rounded-lg shadow">
+                <h2 className="text-lg font-semibold mb-2">Tambah Rating</h2>
+                {user ? (
+                  <>
+                    <div className="flex mb-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          size={24}
+                          className={`cursor-pointer ${star <= newRating ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+                          onClick={() => setNewRating(star)}
+                        />
+                      ))}
+                    </div>
+                    <textarea
+                      className="w-full p-2 border rounded"
+                      rows="3"
+                      placeholder="Tulis review Anda di sini..."
+                      value={newReview}
+                      onChange={(e) => setNewReview(e.target.value)}
+                      style={{ backgroundColor: '#F2F2F2' }}
+                    />
+                    <button
+                      className="mt-2 bg-[#1DA19E] text-white px-4 py-2 rounded hover:bg-[#189693]"
+                      onClick={handleAddReview}
+                    >
+                      Kirim Review
+                    </button>
+                  </>
+                ) : (
+                  <p className="text-gray-600">Silakan login untuk memberikan review.</p>
+                )}
               </div>
-            ))}
-          </div>
-        )}
+
+              <div className="space-y-4">
+                {reviews.map((review) => (
+                  <div key={review.id} className="bg-white p-4 rounded-lg shadow">
+                    <div className="flex items-center mb-2">
+                      <span className="font-semibold mr-2" style={{ color: '#3A3A3A' }}>
+                        {review.name}
+                      </span>
+                      <div className="flex">{renderStars(review.rating)}</div>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-2">{review.comment}</p>
+                    <p className="text-xs text-gray-400">{formatDate(review.date)}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

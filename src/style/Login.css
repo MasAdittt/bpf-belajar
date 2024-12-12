@@ -1,72 +1,113 @@
-.Login {
+/* Main container */
+.bpf-login {
     width: 100%;
+    min-height: 100vh;
     background-color: #f5f5f5;
-    display: grid;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     padding: 20px;
     box-sizing: border-box;
 }
 
-.Login-form {
+/* Form container */
+.bpf-login__form {
     display: flex;
     flex-direction: column;
-    align-items: center;
     background-color: #ffffff;
     padding: 30px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
-    width: 200%;
     box-sizing: border-box;
-    padding-bottom: 40px; /* Add extra padding at the bottom */
-    max-width: 400px; /* Adjust as needed */
     width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
-.Login-form img {
+/* Logo image */
+.bpf-login__form img {
     max-width: 150px;
-    margin-bottom: 20px;
+    width: 80%;
+    height: auto;
+    margin-bottom: 30px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.Login-form form {
+/* Form element */
+.bpf-login__form form {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
     width: 100%;
 }
 
-.Login-form label {
+/* Input containers */
+.bpf-login__input-container {
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    min-height: 80px;
+}
+
+/* Labels */
+.bpf-login__form label {
+    width: 100%;
     margin-bottom: 10px;
     font-weight: 500;
-    text-align: left;
-    width: 100%;
     font-family: Arial, sans-serif;
-    margin-bottom: 20px;
+    text-align: left;
 }
 
-.Login-form input[type="text"],
-.Login-form input[type="password"] {
+/* Label text */
+.bpf-login__label-text {
+    font-size: 15px;
+    color: black;
+    font-family: Arial, sans-serif;
+    margin-bottom: 8px;
     width: 100%;
-  padding: 10px 15px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
-  box-sizing: border-box;
+    text-align: left;
 }
 
-.remember-me {
+/* Input fields */
+.bpf-login__form input[type="text"],
+.bpf-login__form input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.bpf-login__form input[type="text"]:focus,
+.bpf-login__form input[type="password"]:focus {
+    outline: none;
+    border-color: #4B5563;
+}
+
+/* Remember me section */
+.bpf-login__remember-me {
     display: flex;
     align-items: center;
-    margin-bottom: 5px;
+    justify-content: flex-start;
+    margin-bottom: 15px;
     width: 100%;
+    gap: 5px;
 }
 
-.remember-me input {
-    margin-right: 5px;
+.bpf-login__remember-me input {
+    margin: 0;
 }
 
-.Login-form button {
+/* Submit button */
+.bpf-login__form button {
     width: 100%;
     padding: 15px;
     background-color: #FF9900;
@@ -75,64 +116,121 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+    text-align: center;
 }
 
-.Login-form button:hover {
+.bpf-login__form button:hover {
     background-color: #e68a00;
 }
 
-.Login-form button:active {
+.bpf-login__form button:active {
     background-color: #cc7a00;
 }
 
-.Login-form input:focus {
-    outline: none;
-    border-color: #4B5563;
-}
-
-.additional-links-login {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    font-size: 14px;
-    margin-top: 20px;
-    text-align: center;
-    gap: 30px;
-}
-
-.additional-links-login a {
-    color: #4B5563;
-    text-decoration: none;
-    font-family: Arial, sans-serif;
-    font-size: 15px;
-}
-
-.additional-links-login a:hover {
-    text-decoration: underline;
-}
-
-.input-container {
-    margin-bottom: 5px;
-    position: relative;
-    min-height: 80px;
-    padding-bottom: 20px;
-  }
-
-.username {
-    font-size: 15px;
-   
-    color: black;
-    font-family: Arial, sans-serif;
-}
-
-.daftar-bawah {
-    display: flex;
-}
-
-.error-message {
+/* Error messages */
+.bpf-login__error-message {
     color: #d9534f;
     font-size: 12px;
     margin-top: 5px;
     width: 100%;
+    text-align: left;
     position: absolute;
+    bottom: -20px;
+}
+
+/* Additional links */
+.bpf-login__additional-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.bpf-login__additional-links a {
+    color: #4B5563;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    text-align: center;
+}
+
+.bpf-login__additional-links a:hover {
+    text-decoration: underline;
+}
+
+/* Media Queries for Responsiveness */
+@media screen and (max-width: 480px) {
+    .bpf-login {
+        padding: 15px;
+        justify-content: center;
+    }
+
+    .bpf-login__form {
+        padding: 20px;
+        width: 90%;
+        margin: 10px auto;
+    }
+
+    .bpf-login__form img {
+        max-width: 120px;
+        margin-bottom: 20px;
+    }
+
+    .bpf-login__input-container {
+        min-height: 70px;
+    }
+
+    .bpf-login__form input[type="text"],
+    .bpf-login__form input[type="password"] {
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .bpf-login__form button {
+        padding: 12px;
+        font-size: 15px;
+    }
+
+    .bpf-login__additional-links {
+        flex-direction: row;
+        gap: 20px;
+        margin-top: 15px;
+        justify-content: center;
+    }
+
+    .bpf-login__label-text {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .bpf-login {
+        padding: 10px;
+    }
+
+    .bpf-login__form {
+        padding: 15px;
+        width: 95%;
+    }
+
+    .bpf-login__form img {
+        max-width: 100px;
+    }
+
+    .bpf-login__additional-links {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+/* For larger screens */
+@media screen and (min-width: 1200px) {
+    .bpf-login__form {
+        padding: 40px;
+    }
 }

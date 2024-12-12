@@ -1,6 +1,7 @@
+// src/contexts/AuthContext.js
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { firebaseAuthentication } from '../config/firebase';
-import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 
 const AuthContext = createContext();
 
@@ -14,7 +15,7 @@ export function AuthProvider({ children }) {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const unsubscribe = firebaseAuthentication.onAuthStateChanged((user) => {
+    const unsubscribe = onAuthStateChanged(firebaseAuthentication, (user) => {
       if (user) {
         // Set user info including displayName
         setUser({
@@ -29,43 +30,43 @@ export function AuthProvider({ children }) {
     return unsubscribe;
   }, []);
 
-  const login = (email, password) => {
-    return signInWithEmailAndPassword(firebaseAuthentication, email, password)
-      .then((userCredential) => {
-        // Set user info including displayName
-        setUser({
-          ...userCredential.user,
-          displayName: userCredential.user.displayName || 'User'
-        });
-        return userCredential.user;
-      })
-      .catch((error) => {
-        setError(error.message);
-        throw error;
+  const login = async (email, password) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(firebaseAuthentication, email, password);
+      setUser({
+        ...userCredential.user,
+        displayName: userCredential.user.displayName || 'User'
       });
+      return userCredential.user;
+    } catch (error) {
+      setError(error.message);
+      throw error;
+    }
   };
 
-  const logout = () => {
-    return signOut(firebaseAuthentication)
-      .then(() => {
-        setUser(null);
-        console.log('User signed out successfully');
-      })
-      .catch((error) => {
-        setError(error.message);
-        console.error('Error signing out:', error);
-      });
+  const logout = async () => {
+    try {
+      await signOut(firebaseAuthentication);
+      setUser(null);
+      console.log('User signed out successfully');
+    } catch (error) {
+      setError(error.message);
+      console.error('Error signing out:', error);
+      throw error;
+    }
   };
 
   const updateTokensIfNecessary = async () => {
     try {
-      const user = firebaseAuthentication.currentUser;
-      if (user) {
-        const token = await user.getIdToken(true);
-        // Lakukan sesuatu dengan token yang diperbarui
+      const currentUser = firebaseAuthentication.currentUser;
+      if (currentUser) {
+        const token = await currentUser.getIdToken(true);
+        return token;
       }
+      return null;
     } catch (error) {
       console.error("Error updating token:", error);
+      throw error;
     }
   };
 
@@ -78,5 +79,11 @@ export function AuthProvider({ children }) {
     updateTokensIfNecessary,
   };
 
-  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {!loading && children}
+    </AuthContext.Provider>
+  );
 }
+
+export default AuthProvider;

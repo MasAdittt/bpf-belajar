@@ -1,169 +1,130 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { ref, query, orderByChild, equalTo, onValue, update, remove } from 'firebase/database';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { ref, onValue, off, query, orderByChild, equalTo } from 'firebase/database';
 import { database } from '../config/firebase';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import Sidebar from '../components/sidebar';
+import Header from '../components/Header';
+import DashboardContent from '../components/Dashboard';
+import UsersContent from '../components/UserPage';
+import ProductListings from '../components/Product';
+import Calendar from '../components/calendar';
 
-function AdminDashboard() {
-  const [pendingListings, setPendingListings] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+const AdminDashboard = () => {
+  const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [activeMenu, setActiveMenu] = useState('dashboard');
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalListings, setTotalListings] = useState(0);
+  const [publicListings, setPublicListings] = useState(0);
+  const [pendingListings, setPendingListings] = useState(0);
 
   useEffect(() => {
+    const usersRef = ref(database, 'users');
     const listingsRef = ref(database, 'listings');
-    const pendingQuery = query(listingsRef, orderByChild('status'), equalTo('pending'));
-    
-    const unsubscribe = onValue(pendingQuery, (snapshot) => {
-      const listings = [];
-      snapshot.forEach((childSnapshot) => {
-        listings.push({ id: childSnapshot.key, ...childSnapshot.val() });
-      });
-      setPendingListings(listings);
-      setLoading(false);
-    }, (error) => {
-      console.error("Error fetching pending listings:", error);
-      toast.error("Failed to load pending listings");
-      setLoading(false);
+    const pendingQuery = query(ref(database, 'listings'), orderByChild('status'), equalTo('pending'));
+
+    const usersListener = onValue(usersRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const usersList = Object.values(data);
+        setTotalUsers(usersList.length);
+      } else {
+        setTotalUsers(0);
+      }
     });
 
-    return () => unsubscribe();
+    const listingsListener = onValue(listingsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const listingsArray = Object.values(data);
+        setTotalListings(listingsArray.length);
+        const publicListingsCount = listingsArray.filter(listing => listing.isPublic).length;
+        setPublicListings(publicListingsCount);
+      } else {
+        setTotalListings(0);
+        setPublicListings(0);
+      }
+    });
+
+    const pendingListener = onValue(pendingQuery, (snapshot) => {
+      const pendingCount = snapshot.size || 0;
+      setPendingListings(pendingCount);
+    });
+
+    return () => {
+      off(usersRef);
+      off(listingsRef);
+      off(pendingQuery);
+    };
   }, []);
 
-  const approveListing = (listingId) => {
-    const listingRef = ref(database, `listings/${listingId}`);
-    update(listingRef, { status: 'approved', isPublic: true })
-      .then(() => {
-        toast.success('Listing approved and published!');
-        setPendingListings(prevListings => prevListings.filter(listing => listing.id !== listingId));
-      })
-      .catch((error) => {
-        console.error("Error approving listing:", error);
-        toast.error('Error approving listing. Please try again.');
-      });
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const rejectListing = (listingId) => {
-    if (window.confirm("Are you sure you want to reject this listing? This action cannot be undone.")) {
-      const listingRef = ref(database, `listings/${listingId}`);
-      remove(listingRef)
-        .then(() => {
-          toast.success('Listing rejected and removed.');
-          setPendingListings(prevListings => prevListings.filter(listing => listing.id !== listingId));
-        })
-        .catch((error) => {
-          console.error("Error rejecting listing:", error);
-          toast.error('Error rejecting listing. Please try again.');
-        });
+  const handleLogout = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You will be logged out of the dashboard.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, logout!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate('/');
+      }
+    });
+  };
+
+  const renderContent = () => {
+    switch (activeMenu) {
+      case 'users':
+        return <UsersContent />;
+      case 'dashboard':
+        return (
+          <DashboardContent
+            totalUsers={totalUsers}
+            totalListings={totalListings}
+            publicListings={publicListings}
+            pendingListings={pendingListings}
+          />
+        );
+      case 'products':
+        return <ProductListings />;
+      default:
+        return <DashboardContent />;
     }
   };
 
-  const toggleSidebar = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
-  };
-
   return (
-    <div className={`flex h-screen bg-gray-100 ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-      <ToastContainer />
+    <div className="min-h-screen bg-gray-100">
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        toggleSidebar={toggleSidebar} 
+        handleLogout={handleLogout}
+        activeMenu={activeMenu}
+        setActiveMenu={setActiveMenu}
+      />
       
-      {/* Sidebar */}
-      <aside className={`bg-gray-800 text-white w-64 flex-shrink-0 ${sidebarCollapsed ? 'w-16' : 'w-64'} transition-all duration-300`}>
-        <div className="p-4">
-          <Link to="/" className="text-xl font-bold">Admin Dashboard</Link>
-        </div>
-        <nav className="mt-8">
-          <Link to="/admin" className="block py-2 px-4 text-sm hover:bg-gray-700">Dashboard</Link>
-          {/* Add more menu items here */}
-        </nav>
-      </aside>
+      <Header 
+        isOpen={isSidebarOpen} 
+        activeMenu={activeMenu}
+        toggleSidebar={toggleSidebar}
+      />
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Navbar */}
-        <header className="bg-white shadow">
-          <div className="flex items-center justify-between p-4">
-            <button onClick={toggleSidebar} className="text-gray-500 focus:outline-none focus:text-gray-700">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <div className="flex items-center">
-              {/* Add user profile or other navbar items here */}
-            </div>
-          </div>
-        </header>
-
-        {/* Main content */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
-          <div className="container mx-auto px-6 py-8">
-            <h3 className="text-gray-700 text-3xl font-medium">Pending Listings</h3>
-            
-            <div className="mt-8">
-              {loading ? (
-                <p>Loading...</p>
-              ) : pendingListings.length === 0 ? (
-                <p>No pending listings at the moment.</p>
-              ) : (
-                <div className="flex flex-col mt-8">
-                  <div className="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-                    <div className="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
-                      <table className="min-w-full">
-                        <thead>
-                          <tr>
-                            <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                            <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                            <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">City</th>
-                            <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Submitted by</th>
-                            <th className="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white">
-                          {pendingListings.map((listing) => (
-                            <tr key={listing.id}>
-                              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                <div className="text-sm leading-5 font-medium text-gray-900">{listing.title}</div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                <div className="text-sm leading-5 text-gray-900">{listing.category}</div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                <div className="text-sm leading-5 text-gray-900">{listing.city}</div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                <div className="text-sm leading-5 text-gray-900">{listing.userEmail}</div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-sm leading-5 font-medium">
-                                <button onClick={() => approveListing(listing.id)} className="text-indigo-600 hover:text-indigo-900 mr-4">Approve</button>
-                                <button onClick={() => rejectListing(listing.id)} className="text-red-600 hover:text-red-900">Reject</button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </main>
-
-        {/* Footer */}
-        <footer className="bg-white shadow mt-8 py-4">
-          <div className="container mx-auto px-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <strong className="text-gray-700">Copyright © 2023 YourCompany.</strong> All rights reserved.
-              </div>
-              <div className="text-sm text-gray-500">
-                <span>Version</span> <strong>1.0.0</strong>
-              </div>
-            </div>
-          </div>
-        </footer>
-      </div>
+<main 
+  className={`transition-all duration-300 p-4 sm:p-6
+    ${isSidebarOpen ? 'md:ml-64' : 'md:ml-20'}
+    ${isSidebarOpen ? 'ml-0' : 'ml-0'}
+    mt-14 sm:mt-16 md:mt-[60px]`}  // Responsive pada berbagai breakpoint
+>
+  {renderContent()}
+</main>
     </div>
   );
-}
+};
 
 export default AdminDashboard;
