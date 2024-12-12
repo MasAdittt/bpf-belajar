@@ -1,7 +1,7 @@
-'use client'
+
 
 import React from 'react';
-import { Card } from "@/components/ui/card";
+
 
 const Start = () => {
   return (
@@ -41,13 +41,13 @@ const Start = () => {
             </div>
 
             {/* Image Card 2 */}
-            <Card className="overflow-hidden relative h-[400px] md:h-[500px] xl:h-full w-full md:w-full xl:w-[374px]">
+            <div className="overflow-hidden relative h-[400px] md:h-[500px] xl:h-full w-full md:w-full xl:w-[374px]">
               <img 
                 src='./src/assets/image/startbpet.jpg'
                 alt="Team collaboration" 
                 className="absolute inset-0 w-full h-full object-cover"
               />
-            </Card>
+            </div>
 
             {/* Steps Card */}
             <div className="bg-[#1DA19E26] py-6 md:py-8 xl:py-[27px] px-4 md:px-6 xl:px-[26px] h-auto md:h-[500px] xl:h-full rounded-lg w-full md:col-span-2 xl:col-auto xl:w-[374px]">
