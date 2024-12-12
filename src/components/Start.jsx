@@ -1,7 +1,7 @@
 
-
 import React from 'react';
-
+import Gambar1 from'../assets/image/bpet1.jpg';
+import Gambar2 from'../assets/image/startbpet.jpg'
 
 const Start = () => {
   return (
@@ -32,7 +32,7 @@ const Start = () => {
                 </h3>
                 <div className="flex-1 relative">
                   <img 
-                    src='./src/assets/image/bpet1.jpg'
+                    src={Gambar1}
                     alt="Business people reviewing documents" 
                     className="absolute inset-0 w-full h-full object-cover rounded-lg"
                   />
@@ -41,9 +41,9 @@ const Start = () => {
             </div>
 
             {/* Image Card 2 */}
-            <div className="overflow-hidden relative h-[400px] md:h-[500px] xl:h-full w-full md:w-full xl:w-[374px]">
+            <div className="overflow-hidden relative h-[400px] md:h-[500px] xl:h-full w-full md:w-full xl:w-[374px] rounded-lg">
               <img 
-                src='./src/assets/image/startbpet.jpg'
+                src={Gambar2}
                 alt="Team collaboration" 
                 className="absolute inset-0 w-full h-full object-cover"
               />
