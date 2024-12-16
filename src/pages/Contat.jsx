@@ -5,6 +5,11 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import NotifContact from '../kebutuhan/Notifcontact';
 import Logo from '../assets/image/Logo.svg'; // Updated import path
+import Dog1 from '../assets/image/dog1.svg';
+import Cat1 from '../assets/image/Cat1.svg';
+import Cat2 from '../assets/image/Cat2.svg';
+import Bawah1 from '../assets/image/Bawah1.svg';
+import Bawah2 from '../assets/image/Bawah2.svg';
 
 
 const ContactForm = () => {
@@ -211,7 +216,7 @@ Pesan: ${formData.message}
         <div className="grid grid-rows-3 gap-4 h-full">
           <div className="row-span-1 w-full h-48">
             <img
-              src="./src/assets/image/dog1.svg"
+              src={Dog1}
               alt="Dog high five"
               className="rounded-lg object-cover w-full h-full"
             />
@@ -219,12 +224,12 @@ Pesan: ${formData.message}
           
           <div className="row-span-1 grid grid-cols-2 gap-4">
             <img
-              src="./src/assets/image/Cat1.svg"
+              src={Cat1}
               alt="Cat"
               className="rounded-lg object-cover w-full h-48"
             />
             <img
-              src="./src/assets/image/Cat2.svg"
+              src={Cat2}
               alt="Another cat"
               className="rounded-lg object-cover w-full h-48"
             />
@@ -233,14 +238,14 @@ Pesan: ${formData.message}
           <div className="row-span-1 flex gap-4">
             <div className='flex-none w-[175px] lg:w-[175px]'>
               <img
-                src="./src/assets/image/Bawah1.svg"
+                src={Bawah1}
                 alt="Running dog"
                 className="rounded-lg object-cover w-full h-48"
               />
             </div>
             <div className='flex-1'>
               <img
-                src="./src/assets/image/Bawah2.svg"
+                src={Bawah2}
                 alt="Fluffy dog"
                 className="rounded-lg object-cover w-full h-48"
               />

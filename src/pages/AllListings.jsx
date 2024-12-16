@@ -124,8 +124,8 @@ const paginatedListings = useMemo(() => {
         <div className="min-h-screen flex flex-col">
         <div className="flex-grow w-full">
           {/* Mobile Filter - Only visible on mobile */}
-          <div className="lg:hidden mt-4 flex justify-center items-center w-full px-6">
-  <div className="w-full md:w-full">
+          <div className="xl:hidden mt-4 flex justify-center items-center w-full px-2 md:px-7">
+  <div className="w-full xl:w-full">
     <FilterCategory 
       categories={[]}
       selectedCategories={selectedCategories}
@@ -136,7 +136,7 @@ const paginatedListings = useMemo(() => {
                 
               <div className="flex flex-col md:flex-row" style={{marginTop:'20px'}}>
                   {/* Desktop Sidebar - Hidden on mobile */}
-                  <aside className="hidden lg:block w-64 flex-shrink-0 px-4">
+                  <aside className="hidden xl:block w-64 flex-shrink-0 px-4">
                       <FilterCategory 
                           categories={[]}
                           selectedCategories={selectedCategories}
@@ -144,7 +144,7 @@ const paginatedListings = useMemo(() => {
                       />
                   </aside>
                   
-                  <main className="flex-grow px-4 lg:px-0">
+                  <main className="flex-grow px-4 lg:px-2 md:px-7">
                       {searchTerm && (
                           <div className="px-4 py-5 font-['Quicksand']">
                               <h2 className="text-xl font-semibold">Hasil pencarian untuk "{searchTerm}"</h2>

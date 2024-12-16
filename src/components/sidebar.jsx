@@ -14,7 +14,7 @@ const Sidebar = ({ isOpen, toggleSidebar, handleLogout, activeMenu, setActiveMen
         md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         z-50`}>
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h1 className={`font-bold ${isOpen ? 'block' : 'hidden'}`} style={{fontFamily:'Quicksand',color:'#F2F2F2'}}>AdminLTE</h1>
+          <h1 className={`font-bold ${isOpen ? 'block' : 'hidden'}`} style={{fontFamily:'Quicksand',color:'#F2F2F2'}}>AdminBPF</h1>
           <button onClick={toggleSidebar} className="p-2 rounded hover:bg-gray-700">
             {isOpen ? <X size={20} /> : <Menu size={20} />}
           </button>

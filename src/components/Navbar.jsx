@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../config/Auth';
 import { getDatabase, ref, onValue, off } from "firebase/database";
 import NotifListing from '../kebutuhan/NotifListing';
+import Logo from '../assets/image/Logo.svg';
+
 
 function Navbar() {
   const navigate = useNavigate();
@@ -128,8 +130,8 @@ function Navbar() {
       <nav>
         <div className="wrapper">
           <div className="gambar">
-            <img 
-              src='./src/assets/image/Logo.svg'
+          <img 
+              src={Logo}
               alt="Bali Pet Friendly Logo"
               onClick={() => navigate('/')}
             />

@@ -12,6 +12,7 @@ import FilterCategory from '../components/FilterCategory';
 import FeaturedPlace from '../components/Featured';
 import LoginNotificationModal from '../kebutuhan/LoginNotif';
 import LatestPlaces from '../components/Latest';
+import pet from '../assets/image/pet.svg';
 
 const ListingCard = ({ listing, onToggleFavorite, isFavorite }) => {
   const navigate = useNavigate();
@@ -410,7 +411,7 @@ return (
                   margin:'0 auto'
                 }}>
                   <img 
-                    src='./src/assets/image/pet.svg' 
+                    src={pet}
                     alt="No listings found" 
                     style={{ 
                       width: '110px',

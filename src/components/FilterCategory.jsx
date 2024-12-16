@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, X } from 'lucide-react';
 import Checkbox from '../data/Checkbox';
 
@@ -7,13 +7,20 @@ const FilterCategory = ({ categories, selectedCategories, onCategoryChange }) =>
   const locations = ['Badung', 'Bangli', 'Buleleng', 'Denpasar', 'Gianyar', 'Jembrana', 'Karangasem', 'Klungkung', 'Tabanan'];
   const places = ['Cafe', 'Restaurant', 'Mall', 'Hotel', 'Villa', 'Bar'];
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-    if (!isMenuOpen) {
+  // Handle body scroll lock
+  useEffect(() => {
+    if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
   };
 
   return (
@@ -40,42 +47,45 @@ const FilterCategory = ({ categories, selectedCategories, onCategoryChange }) =>
         </button>
       </div>
 
-      {/* Mobile & Tablet Drawer Overlay */}
-      {isMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 xl:hidden"
-          onClick={toggleMenu}
-        />
-      )}
+      {/* Overlay with fade transition */}
+      <div 
+        className={`
+          fixed inset-0 bg-black xl:hidden transition-opacity duration-300 ease-in-out
+          ${isMenuOpen ? 'opacity-50 z-40 visible' : 'opacity-0 invisible'}
+        `}
+        onClick={toggleMenu}
+      />
 
-      {/* Filter Content */}
-      <div className={`
-        xl:bg-white xl:rounded-[6px] xl:p-[34px_28px] xl:relative xl:w-full xl:w-64
-        ${isMenuOpen ? 'block' : 'hidden xl:block'}
-      `}>
-        {/* Mobile & Tablet Drawer Content */}
-        <div className={`
-          xl:hidden
-          fixed inset-x-0 top-[240px] md:top-[240px] bottom-0 z-50
-          bg-white
-          transform transition-transform duration-300
-          ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}
-          overflow-y-auto
-        `}>
-          <div className="flex items-center justify-between p-4 border-b">
+      {/* Filter Content Container */}
+      <div 
+        className={`
+          fixed inset-x-0 bottom-0 z-50 xl:relative xl:block
+          transition-transform duration-300 ease-in-out
+          ${isMenuOpen ? 'translate-y-0' : 'translate-y-full xl:translate-y-0'}
+          ${!isMenuOpen && 'xl:visible'}
+        `}
+      >
+        {/* Mobile & Tablet Drawer */}
+        <div className="xl:hidden bg-white rounded-t-[20px] h-[80vh] overflow-y-auto">
+          {/* Drawer Header */}
+          <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white">
             <h2 className="font-lexend font-medium text-xl">Filters</h2>
-            <button onClick={toggleMenu}>
+            <button 
+              onClick={toggleMenu}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
               <X className="w-6 h-6" />
             </button>
           </div>
 
+          {/* Filter Content */}
           <div className="p-6">
-            {/* Locations - Grid layout adjusted for tablet */}
+            {/* Locations */}
             <div>
               <h2 className="font-lexend font-medium text-xl text-[#3A3A3A] mb-4">
                 Location
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {locations.map((location) => (
                   <div key={location} className="flex items-start">
                     <Checkbox
@@ -94,12 +104,12 @@ const FilterCategory = ({ categories, selectedCategories, onCategoryChange }) =>
               </div>
             </div>
 
-            {/* Places - Grid layout adjusted for tablet */}
+            {/* Places */}
             <div className="mt-8">
               <h2 className="font-lexend font-medium text-xl text-[#3A3A3A] mb-4">
                 Places
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {places.map((place) => (
                   <div key={place} className="flex items-start">
                     <Checkbox
@@ -119,21 +129,21 @@ const FilterCategory = ({ categories, selectedCategories, onCategoryChange }) =>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col md:flex-row gap-3 mt-8">
+            <div className="flex flex-col md:flex-row gap-3 mt-8 sticky bottom-0 bg-white py-4">
               {selectedCategories.length > 0 && (
                 <button
                   onClick={() => {
                     selectedCategories.forEach(category => onCategoryChange(category));
                     toggleMenu();
                   }}
-                  className="flex-1 py-3 px-4 text-red-500 border border-red-500 rounded-lg font-quicksand font-medium"
+                  className="flex-1 py-3 px-4 text-red-500 border border-red-500 rounded-lg font-quicksand font-medium transition-colors hover:bg-red-50"
                 >
                   Clear All
                 </button>
               )}
               <button
                 onClick={toggleMenu}
-                className="flex-1 py-3 px-4 bg-[#1DA19E] text-white rounded-lg font-quicksand font-medium"
+                className="flex-1 py-3 px-4 bg-[#1DA19E] text-white rounded-lg font-quicksand font-medium transition-colors hover:bg-[#178784]"
               >
                 Apply Filters
               </button>
@@ -142,7 +152,7 @@ const FilterCategory = ({ categories, selectedCategories, onCategoryChange }) =>
         </div>
 
         {/* Desktop Content */}
-        <div className="hidden xl:block">
+        <div className="hidden xl:block bg-white rounded-[6px] p-[34px_28px]">
           <p className="font-lexend font-light text-lg text-[#3A3A3A]">Filters</p>
           
           {/* Locations */}

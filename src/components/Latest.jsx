@@ -60,11 +60,11 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
         Latest Places
       </h2>
       
-      <div className="space-y-6 md:space-y-0 md:grid md:grid-cols-2 md:gap-6 lg:space-y-6 lg:block">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
         {latestListings.map((listing) => (
           <div 
             key={listing.id}
-            className="listing-card relative overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col md:flex md:flex-col lg:flex lg:flex-row h-auto md:h-auto lg:h-[292px] bg-white"
+            className="listing-card relative overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col md:flex-col lg:flex-row h-auto lg:h-[292px] bg-white"
             style={{borderRadius: '16px'}}
           >
             {/* Image Section */}
@@ -116,7 +116,7 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
             {/* Content Section */}
             <div className="flex-grow flex flex-col p-4 md:p-4 lg:p-6">
               <h3 
-                className="text-lg font-medium mb-1"
+                className="text-lg md:text-xl font-medium mb-1"
                 style={{fontFamily: 'Lexend'}}
               >
                 {listing.title}
@@ -137,7 +137,7 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
               </div>
 
               <p 
-                className="text-sm"
+                className="text-sm mb-2"
                 style={{
                   fontFamily: 'Lexend',
                   color: '#6B6B6B',
@@ -148,13 +148,11 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
               </p>
 
               <p 
-                className="text-sm"
+                className="text-sm mb-4 line-clamp-2"
                 style={{
                   fontFamily: 'Lexend',
                   color: '#6B6B6B',
-                  fontWeight: 300,
-                  width: '100%',
-                  maxWidth: '360px'
+                  fontWeight: 300
                 }}
               >
                 "{listing.tags}"
@@ -182,7 +180,7 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
                 <div className="flex justify-end">
                   <button 
                     onClick={() => navigate(`/PubTemplate/${listing.id}`)}
-                    className="bg-[#1DA19E] text-white px-4 py-2 rounded-lg hover:bg-[#178784] transition-colors text-base"
+                    className="bg-[#1DA19E] text-white px-4 py-2 rounded-lg hover:bg-[#178784] transition-colors text-sm"
                     style={{fontFamily: "Lexend"}}
                   >
                     See More
@@ -203,4 +201,3 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
 };
 
 export default LatestPlaces;
-

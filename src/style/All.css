@@ -16,8 +16,8 @@
 
 @media (min-width: 1024px) {
   .all-listings-container {
-    padding-left: 135px;
-    padding-right: 135px;
+    padding-left: 50px;
+    padding-right: 50px;
   }
 }
 

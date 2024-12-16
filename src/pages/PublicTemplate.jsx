@@ -118,7 +118,7 @@ const PublicTemplate = () => {
   return (
     <>
       <Navbaru />
-      <div className="min-h-screen bg-[#F2F2F2] flex flex-col pt-[90px]">
+      <div className="min-h-full bg-[#F2F2F2] flex flex-col pt-[90px]">
         <div className="w-full max-w-6xl mx-auto p-4">
           {/* Mobile Image Carousel */}
           <div className="relative block md:hidden mb-6">
