@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../config/Auth';
@@ -5,6 +6,12 @@ import Swal from 'sweetalert2';
 import NotifListing from '../kebutuhan/NotifListing';
 import Gambar1 from '../assets/image/bpet1.jpg';
 import Gambar2 from '../assets/image/startbpet.jpg';
+=======
+
+import React from 'react';
+import Gambar1 from'../assets/image/bpet1.jpg';
+import Gambar2 from'../assets/image/startbpet.jpg'
+>>>>>>> c38c505473803f346c03196c1776565e839bfeac
 
 const Start = () => {
   const navigate = useNavigate();
@@ -44,6 +51,7 @@ const Start = () => {
                       style={{
                         color:'#3A3A3A', 
                         fontSize: '31px',
+<<<<<<< HEAD
                         paddingRight:'45px',
                         fontFamily:'ADELIA',
                         lineHeight:'59px',
@@ -65,9 +73,23 @@ const Start = () => {
                       className="absolute inset-0 w-full h-full object-cover rounded-lg"
                     />
                   </div>
+=======
+                        lineHeight:'59px'
+                      }
+                    }}>
+                  GET STARTED <span style={{fontFamily:'ponari',color:'#3A3A3A'}}>&</span> CLAIM YOUR PERKS NOW!
+                </h3>
+                <div className="flex-1 relative">
+                  <img 
+                    src={Gambar1}
+                    alt="Business people reviewing documents" 
+                    className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                  />
+>>>>>>> c38c505473803f346c03196c1776565e839bfeac
                 </div>
               </div>
 
+<<<<<<< HEAD
               {/* Image Card 2 */}
               <div className="overflow-hidden relative h-[400px] md:h-[500px] xl:h-full w-full md:w-full xl:w-[374px] rounded-lg">
                 <img 
@@ -76,6 +98,16 @@ const Start = () => {
                   className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
+=======
+            {/* Image Card 2 */}
+            <div className="overflow-hidden relative h-[400px] md:h-[500px] xl:h-full w-full md:w-full xl:w-[374px] rounded-lg">
+              <img 
+                src={Gambar2}
+                alt="Team collaboration" 
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            </div>
+>>>>>>> c38c505473803f346c03196c1776565e839bfeac
 
               {/* Steps Card */}
               <div className="bg-[#1DA19E26] py-6 md:py-8 xl:py-[27px] px-4 md:px-6 xl:px-[26px] h-auto md:h-[500px] xl:h-full rounded-lg w-full md:col-span-2 xl:col-auto xl:w-[374px]">

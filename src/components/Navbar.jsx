@@ -130,7 +130,11 @@ function Navbar() {
       <nav>
         <div className="wrapper">
           <div className="gambar">
+<<<<<<< HEAD
           <img 
+=======
+           <img 
+>>>>>>> c38c505473803f346c03196c1776565e839bfeac
               src={Logo}
               alt="Bali Pet Friendly Logo"
               onClick={() => navigate('/')}
