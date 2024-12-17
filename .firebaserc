@@ -1,0 +1,9 @@
+{
+  "projects": {
+    "default": "bpet-4dfb4",
+    "production": "bpet-4dfb4",
+    "main": "bpet-4dfb4"
+  },
+  "targets": {},
+  "etags": {}
+}
