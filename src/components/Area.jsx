@@ -253,7 +253,7 @@ function Area() {
         className={`w-[40px] h-[33px] rounded-md transition-colors duration-200 font-['Quicksand'] text-[14px] flex items-center justify-center ${
           currentPage === index + 1
             ? 'bg-[#1DA19E] text-white border-0' // Halaman saat ini tidak memiliki border
-            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-[1px] border-[#6B6B6B33]' // Halaman lain memiliki border
+            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-[1px] border-[#6B6B6B33]' // Halaman lain memiliki border
         }`}
         style={{fontWeight:600}}
       >
