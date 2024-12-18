@@ -230,7 +230,7 @@ function Area() {
   <div className="flex items-center">
     <MapPin className="w-4 h-4  text-[#6B6B6B]" />
     <p className="font-['Lexend'] text-sm leading-none">
-      {listing.city ? listing.city : 'Unknown'}
+      {listing.city ? listing.city : 'Unknown'}, {listing.district}
     </p>
   </div>
   <p className="leading-none" style={{color:'#6B6B6B',fontFamily:'Quicksand',fontWeight:500,lineHeight:'18px'}}>

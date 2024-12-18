@@ -114,6 +114,7 @@ const PublicTemplate = () => {
   const imageUrls = listing.imageUrls || Array(5).fill("/api/placeholder/800/600");
   const websiteUrl = getWebsiteUrl(listing?.website);
   const instagramUrl = getWebsiteUrl(listing?.instagram) || "https://www.instagram.com";
+  const menuUrl = getWebsiteUrl(listing?.menuLink);
 
   return (
     <>
@@ -168,30 +169,31 @@ const PublicTemplate = () => {
           </div>
 
           {/* Main Content Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 min-h-[400px]">
-            <div className="md:col-span-2 flex flex-col">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 min-h-[400px] mt-4">
+            <div className="md:col-span-2 flex flex-col mt-4">
               <div className="mb-6 min-h-[200px] flex-grow">
-                <h1 className="text-2xl md:text-4xl font-bold text-[#3A3A3A] mb-8">
-                  {listing.title}
-                </h1>
+              <h2 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-4xl font-bold text-[#3A3A3A] mb-4" style={{fontFamily:'ADELIA'}}>            
+                      {listing.title}
+                </h2>
                 <p className="mb-4 font-['Quicksand'] text-[15px] font-light text-justify whitespace-pre-line">
                   {listing.description}
                 </p>
               </div>
-
-              {/* Action Links */}
-              <div className="flex flex-wrap md:flex-nowrap items-center gap-4 py-4 font-['Quicksand'] text-[#3A3A3A]">
-                <ActionLink href="#menu" icon={<Menu size={16} />} text="Menu" />
-                <Separator />
-                <ActionLink href={getWhatsAppUrl()} icon={<Phone size={16} />} text="Contact" />
-                <Separator />
-                <ActionLink href={instagramUrl} icon={<Instagram size={16} />} text="Instagram" />
-                {websiteUrl && (
-                  <>
-                    <Separator />
-                    <ActionLink href={websiteUrl} icon={<Globe size={16} />} text="Website" />
-                  </>
-                )}
+  {/* Updated Action Links Container */}
+   <div className="overflow-x-auto">
+                <div className="flex items-center gap-4 py-4 font-['Quicksand'] text-[#3A3A3A] whitespace-nowrap min-w-max">
+                  <ActionLink href={menuUrl} icon={<Menu size={16} />} text="Menu" />
+                  <Separator />
+                  <ActionLink href={getWhatsAppUrl()} icon={<Phone size={16} />} text="Contact" />
+                  <Separator />
+                  <ActionLink href={instagramUrl} icon={<Instagram size={16} />} text="Instagram" />
+                  {websiteUrl && (
+                    <>
+                      <Separator />
+                      <ActionLink href={websiteUrl} icon={<Globe size={16} />} text="Website" />
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -218,8 +220,7 @@ const ActionLink = ({ href, icon, text }) => (
     href={href} 
     target="_blank" 
     rel="noopener noreferrer" 
-    className="flex items-center gap-2 hover:text-blue-800 text-sm font-bold"
-  >
+    className="flex items-center gap-1 sm:gap-2 hover:text-blue-800 text-xs sm:text-sm font-bold"  >
     {icon} {text}
   </a>
 );
