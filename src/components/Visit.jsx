@@ -100,7 +100,7 @@ const Visit = () => {
   };
 
   return (
-    <div className="w-full bg-[#FFFFFF] py-8 lg:py-16 px-4 lg:px-8"> 
+    <div className="w-full bg-transparent py-8 lg:py-16 px-4 lg:px-8"> 
       {/* Header */}
       <div className="w-full lg:w-[601px] px-4 lg:px-0" style={{margin:'0 auto'}}>
         <h2 className="text-3xl lg:text-[39px] text-center lg:text-left text-gray-800 mb-4" 
