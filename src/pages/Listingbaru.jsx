@@ -9,6 +9,8 @@ import Bawah from '../components/Bawah';
 import Swal from 'sweetalert2';
 import ExploreAreaMap from '../kebutuhan/Explore';
 import Loading from '../components/Loading';
+import { ref as storageRef, deleteObject } from 'firebase/storage';
+import { storage } from '../config/firebase';
 
 const Listingbaru = () => {
   const { id } = useParams();
@@ -77,26 +79,53 @@ const Listingbaru = () => {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        const listingRef = ref(database, `listings/${id}`);
-        remove(listingRef)
-          .then(() => {
-            Swal.fire(
-              'Deleted!',
-              'Your listing has been deleted.',
-              'success'
-            );
-            navigate('/');
-          })
-          .catch((error) => {
-            console.error("Error deleting listing:", error);
-            Swal.fire(
-              'Error!',
-              'There was an error deleting the listing.',
-              'error'
-            );
-          });
+        try {
+          // First, delete all images from storage
+          if (listing.imageUrls && listing.imageUrls.length > 0) {
+            const deletePromises = listing.imageUrls.map(async (imageUrl) => {
+              // Extract the file path from the URL
+              // Assuming your storage URLs follow a pattern like:
+              // https://firebasestorage.googleapis.com/v0/b/[bucket]/o/[filepath]?token=[token]
+              const decodedUrl = decodeURIComponent(imageUrl);
+              const startIndex = decodedUrl.indexOf('/o/') + 3;
+              const endIndex = decodedUrl.indexOf('?');
+              const filePath = decodedUrl.substring(startIndex, endIndex !== -1 ? endIndex : undefined);
+              
+              if (filePath) {
+                const imageRef = storageRef(storage, filePath);
+                try {
+                  await deleteObject(imageRef);
+                } catch (error) {
+                  console.error(`Error deleting image ${filePath}:`, error);
+                  // Continue with other deletions even if one fails
+                }
+              }
+            });
+  
+            // Wait for all image deletions to complete
+            await Promise.all(deletePromises);
+          }
+  
+          // Then delete the database entry
+          const listingRef = ref(database, `listings/${id}`);
+          await remove(listingRef);
+  
+          Swal.fire(
+            'Deleted!',
+            'Your listing and associated images have been deleted.',
+            'success'
+          );
+          navigate('/');
+        } catch (error) {
+          console.error("Error during deletion:", error);
+          Swal.fire(
+            'Error!',
+            'There was an error deleting the listing or its images.',
+            'error'
+          );
+        }
       }
     });
   };
