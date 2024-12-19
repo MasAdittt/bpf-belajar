@@ -107,7 +107,7 @@ function FavoriteListings() {
   return (
     <>
       <Navbaru />
-      <section className="w-full px-4 sm:px-6 md:px-8">
+      <section className="w-full sm:px-6 md:px-8">
         <div className="container mx-auto max-w-7xl">
           {/* Listings Grid */}
           <div className="Area-list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-6">
@@ -116,7 +116,7 @@ function FavoriteListings() {
                 <img 
                   src={pet} 
                   alt="pet logo" 
-                  className="max-w-[250px] sm:max-w-[300px] mb-6"
+                  className="max-w-[100px] sm:max-w-[300px] mb-6"
                 />
                 
                 <p className="font-['Lexend'] text-[#3A3A3A33] mb-4 max-w-[470px] mx-auto text-sm sm:text-base">
@@ -163,20 +163,22 @@ function FavoriteListings() {
                   />
 
                   {/* Content */}
-                  <div className="p-3 sm:p-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <h6 className="font-['Lexend'] text-base sm:text-lg font-semibold truncate pr-2">{listing.title}</h6>
-                    </div>
-                    <div className="flex flex-col space-y-1">
-                      <p className="font-['Lexend'] text-xs sm:text-sm text-gray-700 flex items-center">
-                        <FontAwesomeIcon icon={faLocationDot} className="mr-1.5"/>
-                        {listing.city ? listing.city : 'Unknown'}
-                      </p>
-                      <p className="text-xs sm:text-sm text-gray-500 font-['Quicksand'] italic truncate">
-                        "{listing.tags}"
-                      </p>
-                    </div>
-                  </div>
+                  <div className="p-0">
+  <div className="flex justify-between items-start mb-1.5">
+    <h6 className="font-['Lexend'] text-base sm:text-lg font-semibold truncate pr-2">
+      {listing.title}
+    </h6>
+  </div>
+  <div className="flex flex-col space-y-1">
+    <p className="font-['Lexend'] text-xs sm:text-sm text-gray-700 flex items-center">
+      <FontAwesomeIcon icon={faLocationDot} className="mr-1.5"/>
+      {listing.city ? listing.city : 'Unknown'}
+    </p>
+    <p className="font-['Lexend'] text-xs sm:text-sm text-gray-500 m-0 p-0">
+      {listing.tags}
+    </p>
+  </div>
+</div>
                 </div>
               ))
             )}
@@ -192,7 +194,7 @@ function FavoriteListings() {
                   className={`w-8 sm:w-[40px] h-8 sm:h-[33px] rounded-md transition-colors duration-200 font-['Quicksand'] text-xs sm:text-sm flex items-center justify-center ${
                     currentPage === index + 1
                       ? 'bg-[#1DA19E] text-white border-0'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-[1px] border-[#6B6B6B33]'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-[1px] border-[#6B6B6B33]'
                   }`}
                 >
                   {index + 1}

@@ -127,7 +127,7 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
                     fontWeight: 300
                   }}
                 >
-                  {listing.city}  <span className="px-1 text-[#6B6B6B]">•</span>  {listing.businessHours ? `${listing.businessHours.opening} - ${listing.businessHours.closing}` : 'Hours Not Available'} WITA
+                  {listing.city}, {listing.district}  <span className="px-1 text-[#6B6B6B]">•</span>  {listing.businessHours ? `${listing.businessHours.opening} - ${listing.businessHours.closing}` : 'Hours Not Available'} WITA
                 </span>
               </div>
 
