@@ -85,12 +85,7 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
                   >
                     {listing.category}
                   </div>
-                  <div 
-                    className="bg-gray-100 px-3 py-1 rounded-lg text-sm"
-                    style={{fontFamily: 'Lexend'}}
-                  >
-                    {formatDate(listing.createdAt)}
-                  </div>
+                 
                 </div>
           
                 {/* Heart Icon */}

@@ -25,13 +25,7 @@ const FeaturedPlaceCard = ({ listing, onClick, isFavorite, onToggleFavorite, cli
           {listing.category}
         </div>
 
-        {/* View Count Badge */}
-        <div className="absolute top-4 left-32 bg-[#F2F2F2] flex items-center gap-1" 
-          style={{padding:'4px 14px',borderRadius:'8px',fontSize:'14px',fontFamily:'Lexend'}}>
-          <Eye size={16} />
-          {clickCount || 0}
-        </div>
-
+     
         {/* Heart Icon Container */}
         <div className="absolute top-4 right-4">
           <button
