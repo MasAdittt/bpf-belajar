@@ -407,8 +407,10 @@ return (
                   alignItems: 'center',
                   justifyContent: 'center',
                   textAlign: 'center',
-                  width:'376px',
-                  margin:'0 auto'
+                  width:'100%',
+                  margin:'0 auto',
+                  maxWidth:'376px',
+                  padding:'0 20px'
                 }}>
                   <img 
                     src={pet}
@@ -418,7 +420,7 @@ return (
                       marginBottom: '20px'
                     }} 
                   />
-                  <p style={{ fontFamily:'Lexend',color:'#3A3A3A33',fontSize:'16px',lineHeight:'24px' }}>
+                  <p style={{ fontFamily:'Lexend',color:'#3A3A3A33',lineHeight:'24px',fontSize: 'clamp(14px, 4vw, 16px)',wordBreak:'break-word' }}>
                     {searchTerm 
                       ? `Maaf, tidak ada hasil untuk pencarian "${searchTerm}"`
                       : 'Oops! It looks like there are no matching places. Try a different search or reset your filters.'}
