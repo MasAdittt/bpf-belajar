@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Paper, Typography, TextField, Button, Box, FormControlLabel, Checkbox, Link,CircularProgress } from '@mui/material';
+import { Container, Paper, Typography, TextField, Button, Box, FormControlLabel, Checkbox, Link, CircularProgress } from '@mui/material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { firebaseAuthentication } from '../config/firebase';
+import { firebaseAuthentication, trackEvent } from '../config/firebase';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from 'react-router-dom';
 import { getDatabase, ref, query, orderByChild, equalTo, get, set, onDisconnect, serverTimestamp, onValue } from "firebase/database";
 import SimpleNavbar from '../components/Navlogin';
-import Swal from 'sweetalert2';
 import Logo from '../assets/image/Logo.svg';
 
 // Komponen Alert Notification
@@ -63,10 +62,14 @@ const AlertNotification = ({ message, type = 'error', duration = 8000, onClose }
 function Login() {
   const navigate = useNavigate();
   const [rememberMe, setRememberMe] = useState(false);
-  // State untuk alert notification
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const adminEmails = [
+    "adityabayuwicaksono38@gmail.com",
+    "dsm@incognito.asia"
+  ];
 
   useEffect(() => {
     const savedCredentials = localStorage.getItem('rememberedCredentials');
@@ -77,28 +80,6 @@ function Login() {
       setRememberMe(true);
     }
   }, []);
-
-  const handleRememberMe = (event) => {
-    setRememberMe(event.target.checked);
-  };
-
-  const formik = useFormik({
-    initialValues: {
-      email: '',
-      password: '',
-    },
-    validationSchema: yup.object().shape({
-      email: yup.string().required('Username atau email diperlukan'),
-      password: yup
-        .string()
-        .required('Password diperlukan')
-        .matches(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.{8,})/,
-          'Password harus mengandung setidaknya 8 karakter, termasuk huruf kapital dan kecil'
-        ),
-    }),
-    onSubmit: loginUser,
-  });
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(firebaseAuthentication, (user) => {
@@ -120,14 +101,46 @@ function Login() {
     return () => unsubscribeAuth();
   }, [navigate]);
 
+  const handleRememberMe = (event) => {
+    setRememberMe(event.target.checked);
+    trackEvent('remember_me_toggle', {
+      checked: event.target.checked
+    });
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: yup.object().shape({
+      email: yup.string().required('Username atau email diperlukan'),
+      password: yup
+        .string()
+        .required('Password diperlukan')
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.{8,})/,
+          'Password harus mengandung setidaknya 8 karakter, termasuk huruf kapital dan kecil'
+        ),
+    }),
+    onSubmit: loginUser,
+  });
+
   const handleAutoLogout = async () => {
     try {
       await signOut(firebaseAuthentication);
+      trackEvent('auto_logout', {
+        reason: 'account_inactive'
+      });
       setAlertMessage('Akun Anda telah dinonaktifkan oleh admin. Anda telah dikeluarkan dari sistem.');
       setShowAlert(true);
       navigate('/Coba');
     } catch (error) {
       console.error("Logout error:", error);
+      trackEvent('logout_error', {
+        error_code: error.code,
+        error_message: error.message
+      });
     }
   };
 
@@ -184,11 +197,17 @@ function Login() {
 
   async function loginUser() {
     setIsLoading(true);
+    const loginStartTime = Date.now();
+    
     try {
       let email = formik.values.email;
       let userStatus;
       
-      // Get email if username was provided
+      trackEvent('login_attempt', {
+        input_type: email.includes('@') ? 'email' : 'username',
+        timestamp: new Date().toISOString()
+      });
+
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         const userData = await getEmailFromUsername(email);
         email = userData.email;
@@ -196,34 +215,38 @@ function Login() {
       } else {
         userStatus = await checkUserStatus(email);
       }
-  
-      // Check if account is active
+
       if (userStatus === 'inactive') {
+        trackEvent('login_failed', {
+          reason: 'account_inactive',
+          email: email
+        });
         setAlertMessage('Akun Anda telah dinonaktifkan. Silakan hubungi admin untuk informasi lebih lanjut.');
         setShowAlert(true);
         setIsLoading(false);
         return;
       }
-  
-      // Attempt login
+
       const userCredential = await signInWithEmailAndPassword(
-        firebaseAuthentication, 
-        email, 
+        firebaseAuthentication,
+        email,
         formik.values.password
       );
-  
-      // Check if email is verified
+
       if (!userCredential.user.emailVerified) {
+        trackEvent('login_failed', {
+          reason: 'email_not_verified',
+          email: email
+        });
         await signOut(firebaseAuthentication);
         setAlertMessage('Email Anda belum terverifikasi. Silakan cek email Anda untuk link verifikasi.');
         setShowAlert(true);
         setIsLoading(false);
         return;
       }
-  
-      // Continue with successful login
+
       await updateOnlineStatus(userCredential.user.uid);
-  
+
       if (rememberMe) {
         localStorage.setItem('rememberedCredentials', JSON.stringify({
           email: formik.values.email,
@@ -232,16 +255,33 @@ function Login() {
       } else {
         localStorage.removeItem('rememberedCredentials');
       }
-  
-      const adminEmail = "adityabayuwicaksono38@gmail.com";
-      if (userCredential.user.email === adminEmail) {
+
+      const loginDuration = Date.now() - loginStartTime;
+      const isAdmin = adminEmails.includes(userCredential.user.email);
+      
+      trackEvent('login_success', {
+        user_type: isAdmin ? 'admin' : 'regular',
+        email: userCredential.user.email,
+        login_duration: loginDuration,
+        remember_me: rememberMe,
+        timestamp: new Date().toISOString()
+      });
+
+      if (isAdmin) {
         navigate('/admin');
       } else {
         navigate('/');
       }
-  
+
     } catch (error) {
       console.error("Login error:", error);
+      trackEvent('login_error', {
+        error_code: error.code,
+        error_message: error.message,
+        email: formik.values.email,
+        timestamp: new Date().toISOString()
+      });
+      
       let errorMessage = 'Invalid credential, please check your username, email or password';
       setAlertMessage(errorMessage);
       setShowAlert(true);
@@ -249,7 +289,6 @@ function Login() {
       setIsLoading(false);
     }
   }
-
   return (
     <>
       <SimpleNavbar />
