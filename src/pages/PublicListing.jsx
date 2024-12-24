@@ -71,7 +71,7 @@ const ListingCard = ({ listing, onToggleFavorite, isFavorite }) => {
           {listing.title}
         </h3>
         
-        <div className="flex items-center mb-2">
+        <div className="flex items-center">
           <MapPin size={12} color="#6B6B6B" className="mr-1" />
           <span 
             className="text-sm"
@@ -85,29 +85,31 @@ const ListingCard = ({ listing, onToggleFavorite, isFavorite }) => {
           </span>
         </div>
 
-        <p 
-          className="text-sm"
-          style={{
-            fontFamily: 'Lexend',
-            color: '#6B6B6B',
-            fontWeight: 300
-          }}
-        >
-          {listing.foodCategory}, {listing.halalStatus}
-        </p>
+        <div className="flex flex-col -space-y-1">
+          <p 
+            className="text-sm"
+            style={{
+              fontFamily: 'Lexend',
+              color: '#6B6B6B',
+              fontWeight: 300
+            }}
+          >
+            {listing.foodCategory}, {listing.halalStatus}
+          </p>
 
-        <p 
-          className="text-sm"
-          style={{
-            fontFamily: 'Lexend',
-            color: '#6B6B6B',
-            fontWeight: 300,
-            width: '100%',
-            maxWidth: '360px'
-          }}
-        >
-          "{listing.tags}"
-        </p>
+          <p 
+            className="text-sm"
+            style={{
+              fontFamily: 'Lexend',
+              color: '#6B6B6B',
+              fontWeight: 300,
+              width: '100%',
+              maxWidth: '360px'
+            }}
+          >
+            "{listing.tags}"
+          </p>
+        </div>
     
         <div className="mt-auto">
           <div 

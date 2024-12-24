@@ -478,22 +478,7 @@
         </TextField>
     </Box>
 
-                                <TextField
-                                    label="Upload Menu Link"
-                                    variant="outlined"
-                                    name="menuLink"
-                                    value={formData.menuLink}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="PDF file preferred, shared via Google Drive link"
-                                    inputProps={{ maxLength: 100 }}
-                                    InputProps={{
-                                        sx: { fontFamily: 'Lexend' }
-                                    }}
-                                    InputLabelProps={{
-                                        sx: { fontFamily: 'Lexend' }
-                                    }}
-                                />
+                             
 
                     <TextField
                         label="Address"
@@ -595,13 +580,27 @@
         lng: formData.longitude
     } : null}
 />
+<TextField
+                                    label="Upload Menu Link"
+                                    variant="outlined"
+                                    name="menuLink"
+                                    value={formData.menuLink}
+                                    onChange={handleChange}
+                                    placeholder="PDF file preferred, shared via Google Drive link"
+                                    inputProps={{ maxLength: 100 }}
+                                    InputProps={{
+                                        sx: { fontFamily: 'Lexend' }
+                                    }}
+                                    InputLabelProps={{
+                                        sx: { fontFamily: 'Lexend' }
+                                    }}
+                                />
                                 <TextField
                                     label="Contact Number"
                                     variant="outlined"
                                     name="phone"
                                     value={formData.phone}
                                     onChange={handleChange}
-                                    required
                                     placeholder='+62'
                                     inputProps={{ maxLength: 100 }}
                                     InputProps={{
