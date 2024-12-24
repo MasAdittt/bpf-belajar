@@ -219,14 +219,9 @@ function Area() {
 
       {/* Content */}
       <div>
-        <div className="flex justify-between items-start">
-          <h6 className="font-['Lexend'] text-base md:text-lg leading-tight pb-2">{listing.title}</h6>
-          {/* <div className="flex items-center pt-1 pr-1.5 font-['Lexend']">
-            <FontAwesomeIcon icon={faStar} className="mr-1 text-yellow-400" />
-            <span className="text-[#3A3A3A] font-semibold">{listing.averageRating.toFixed(1)}</span>
-          </div> */}
-        </div>
-        <div className="flex flex-col -space-y-1">
+        <div className="items-start">
+          <h6 className="font-['Lexend'] text-base md:text-lg leading-tight">{listing.title}</h6>
+          <div className="flex flex-col -space-y-1">
   <div className="flex items-center">
     <MapPin className="w-4 h-4  text-[#6B6B6B]" />
     <p className="font-['Lexend'] text-sm leading-none">
@@ -237,6 +232,12 @@ function Area() {
     "{listing.tags}"
   </p>
 </div>
+          {/* <div className="flex items-center pt-1 pr-1.5 font-['Lexend']">
+            <FontAwesomeIcon icon={faStar} className="mr-1 text-yellow-400" />
+            <span className="text-[#3A3A3A] font-semibold">{listing.averageRating.toFixed(1)}</span>
+          </div> */}
+        </div>
+        
       </div>
     </div>
   ))}

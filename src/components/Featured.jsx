@@ -61,7 +61,7 @@ const FeaturedPlaceCard = ({ listing, onClick, isFavorite, onToggleFavorite, cli
           }}>
             {listing.title}
           </h3>
-          <div className="flex items-center text-sm mb-2">
+          <div className="flex items-center text-sm">
             <MapPin className="w-4 h-4 mr-1" />
             <span style={{
               fontSize:'12px',
@@ -73,9 +73,9 @@ const FeaturedPlaceCard = ({ listing, onClick, isFavorite, onToggleFavorite, cli
               {listing.city}
             </span>
           </div>
-          <p className="text-sm text-white/90 line-clamp-2" style={{
-            fontFamily:'Quicksand',
-            fontWeight:500,
+          <p className="text-sm text-white/90 line-clamp-3 h-auto" style={{
+            fontFamily:'Lexend',
+            fontWeight:300,
             lineHeight:'18px'
           }}>
             "{listing.tags}"

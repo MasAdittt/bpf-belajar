@@ -131,3 +131,9 @@
   padding: 0 2px;
   background-color: #F2F2F2;
 }
+
+@media (max-width: 480px) {
+  .personal-tombol{
+    font-size: 16px;
+  }
+}

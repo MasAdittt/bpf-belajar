@@ -147,12 +147,9 @@ function Home() {
           <Start />
         </div>
         
-        <div 
-          data-aos="fade-up" 
-          onMouseEnter={() => handleSectionView('bawah')}
-        >
+       
           <Bawah />
-        </div>
+        
       </main>
     </div>
   );

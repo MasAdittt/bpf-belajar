@@ -310,6 +310,10 @@
       font-size: 14px;
     }
 
+    .nav-buttons{
+      gap: 12px;
+    }
+
     .mobile-menu-buttons .Add,
     .mobile-menu-buttons .Sign {
       padding: 8px 12px;
