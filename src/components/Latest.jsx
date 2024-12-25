@@ -110,79 +110,81 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
           
             {/* Content Section */}
             <div className="flex-grow flex flex-col p-4 md:p-4 lg:p-6">
-              <h3 
-                className="text-lg md:text-xl font-medium mb-1"
-                style={{fontFamily: 'Lexend'}}
-              >
-                {listing.title}
-              </h3>
-              
-              <div className="flex items-center">
-                <MapPin size={12} color="#6B6B6B" className="mr-1" />
-                <span 
-                  className="text-sm"
-                  style={{
-                    fontFamily: 'Lexend',
-                    color: '#6B6B6B',
-                    fontWeight: 300
-                  }}
-                >
-                  {listing.city}, {listing.district}  <span className="px-1 text-[#6B6B6B]">•</span>  {listing.businessHours ? `${listing.businessHours.opening} - ${listing.businessHours.closing}` : 'Hours Not Available'} WITA
-                </span>
-              </div>
+    <div className="flex flex-col -space-y-1">
+      <h3 
+        className="text-lg md:text-xl font-medium mb-3"
+        style={{fontFamily: 'Lexend'}}
+      >
+        {listing.title}
+      </h3>
+      
+      <div className="flex items-center pb-2">
+        <MapPin size={12} color="#6B6B6B" className="mr-1" />
+        <span 
+          className="text-sm leading-none"
+          style={{
+            fontFamily: 'Lexend',
+            color: '#6B6B6B',
+            fontWeight: 300
+          }}
+        >
+          {listing.city}, {listing.district}  <span className="px-1 text-[#6B6B6B]">•</span>  {listing.businessHours ? `${listing.businessHours.opening} - ${listing.businessHours.closing}` : 'Hours Not Available'} WITA
+        </span>
+      </div>
 
-              <p 
-                className="text-sm"
-                style={{
-                  fontFamily: 'Lexend',
-                  color: '#6B6B6B',
-                  fontWeight: 300
-                }}
-              >
-                {listing.foodCategory}, {listing.halalStatus}
-              </p>
+      <p 
+        className="text-sm leading-none m-0 pb-2" 
+        style={{
+          fontFamily: 'Lexend',
+          color: '#6B6B6B',
+          fontWeight: 300
+        }}
+      >
+        {listing.foodCategory}, {listing.halalStatus}
+      </p>
 
-              <p 
-                className="text-sm mb-2 line-clamp-2"
-                style={{
-                  fontFamily: 'Lexend',
-                  color: '#6B6B6B',
-                  fontWeight: 300
-                }}
-              >
-                "{listing.tags}"
-              </p>
-          
-              <div className="mt-auto">
-                <div 
-                  className="flex flex-wrap items-center gap-2 mb-4 text-sm"
-                  style={{
-                    fontFamily: 'Lexend',
-                    color: '#3A3A3A',
-                    fontWeight: 500,
-                    cursor: 'pointer'
-                  }}
-                >
-                  <a className="hover:text-blue-800">Maps</a>
-                  <span className="text-gray-700">•</span>
-                  <a className="hover:text-blue-800">Contact</a>
-                  <span className="text-gray-700">•</span>
-                  <a className="hover:text-blue-800">Instagram</a>
-                  <span className="text-gray-700">•</span>
-                  <a className="hover:text-blue-800">Website</a>
-                </div>
-                
-                <div className="flex justify-end">
-                  <button 
-                    onClick={() => navigate(`/PubTemplate/${listing.id}`)}
-                    className="bg-[#1DA19E] text-white px-4 py-2 rounded-lg hover:bg-[#178784] transition-colors text-sm"
-                    style={{fontFamily: "Lexend"}}
-                  >
-                    See More
-                  </button>
-                </div>
-              </div>
-            </div>
+      <p 
+        className="text-sm line-clamp-3 leading-tight"
+        style={{
+          fontFamily: 'Lexend',
+          color: '#6B6B6B',
+          fontWeight: 300
+        }}
+      >
+        "{listing.tags}"
+      </p>
+    </div>
+
+    <div className="mt-auto">
+      <div 
+        className="flex flex-wrap items-center gap-2 mb-4 text-sm"
+        style={{
+          fontFamily: 'Lexend',
+          color: '#3A3A3A',
+          fontWeight: 500,
+          cursor: 'pointer'
+        }}
+      >
+        <a className="hover:text-blue-800">Maps</a>
+        <span className="text-gray-700">•</span>
+        <a className="hover:text-blue-800">Contact</a>
+        <span className="text-gray-700">•</span>
+        <a className="hover:text-blue-800">Instagram</a>
+        <span className="text-gray-700">•</span>
+        <a className="hover:text-blue-800">Website</a>
+      </div>
+      
+      <div className="flex justify-end">
+        <button 
+          onClick={() => navigate(`/PubTemplate/${listing.id}`)}
+          className="bg-[#1DA19E] text-white px-4 py-2 rounded-lg hover:bg-[#178784] transition-colors text-sm"
+          style={{fontFamily: "Lexend"}}
+        >
+          See More
+        </button>
+      </div>
+    </div>
+  </div>
           </div>
         ))}
       </div>

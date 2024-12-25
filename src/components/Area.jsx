@@ -219,21 +219,18 @@ function Area() {
 
       {/* Content */}
       <div>
-        <div className="items-start">
-          <h6 className="font-['Lexend'] text-base md:text-lg leading-tight">{listing.title}</h6>
-          <div className="flex flex-col -space-y-2">
-  <div className="flex items-center ">
-    <MapPin className="w-4 h-4  text-[#6B6B6B]" />
-    <p className="font-['Lexend'] text-sm leading-none">
-      {listing.city ? listing.city : 'Unknown'}, {listing.district}
+      <div className="flex flex-col -space-y-2">
+    <h6 className="font-['Lexend'] text-base md:text-lg leading-none">{listing.title}</h6>
+    <div className="flex items-center -mb-2">
+      <MapPin className="w-4 h-4 text-[#6B6B6B]" />
+      <p className="font-['Lexend'] text-sm leading-none">
+        {listing.city ? listing.city : 'Unknown'}, {listing.district}
+      </p>
+    </div>
+    <p className="font-['Lexend'] text-[#6B6B6B] font-light text-sm leading-none">
+      "{listing.tags}"
     </p>
   </div>
-  <p className="leading-none" style={{color:'#6B6B6B',fontFamily:'Quicksand',fontWeight:500,lineHeight:'18px'}}>
-    "{listing.tags}"
-  </p>
-</div>
-         
-        </div>
         
       </div>
     </div>
