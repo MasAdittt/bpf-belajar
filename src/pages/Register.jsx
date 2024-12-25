@@ -26,10 +26,8 @@ function Register() {
       await set(ref(database, 'users/' + user.uid), {
         username: username,
         email: user.email,
-        createdAt: Date.now(), // Use timestamp as number
+        createdAt: Date.now(),
         updatedAt: Date.now(),
-        // Optional: Add more fields as needed
-        // searchHistory can be added later
       });
     } catch (error) {
       console.error("Error saving user to database:", error);
@@ -39,38 +37,29 @@ function Register() {
 
   const validateUniqueUsername = async (username) => {
     try {
-      // Create a query to check if username already exists
       const usernameQuery = query(
         ref(database, 'users'), 
         orderByChild('username'), 
         equalTo(username)
       );
-  
-      // Get the snapshot of users with this username
       const snapshot = await get(usernameQuery);
-  
-      // If snapshot exists, username is already taken
       return !snapshot.exists();
     } catch (error) {
       console.error("Error checking username uniqueness:", error);
       return false;
     }
   };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(firebaseAuthentication, async (user) => {
       if (user) {
         try {
-          // Reload user untuk memastirkan status terbaru
           await user.reload();
-
-          // Periksa verifikasi email
           if (user.emailVerified) {
-            // Cek apakah user sudah ada di database
             const userRef = ref(database, 'users/' + user.uid);
             const snapshot = await get(userRef);
 
             if (!snapshot.exists()) {
-              // Simpan user ke database jika belum ada
               await saveUserToDatabase(user, user.displayName);
 
               Swal.fire({
@@ -81,11 +70,8 @@ function Register() {
                 iconColor: '#1DA19E',
                 confirmButtonColor: '#1DA19E'
               });
-
-              // Arahkan ke halaman selanjutnya
               navigate('/complete-profile');
             } else {
-              // User sudah ada di database
               navigate('/complete-profile');
             }
           }
@@ -101,7 +87,6 @@ function Register() {
   const registerUser = async (values) => {
     setLoading(true);
     try {
-      // Pertama, periksa keunikan username
       const isUsernameUnique = await validateUniqueUsername(values.username);
       
       if (!isUsernameUnique) {
@@ -115,7 +100,6 @@ function Register() {
         return;
       }
   
-      // Buat user dengan email dan password
       const userCredential = await createUserWithEmailAndPassword(
         firebaseAuthentication, 
         values.email, 
@@ -123,24 +107,17 @@ function Register() {
       );
       const user = userCredential.user;
   
-      // Update profile dengan username
       await updateProfile(user, { 
         displayName: values.username 
       });
 
-        // Simpan data user ke Realtime Database
-    await saveUserToDatabase(user, values.username);
+      await saveUserToDatabase(user, values.username);
   
-      // Kirim email verifikasi
       await sendEmailVerification(user);
-  
-      // Logout user setelah registrasi
       await firebaseAuthentication.signOut();
       
-      // Set email verification sent state
       setEmailVerificationSent(true);
       
-      // Tampilkan pesan sukses
       Swal.fire({ 
         icon: 'success',
         title: 'Verification Email Sent',
@@ -155,7 +132,6 @@ function Register() {
           htmlContainer: 'text-gray-600 !font-lexend'
         }
       }).then(() => {
-        // Arahkan ke halaman login
         navigate('/Coba');
       });
   
@@ -172,7 +148,6 @@ function Register() {
     }
   };
 
-  // Formik validation schema
   const formik = useFormik({
     initialValues: {
       username: '',
@@ -185,20 +160,14 @@ function Register() {
       username: yup.string()
         .required('Username is required')
         .min(3, 'Username should be at least 3 characters long')
-        // Additional username validation to prevent special characters
         .matches(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores'),
       email: yup.string()
         .required('Email is required')
         .email('Invalid email format'),
-      password: yup
-        .string()
+      password: yup.string()
         .required('Password is required')
-        .matches(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.{8,})/,
-          'Password must include uppercase, lowercase, number, and be at least 8 characters'
-        ),
-      confirmPassword: yup
-        .string()
+        .min(8, 'Password should be at least 8 characters long'),
+      confirmPassword: yup.string()
         .oneOf([yup.ref('password'), null], 'Passwords must match')
         .required('Password confirmation is required'),
     }),
@@ -216,7 +185,7 @@ function Register() {
           flexDirection: 'column', 
           justifyContent: 'center', 
           backgroundColor: '#F2F2F2',
-          px: { xs: 2, sm: 3, md: 4 } // Responsive padding
+          px: { xs: 2, sm: 3, md: 4 }
         }}
       >
         <Box 
@@ -224,25 +193,25 @@ function Register() {
             display: 'flex', 
             flexDirection: 'column', 
             alignItems: 'center', 
-            width: { xs: '100%', sm: '100%', md: '672px' }, // Responsive width
+            width: { xs: '100%', sm: '100%', md: '672px' },
             margin: '0 auto',
-            px: { xs: 0, sm: 2 } // Additional padding for small screens
+            px: { xs: 0, sm: 2 }
           }}
         >
           <Typography 
             component="h2" 
             variant="h4" 
             sx={{ 
-              mb: { xs: 2, sm: 3 }, // Responsive margin
+              mb: { xs: 2, sm: 3 },
               fontWeight: 400, 
               textAlign: 'center', 
               fontFamily: 'ADELIA', 
               color: '#3A3A3A', 
-              fontSize: { xs: '24px', sm: '32px', md: '39px' }, // Responsive font size
-              width: { xs: '100%', sm: '400px', md: '500px' }, // Responsive width
-              lineHeight: { xs: '36px', sm: '48px', md: '62px' }, // Responsive line height
-              paddingTop: { xs: '20px', sm: '30px', md: '38px' }, // Responsive padding
-              px: { xs: 2, sm: 0 } // Side padding for mobile
+              fontSize: { xs: '24px', sm: '32px', md: '39px' },
+              width: { xs: '100%', sm: '400px', md: '500px' },
+              lineHeight: { xs: '36px', sm: '48px', md: '62px' },
+              paddingTop: { xs: '20px', sm: '30px', md: '38px' },
+              px: { xs: 2, sm: 0 }
             }}
           >
             Welcome To <br />
@@ -252,17 +221,17 @@ function Register() {
           <Paper 
             elevation={0} 
             sx={{ 
-              p: { xs: 3, sm: 4, md: 6 }, // Responsive padding
+              p: { xs: 3, sm: 4, md: 6 },
               width: '100%', 
               borderRadius: 2,
-              maxWidth: { xs: '100%', sm: '100%', md: '672px' } // Max width for different screens
+              maxWidth: { xs: '100%', sm: '100%', md: '672px' }
             }}
           >
             <Box sx={{ 
               mb: 3, 
               textAlign: 'center',
               '& img': {
-                height: { xs: '35px', sm: '40px', md: '43px' }, // Responsive image height
+                height: { xs: '35px', sm: '40px', md: '43px' },
                 width: 'auto'
               }
             }}>
@@ -289,11 +258,11 @@ function Register() {
                   mb: 2,
                   '& .MuiInputBase-input': {
                     fontFamily: 'Lexend',
-                    fontSize: { xs: '14px', sm: '16px' } // Responsive font size
+                    fontSize: { xs: '14px', sm: '16px' }
                   },
                   '& .MuiInputLabel-root': {
                     fontFamily: 'Lexend',
-                    fontSize: { xs: '14px', sm: '16px' } // Responsive font size
+                    fontSize: { xs: '14px', sm: '16px' }
                   }
                 }}
               />
@@ -332,8 +301,7 @@ function Register() {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 error={formik.touched.password && Boolean(formik.errors.password)}
-                helperText={formik.touched.password && formik.errors.password}
-                sx={{
+                helperText={formik.touched.password && formik.errors.password}                sx={{
                   mb: 2,
                   '& .MuiInputBase-input': {
                     fontFamily: 'Lexend',
@@ -370,55 +338,56 @@ function Register() {
                 }}
               />
 
-<Button
-  type="submit"
-  fullWidth
-  variant="contained"
-  disabled={loading}
-  sx={{
-    mt: 2,
-    mb: 2,
-    bgcolor: '#1DA19E',
-    '&:hover': {
-      bgcolor: '#158784',
-    },
-    '&.Mui-disabled': {
-      bgcolor: '#1DA19E',
-      opacity: 0.7,
-    },
-    borderRadius: '12px',
-    py: { xs: 1.2, sm: 1.5 },
-    fontFamily: 'Lexend',
-    fontWeight: 500,
-    boxShadow: 'none',
-    fontSize: { xs: '14px', sm: '16px' }
-  }}
->
-  <Box sx={{ 
-    display: 'flex', 
-    alignItems: 'center', 
-    justifyContent: 'center',
-    width: '100%'
-  }}>
-    Register
-    {loading && (
-      <CircularProgress
-        size={20}
-        sx={{
-          color: 'white',
-          marginLeft: 1
-        }}
-      />
-    )}
-  </Box>
-</Button>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                disabled={loading}
+                sx={{
+                  mt: 2,
+                  mb: 2,
+                  bgcolor: '#1DA19E',
+                  '&:hover': {
+                    bgcolor: '#158784',
+                  },
+                  '&.Mui-disabled': {
+                    bgcolor: '#1DA19E',
+                    opacity: 0.7,
+                  },
+                  borderRadius: '12px',
+                  py: { xs: 1.2, sm: 1.5 },
+                  fontFamily: 'Lexend',
+                  fontWeight: 500,
+                  boxShadow: 'none',
+                  fontSize: { xs: '14px', sm: '16px' }
+                }}
+              >
+                <Box sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  width: '100%'
+                }}>
+                  Register
+                  {loading && (
+                    <CircularProgress
+                      size={20}
+                      sx={{
+                        color: 'white',
+                        marginLeft: 1
+                      }}
+                    />
+                  )}
+                </Box>
+              </Button>
+              
               <Box 
                 sx={{ 
                   display: 'flex', 
                   justifyContent: 'center',
-                  flexDirection: { xs: 'column', sm: 'row' }, // Stack vertically on mobile
+                  flexDirection: { xs: 'column', sm: 'row' },
                   alignItems: 'center',
-                  gap: { xs: 2, sm: 4, md: 3 }, // Responsive gap
+                  gap: { xs: 2, sm: 4, md: 3 },
                   mt: 2
                 }}
               >
@@ -433,7 +402,7 @@ function Register() {
                       color: '#158784',
                       textDecoration: 'underline'
                     },
-                    fontSize: { xs: '14px', sm: '16px' } // Responsive font size
+                    fontSize: { xs: '14px', sm: '16px' }
                   }}
                 >
                   Login Now?
@@ -447,10 +416,10 @@ function Register() {
             color="text.secondary" 
             sx={{ 
               mt: 3, 
-              paddingBottom: { xs: '30px', sm: '40px', md: '50px' }, // Responsive padding
+              paddingBottom: { xs: '30px', sm: '40px', md: '50px' },
               fontFamily: 'Lexend', 
               fontWeight: 500,
-              fontSize: { xs: '12px', sm: '14px' } // Responsive font size
+              fontSize: { xs: '12px', sm: '14px' }
             }}
           >
             © 2024 Balipetfriendly

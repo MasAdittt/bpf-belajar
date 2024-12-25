@@ -1,146 +1,143 @@
-/* CSS styles */
 body, html {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    height: 100%;
-  }
-  
-  /* Section bawah - Desktop styles */
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  height: 100%;
+}
+
+/* Section bawah - Desktop styles */
+.bawah-sec {
+  position: relative;
+  min-height: 320px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  margin-top: 0;
+}
+
+.bawah-judul {
+  text-align: center;
+  justify-content: center;
+}
+
+.pet {
+  color: #ffffff;
+  font-size: 39px;
+  margin-bottom: 10px;
+  font-family: 'ADELIA', sans-serif;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.font-bawah {
+  color: #F1F1F1;
+  font-size: 16px;
+  margin-bottom: 20px;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.15px;
+  line-height: 25.6px;
+}
+
+.tombol {
+  background-color: #1DA19E;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Lexend';
+  line-height: 24px;
+  letter-spacing: 0.15px;
+  transition: background-color 0.3s, transform 0.1s;
+}
+
+.tombol:hover {
+  background-color: #178F8C;
+}
+
+.tombol:active {
+  transform: scale(0.98);
+  background-color: #088395;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
   .bawah-sec {
-    position: relative;
-    min-height: 320px;
-    width: 100%;
-    background-image: url('./src/assets/image/footer.jpg');
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing: border-box;
-    margin-top: 0; /* Remove any top margin */
+    min-height: 250px;
+    padding: 20px 15px;
+    background-position: 80% center; /* Menggeser background ke kanan */
   }
-  
+
   .bawah-judul {
-    text-align: center;
+    width: 100%;
+    padding: 0 15px;
+    box-sizing: border-box;
+  }
+
+  .pet {
+    font-size: 28px;
+    margin-bottom: 15px;
+    padding: 0 10px;
+  }
+
+  .font-bawah {
+    font-size: 14px;
+    line-height: 22px;
+    margin-bottom: 25px;
+    padding: 0 20px;
+  }
+
+  .tombol {
+    font-size: 14px;
+    padding: 8px 24px;
+    min-width: 160px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
   }
-  
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .bawah-sec {
+    min-height: 220px;
+    background-position: 85% center; /* Menggeser background lebih ke kanan untuk layar yang lebih kecil */
+  }
+
   .pet {
-    color: #ffffff;
-    font-size: 39px;
-    margin-bottom: 10px;
-    font-family: 'ADELIA', sans-serif;
-    font-weight: 400;
-    line-height: 1.2;
+    font-size: 24px;
   }
-  
+
   .font-bawah {
-    color: #F1F1F1;
-    font-size: 16px;
-    margin-bottom: 20px;
-    font-family: 'Quicksand', sans-serif;
-    font-weight: 400;
-    letter-spacing: 0.15px;
-    line-height: 25.6px;
+    font-size: 13px;
+    line-height: 20px;
+    padding: 0 15px;
   }
-  
-  .tombol {
-    background-color: #1DA19E;
-    color: #ffffff;
-    font-size: 16px;
-    font-weight: 500;
-    padding: 10px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-family: 'Lexend';
-    line-height: 24px;
-    letter-spacing: 0.15px;
-    transition: background-color 0.3s, transform 0.1s;
+}
+
+/* Custom styling for SweetAlert on mobile */
+@media (max-width: 768px) {
+  .swal2-popup {
+    font-size: 14px !important;
+    padding: 15px !important;
   }
-  
-  .tombol:hover {
-    background-color: #178F8C;
+
+  .swal2-title {
+    font-size: 20px !important;
   }
-  
-  .tombol:active {
-    transform: scale(0.98);
-    background-color: #088395;
+
+  .swal2-content {
+    font-size: 14px !important;
   }
-  
-  /* Mobile styles */
-  @media (max-width: 768px) {
-    .bawah-sec {
-      min-height: 250px; /* Reduced height for mobile */
-      padding: 20px 15px; /* Added horizontal padding */
-    }
-  
-    .bawah-judul {
-      width: 100%;
-      padding: 0 15px;
-      box-sizing: border-box;
-    }
-  
-    .pet {
-      font-size: 28px; /* Smaller font size for mobile */
-      margin-bottom: 15px;
-      padding: 0 10px;
-    }
-  
-    .font-bawah {
-      font-size: 14px;
-      line-height: 22px;
-      margin-bottom: 25px;
-      padding: 0 20px;
-    }
-  
-    .tombol {
-      font-size: 14px;
-      padding: 8px 24px;
-      min-width: 160px; /* Ensure minimum touch target size */
-      height: 40px; /* Better touch target */
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
+
+  .swal2-confirm {
+    font-size: 14px !important;
+    padding: 8px 20px !important;
   }
-  
-  /* Small mobile devices */
-  @media (max-width: 480px) {
-    .bawah-sec {
-      min-height: 220px;
-    }
-  
-    .pet {
-      font-size: 24px;
-    }
-  
-    .font-bawah {
-      font-size: 13px;
-      line-height: 20px;
-      padding: 0 15px;
-    }
-  }
-  
-  /* Custom styling for SweetAlert on mobile */
-  @media (max-width: 768px) {
-    .swal2-popup {
-      font-size: 14px !important;
-      padding: 15px !important;
-    }
-  
-    .swal2-title {
-      font-size: 20px !important;
-    }
-  
-    .swal2-content {
-      font-size: 14px !important;
-    }
-  
-    .swal2-confirm {
-      font-size: 14px !important;
-      padding: 8px 20px !important;
-    }
-  }
+}
