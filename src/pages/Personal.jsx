@@ -548,7 +548,7 @@
                                 <ul className="space-y-2">
                                     <li className="flex items-center">
                                         <img src={orang} alt="Profile" className="w-4 h-4 mr-2" />
-                                        <span className="truncate" style={{color:'#3A3A3A', fontFamily:'Lexend', fontWeight:300, fontSize:'18px'}}>@{firstName} {lastName}</span>
+                                        <span className="truncate" style={{color:'#3A3A3A', fontFamily:'Lexend', fontWeight:300, fontSize:'14px'}}>@{firstName} {lastName}</span>
                                     </li>
                                     <li className="flex items-center">
                                     <img src={titik} alt="Profile" className="w-4 h-4 mr-2" />
@@ -679,9 +679,9 @@
                                 )}
                             </div>
                             <div className="text-center md:text-left md:pt-5">
-                                <h1 className="text-2xl md:text-[35px] text-[#3A3A3A] font-bold font-['Lexend']">
+                                <h2 className="text-lg md:text-2xl text-[#3A3A3A] font-medium font-['Lexend']">
                                     {firstName} {lastName}
-                                </h1>
+                                </h2>
                                 <p className="text-sm md:text-base font-light font-['Lexend']">{email}</p>
                             </div>
                         </div>

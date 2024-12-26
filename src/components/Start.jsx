@@ -46,11 +46,11 @@ const Start = () => {
                         paddingRight: '45px',
                         fontFamily: 'ADELIA',
                         lineHeight: '59px',
-                        '@media (min-width: 768px)': {
+                        '@media (minwidth: 768px)': {
                           fontSize: '28px',
                           lineHeight: '48px'
                         },
-                        '@media (min-width: 1280px)': {
+                        '@media (minwidth: 1280px)': {
                           fontSize: '31px',
                           lineHeight: '59px'
                         }
