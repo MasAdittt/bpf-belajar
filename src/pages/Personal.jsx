@@ -22,6 +22,11 @@
         import Keamanan from '../components/Keamanan';
         import Payments from '../components/Payments';
         import UserReviewsComponent from '../components/UserReview';
+        import { Star, Heart,MapPin } from 'lucide-react';
+        import orang from '../assets/image/orang.svg';
+        import telpon from '../assets/image/telpon.svg';
+        import titik from '../assets/image/titik.svg';
+
 
         function Personal() {
             const navigate = useNavigate();
@@ -539,33 +544,31 @@
                             <div className="flex flex-col md:flex-row gap-6">
 
     <aside className="bg-white p-6 rounded-lg  w-full md:w-[281px] h-[300px] mb-6 md:mb-0">                           
-        <h2 style={{ fontFamily:'Quicksand', fontSize:'20px', fontWeight:700,color:"#3A3A3A", paddingBottom:'16px'}}>About me</h2>
+        <h2 style={{ fontFamily:'Lexend', fontSize:'18px', fontWeight:700,color:"#3A3A3A", paddingBottom:'16px'}}>About me</h2>
                                 <ul className="space-y-2">
                                     <li className="flex items-center">
-                                        <FontAwesomeIcon icon={faUser} className="mr-2 text-gray-600"  style={{paddingRight:'5px'}}/>
-                                        <span className="truncate" style={{color:'#3A3A3A', fontFamily:'Quicksand', fontWeight:300, fontSize:'14px'}}>@{firstName} {lastName}</span>
+                                        <img src={orang} alt="Profile" className="w-4 h-4 mr-2" />
+                                        <span className="truncate" style={{color:'#3A3A3A', fontFamily:'Lexend', fontWeight:300, fontSize:'14px'}}>@{firstName} {lastName}</span>
                                     </li>
                                     <li className="flex items-center">
-                                        <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2 text-gray-600"  style={{paddingRight:'5px'}}/>
-                                        <span className="truncate"  style={{color:'#3A3A3A', fontFamily:'Quicksand', fontWeight:300, fontSize:'14px'}}>{location || 'Not provided'}, {province}</span>
+                                    <img src={titik} alt="Profile" className="w-4 h-4 mr-2" />
+
+                                        <span className="truncate"  style={{color:'#3A3A3A', fontFamily:'Lexend', fontWeight:300, fontSize:'14px'}}>{location || 'Not provided'}, {province}</span>
                                     </li>
-                                    <li className="flex items-center overflow-hidden">
-                                        <FontAwesomeIcon icon={faEnvelope} className="mr-2 text-gray-600 flex-shrink-0"  style={{paddingRight:'5px'}}/>
-                                        <span className="truncate"  style={{color:'#3A3A3A', fontFamily:'Quicksand', fontWeight:300, fontSize:'14px'}}>{email}</span>
-                                    </li>
+     
                                     <li className="flex items-center">
-                                        <FontAwesomeIcon icon={faPhone} className="mr-2 text-gray-600" style={{paddingRight:'5px'}} />
-                                        <span className="truncate"  style={{color:'#3A3A3A', fontFamily:'Quicksand', fontWeight:300, fontSize:'14px'}}>{phone || 'Not provided'}</span>
+                                    <img src={telpon} alt="Profile" className="w-4 h-4 mr-2" />
+                                        <span className="truncate"  style={{color:'#3A3A3A', fontFamily:'Lexend', fontWeight:300, fontSize:'14px'}}>{phone || 'Not provided'}</span>
                                     </li>
                                 </ul>
-                                <h2 className="text-xl font-bold mt-6 mb-2" style={{fontFamily:'Quicksand'}}>Contribution</h2>
-                                <li className="flex items-center" style={{fontFamily:'Quicksand'}}>
-        <FontAwesomeIcon icon={faStar} className="mr-2 text-gray-600" style={{fontFamily:'Quicksand'}}/>
+                                <h2 className="text-base font-bold mt-6 mb-2" style={{fontFamily:'Lexend'}}>Contribution</h2>
+                                <li className="flex items-center text-sm" style={{fontFamily:'Lexend'}}>
+        <FontAwesomeIcon icon={faStar} className="mr-2 text-gray-600" style={{fontFamily:'Lexend'}}/>
         {reviewCount} {reviewCount === 1 ? 'Listing' : 'Listings'}
     </li>
                             </aside>
                             <div className="flex flex-col flex-1">
-                            <div className="pembungkus  w-full px-4 md:px-0 min-h-full font-['Quicksand'] pb-[20px] bg-white" style={{padding:'32px'}}  >
+                            <div className="pembungkus  w-full px-4 md:px-0 min-h-full font-['Lexend'] pb-[20px] bg-white" style={{padding:'32px'}}  >
                             <TextField
                                     id="email"
                                     label="Email *"
@@ -670,16 +673,16 @@
                                 ) : profilePhoto ? (
                                     <img src={profilePhoto} alt="Profile" className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover" />
                                 ) : (
-                                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-quicksand">
+                                    <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-lexend">
                                         <span>{firstName ? firstName[0].toUpperCase() : 'A'}</span>
                                     </div>
                                 )}
                             </div>
                             <div className="text-center md:text-left md:pt-5">
-                                <h1 className="text-2xl md:text-[35px] text-[#3A3A3A] font-bold font-['Quicksand']">
+                                <h1 className="text-2xl md:text-[35px] text-[#3A3A3A] font-bold font-['Lexend']">
                                     {firstName} {lastName}
                                 </h1>
-                                <p className="text-sm md:text-base font-light font-['Quicksand']">{email}</p>
+                                <p className="text-sm md:text-base font-light font-['Lexend']">{email}</p>
                             </div>
                         </div>
                     </div>

@@ -175,13 +175,13 @@ const PublicTemplate = () => {
               <h2 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-4xl font-bold text-[#3A3A3A] mb-4" style={{fontFamily:'ADELIA'}}>            
                       {listing.title}
                 </h2>
-                <p className="mb-4 font-['Quicksand'] text-[15px] font-light text-justify whitespace-pre-line">
+                <p className="mb-4 font-lexend text-sm font-light text-justify whitespace-pre-line">
                   {listing.description}
                 </p>
               </div>
   {/* Updated Action Links Container */}
    <div className="overflow-x-auto">
-                <div className="flex items-center gap-4 py-4 font-['Quicksand'] text-[#3A3A3A] whitespace-nowrap min-w-max">
+                <div className="flex items-center gap-4 py-4 font-lexend text-[#3A3A3A] whitespace-nowrap min-w-max">
                   <ActionLink href={menuUrl} icon={<Menu size={16} />} text="Menu" />
                   <Separator />
                   <ActionLink href={getWhatsAppUrl()} icon={<Phone size={16} />} text="Contact" />

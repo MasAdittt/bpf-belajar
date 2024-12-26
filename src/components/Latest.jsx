@@ -118,11 +118,10 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
         {listing.title}
       </h3>
       
-      <div className="flex items-center pb-2">
+      <div className="flex items-center ">
         <MapPin size={12} color="#6B6B6B" className="mr-1" />
         <span 
-          className="text-xs leading-none"
-          style={{
+ className="text-xs md:text-sm leading-none pb-1"  style={{
             fontFamily: 'Lexend',
             color: '#6B6B6B',
             fontWeight: 300
@@ -133,8 +132,7 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
       </div>
 
       <p 
-        className="text-xs leading-none m-0 pb-2" 
-        style={{
+ className="text-xs md:text-sm leading-none pb-3"    style={{
           fontFamily: 'Lexend',
           color: '#6B6B6B',
           fontWeight: 300
@@ -144,7 +142,7 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
       </p>
 
       <p 
-        className="text-xs line-clamp-3 leading-tight"
+        className="text-xs md:text-sm line-clamp-3 leading-tight p-0 pb-5"
         style={{
           fontFamily: 'Lexend',
           color: '#6B6B6B',

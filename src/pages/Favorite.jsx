@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ref, onValue, off, set } from 'firebase/database';
 import { database } from '../config/firebase';
 import { useNavigate } from 'react-router-dom';
-import { Star, Heart } from 'lucide-react';
+import { Star, Heart,MapPin } from 'lucide-react';
 import { getAuth } from 'firebase/auth';
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,6 +10,7 @@ import Navbaru from '../components/Navbaru';
 import Bawah from '../components/Bawah';
 import Loading from '../components/Loading';
 import pet from '../assets/image/pet.svg'; // Updated import path
+
 
 import '../style/All.css';
 
@@ -163,22 +164,18 @@ function FavoriteListings() {
                   />
 
                   {/* Content */}
-                  <div className="p-0">
-  <div className="flex justify-between items-start mb-1.5">
-    <h6 className="font-['Lexend'] text-base sm:text-lg font-semibold truncate pr-2">
-      {listing.title}
-    </h6>
-  </div>
-  <div className="flex flex-col space-y-1">
-    <p className="font-['Lexend'] text-xs sm:text-sm text-gray-700 flex items-center">
-      <FontAwesomeIcon icon={faLocationDot} className="mr-1.5"/>
-      {listing.city ? listing.city : 'Unknown'}
-    </p>
-    <p className="font-['Lexend'] text-xs sm:text-sm text-gray-500 m-0 p-0">
-      {listing.tags}
+                  <div className="flex flex-col -space-y-2">
+    <h6 className="font-['Lexend'] text-base md:text-lg leading-none">{listing.title}</h6>
+    <div className="flex items-center -mb-2">
+      <MapPin className="w-4 h-4 text-[#6B6B6B]" />
+      <p className="font-['Lexend'] text-sm leading-none">
+        {listing.city ? listing.city : 'Unknown'}, {listing.district}
+      </p>
+    </div>
+    <p className="font-['Lexend'] text-[#6B6B6B] font-light text-sm leading-none">
+      "{listing.tags}"
     </p>
   </div>
-</div>
                 </div>
               ))
             )}
