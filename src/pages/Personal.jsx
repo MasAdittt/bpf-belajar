@@ -544,11 +544,11 @@
                             <div className="flex flex-col md:flex-row gap-6">
 
     <aside className="bg-white p-6 rounded-lg  w-full md:w-[281px] h-[300px] mb-6 md:mb-0">                           
-        <h2 style={{ fontFamily:'Lexend', fontSize:'18px', fontWeight:700,color:"#3A3A3A", paddingBottom:'16px'}}>About me</h2>
+        <h2 style={{ fontFamily:'Lexend', fontSize:'16px', fontWeight:700,color:"#3A3A3A", paddingBottom:'16px'}}>About me</h2>
                                 <ul className="space-y-2">
                                     <li className="flex items-center">
                                         <img src={orang} alt="Profile" className="w-4 h-4 mr-2" />
-                                        <span className="truncate" style={{color:'#3A3A3A', fontFamily:'Lexend', fontWeight:300, fontSize:'14px'}}>@{firstName} {lastName}</span>
+                                        <span className="truncate" style={{color:'#3A3A3A', fontFamily:'Lexend', fontWeight:300, fontSize:'18px'}}>@{firstName} {lastName}</span>
                                     </li>
                                     <li className="flex items-center">
                                     <img src={titik} alt="Profile" className="w-4 h-4 mr-2" />
