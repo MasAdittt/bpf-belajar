@@ -141,7 +141,7 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
         {listing.foodCategory}, {listing.halalStatus}
       </p>
 
-      <p 
+      {/* <p 
         className="text-xs md:text-sm line-clamp-3 leading-tight p-0 pb-5"
         style={{
           fontFamily: 'Lexend',
@@ -150,7 +150,7 @@ const LatestPlaces = ({ onToggleFavorite, favorites }) => {
         }}
       >
         "{listing.tags}"
-      </p>
+      </p> */}
     </div>
 
     <div className="mt-auto">

@@ -233,7 +233,7 @@ const paginatedListings = useMemo(() => {
                                                 {listing.foodCategory}, {listing.halalStatus}
                                               </p>
                                         
-                                              <p 
+                                              {/* <p 
                                                 className="text-xs md:text-sm line-clamp-3 leading-tight p-0 pb-5"
                                                 style={{
                                                   fontFamily: 'Lexend',
@@ -242,7 +242,7 @@ const paginatedListings = useMemo(() => {
                                                 }}
                                               >
                                                 "{listing.tags}"
-                                              </p>
+                                              </p> */}
                                             </div>
                                         
                                             <div className="mt-auto">
@@ -266,7 +266,7 @@ const paginatedListings = useMemo(() => {
                                               
                                               <div className="flex justify-end">
                                                 <button 
-                                                  onClick={() => navigate(`/PubTemplate/${listing.id}`)}
+                                                  onClick={() => navigate(`/baru/${listing.id}`)}
                                                   className="bg-[#1DA19E] text-white px-4 py-2 rounded-lg hover:bg-[#178784] transition-colors text-sm"
                                                   style={{fontFamily: "Lexend"}}
                                                 >

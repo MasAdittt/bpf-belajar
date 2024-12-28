@@ -95,7 +95,7 @@ const ListingCard = ({ listing, onToggleFavorite, isFavorite }) => {
                 {listing.foodCategory}, {listing.halalStatus}
               </p>
         
-              <p 
+              {/* <p 
                 className="text-xs md:text-sm line-clamp-3 leading-tight p-0 pb-5"
                 style={{
                   fontFamily: 'Lexend',
@@ -104,7 +104,7 @@ const ListingCard = ({ listing, onToggleFavorite, isFavorite }) => {
                 }}
               >
                 "{listing.tags}"
-              </p>
+              </p> */}
             </div>
         
             <div className="mt-auto">

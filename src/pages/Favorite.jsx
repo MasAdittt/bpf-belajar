@@ -172,9 +172,9 @@ function FavoriteListings() {
         {listing.city ? listing.city : 'Unknown'}, {listing.district}
       </p>
     </div>
-    <p className="font-['Lexend'] text-[#6B6B6B] font-light text-sm leading-none">
+    {/* <p className="font-['Lexend'] text-[#6B6B6B] font-light text-sm leading-none">
       "{listing.tags}"
-    </p>
+    </p> */}
   </div>
                 </div>
               ))

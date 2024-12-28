@@ -170,9 +170,11 @@ const Listingbaru = () => {
   if (error) return <div className="flex justify-center items-center min-h-screen">Error: {error}</div>;
   if (!listing) return <Loading />;
 
+
   const imageUrls = listing.imageUrls || Array(5).fill("/api/placeholder/800/600");
   const websiteUrl = getWebsiteUrl(listing?.website);
   const instagramUrl = getWebsiteUrl(listing?.instagram) || "https://www.instagram.com";
+  const menuUrl = getWebsiteUrl(listing?.menuLink);
 
   return (
     <>
@@ -260,20 +262,45 @@ const Listingbaru = () => {
                 </p>
               </div>
 
-              {/* Action Links */}
-              <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-4 py-2 md:py-4 font-['Quicksand'] text-[#3A3A3A]">
-                <ActionLink href="#menu" icon={<Menu size={14} className="md:w-4 md:h-4" />} text="Menu" />
-                <Separator />
-                <ActionLink href={getWhatsAppUrl()} icon={<Phone size={14} className="md:w-4 md:h-4" />} text="Contact" />
-                <Separator />
-                <ActionLink href={instagramUrl} icon={<Instagram size={14} className="md:w-4 md:h-4"  />} text="Instagram" />
-                {websiteUrl && (
-                  <>
-                    <Separator />
-                    <ActionLink href={websiteUrl} icon={<Globe size={14}className="md:w-4 md:h-4"  />} text="Website" />
-                  </>
-                )}
-              </div>
+                {/* Updated Action Links */}
+            <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-4 py-2 md:py-4 font-['Quicksand'] text-[#3A3A3A]">
+              {listing.menuLink && (
+                <>
+                  <ActionLink 
+                    href={menuUrl} 
+                    icon={<Menu size={14} className="md:w-4 md:h-4" />} 
+                    text="Menu" 
+                  />
+                  <Separator />
+                </>
+              )}
+              {listing.phone && (
+                <>
+                  <ActionLink 
+                    href={getWhatsAppUrl()} 
+                    icon={<Phone size={14} className="md:w-4 md:h-4" />} 
+                    text="Contact" 
+                  />
+                  <Separator />
+                </>
+              )}
+              <ActionLink 
+                href={instagramUrl} 
+                icon={<Instagram size={14} className="md:w-4 md:h-4" />} 
+                text="Instagram" 
+              />
+              {websiteUrl && (
+                <>
+                  <Separator />
+                  <ActionLink 
+                    href={websiteUrl} 
+                    icon={<Globe size={14} className="md:w-4 md:h-4" />} 
+                    text="Website" 
+                  />
+                </>
+              )}
+            </div>
+          
             </div>
 
             {/* Map Section */}

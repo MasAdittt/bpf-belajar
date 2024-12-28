@@ -78,14 +78,12 @@ const PublicTemplate = () => {
     };
   }, [id]);
 
-  // Improved scroll handler with debounce
   const handleScroll = (event) => {
     const scrollContainer = event.target;
     const scrollPosition = scrollContainer.scrollLeft;
     const imageWidth = scrollContainer.clientWidth;
     const newIndex = Math.round(scrollPosition / imageWidth);
     
-    // Prevent unnecessary state updates
     if (newIndex !== currentImageIndex) {
       setCurrentImageIndex(newIndex);
     }
@@ -172,20 +170,28 @@ const PublicTemplate = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 min-h-[400px] mt-4">
             <div className="md:col-span-2 flex flex-col mt-4">
               <div className="mb-6 min-h-[200px] flex-grow">
-              <h2 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-4xl font-bold text-[#3A3A3A] mb-4" style={{fontFamily:'ADELIA'}}>            
-                      {listing.title}
+                <h2 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-4xl font-bold text-[#3A3A3A] mb-4" style={{fontFamily:'ADELIA'}}>            
+                  {listing.title}
                 </h2>
                 <p className="mb-4 font-lexend text-sm font-light text-justify whitespace-pre-line">
                   {listing.description}
                 </p>
               </div>
-  {/* Updated Action Links Container */}
-   <div className="overflow-x-auto">
+              {/* Updated Action Links Container */}
+              <div className="overflow-x-auto">
                 <div className="flex items-center gap-4 py-4 font-lexend text-[#3A3A3A] whitespace-nowrap min-w-max">
-                  <ActionLink href={menuUrl} icon={<Menu size={16} />} text="Menu" />
-                  <Separator />
-                  <ActionLink href={getWhatsAppUrl()} icon={<Phone size={16} />} text="Contact" />
-                  <Separator />
+                  {listing.menuLink && (
+                    <>
+                      <ActionLink href={menuUrl} icon={<Menu size={16} />} text="Menu" />
+                      <Separator />
+                    </>
+                  )}
+                  {listing.phone && (
+                    <>
+                      <ActionLink href={getWhatsAppUrl()} icon={<Phone size={16} />} text="Contact" />
+                      <Separator />
+                    </>
+                  )}
                   <ActionLink href={instagramUrl} icon={<Instagram size={16} />} text="Instagram" />
                   {websiteUrl && (
                     <>
@@ -199,10 +205,8 @@ const PublicTemplate = () => {
 
             {/* Map Section */}
             <div className="w-full">
-             
               <div className="h-full">
-              <ExploreAreaMap location={listing.location} address={listing.address} />
-
+                <ExploreAreaMap location={listing.location} address={listing.address} />
               </div>
             </div>
           </div>
@@ -220,7 +224,8 @@ const ActionLink = ({ href, icon, text }) => (
     href={href} 
     target="_blank" 
     rel="noopener noreferrer" 
-    className="flex items-center gap-1 sm:gap-2 hover:text-blue-800 text-xs sm:text-sm font-bold"  >
+    className="flex items-center gap-1 sm:gap-2 hover:text-blue-800 text-xs sm:text-sm font-bold"
+  >
     {icon} {text}
   </a>
 );

@@ -38,7 +38,7 @@ const EditListing = () => {
     });
     
     const [location, setLocation] = useState({
-        latitude: -8.4095,
+        latitude: -8.409,
         longitude: 115.1889
     });
 
@@ -78,6 +78,24 @@ const EditListing = () => {
 
     const onAddressFieldFocus = () => {
         // Add your address field focus logic here if needed
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        
+        // Reset menuLink when changing category to non-Cafe/Restaurant
+        if (name === 'category' && value !== 'Cafe' && value !== 'Restaurant') {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value,
+                menuLink: ''
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
     };
 
     const handleLocationSelect = (latlng) => {
@@ -151,13 +169,6 @@ const EditListing = () => {
       fetchListingData();
   }, [id, navigate]);
 
-        const handleChange = (e) => {
-            const { name, value } = e.target;
-            setFormData(prev => ({
-                ...prev,
-                [name]: value
-            }));
-        };
 
         const handleCityChange = (event) => {
             const { value } = event.target;
@@ -664,22 +675,23 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
       </TextField>
     </Box>
 
-                              <TextField
-                                  label="Upluoad Menu Link"
-                                  variant="outlined"
-                                  name="menuLink"
-                                  value={formData.menuLink}
-                                  onChange={handleChange}
-                                  required
-                                  placeholder="PDF file preferred, shared via Google Drive link"
-                                  inputProps={{ maxLength: 100 }}
-                                  InputProps={{
-                                      sx: { fontFamily: 'Lexend' }
-                                  }}
-                                  InputLabelProps={{
-                                      sx: { fontFamily: 'Lexend' }
-                                  }}
-                              />
+    {(formData.category === "Cafe" || formData.category === "Restaurant") && (
+    <TextField
+        label="Upload Menu Link"
+        variant="outlined"
+        name="menuLink"
+        value={formData.menuLink}
+        onChange={handleChange}
+        placeholder="PDF file preferred, shared via Google Drive link"
+        inputProps={{ maxLength: 100 }}
+        InputProps={{
+            sx: { fontFamily: 'Lexend' }
+        }}
+        InputLabelProps={{
+            sx: { fontFamily: 'Lexend' }
+        }}
+    />
+)}
 
                               <TextField
                                   label="Address"

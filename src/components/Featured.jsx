@@ -73,13 +73,13 @@ const FeaturedPlaceCard = ({ listing, onClick, isFavorite, onToggleFavorite, cli
               {listing.city}
             </span>
           </div>
-          <p className="text-sm text-white/90 line-clamp-3 h-auto" style={{
+          {/* <p className="text-sm text-white/90 line-clamp-3 h-auto" style={{
             fontFamily:'Lexend',
             fontWeight:300,
             lineHeight:'18px'
           }}>
             "{listing.tags}"
-          </p>
+          </p> */}
         </div>
       </div>
     </div>

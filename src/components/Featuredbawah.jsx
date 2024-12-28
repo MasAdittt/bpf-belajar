@@ -56,7 +56,7 @@ const FeaturedPlaceCard = ({ listing, onClick, isFavorite, onToggleFavorite, cli
             <MapPin className="w-3 h-3 md:w-4 md:h-4" />
             <span style={{fontFamily:'Lexend',color:'#F2F2F2'}}>{listing.city}</span>
           </div>
-          <p className="text-xs md:text-sm opacity-90 line-clamp-2 font-lexend">"{listing.tags}"</p> 
+          {/* <p className="text-xs md:text-sm opacity-90 line-clamp-2 font-lexend">"{listing.tags}"</p>  */}
         </div>
       </div>
     </div>

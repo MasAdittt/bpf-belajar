@@ -23,13 +23,14 @@ import PubAdmin from './pages/PubAdmin.jsx'
 import FavoriteListings from './pages/Favorite.jsx'
 import ListingForm from './pages/Form.jsx'
 import ContactForm from './pages/Contat.jsx'
-
+import AnalyticsTracker from './components/Analytic.jsx'
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Routes>
           {/* Public Routes */}
+          
           <Route path='/' element={<Home />}/>
           <Route path='/Coba' element={<Login />}/>
           <Route path='/Daftar' element={<Register />}/>
