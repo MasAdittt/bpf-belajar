@@ -1,97 +1,95 @@
-// Location.jsx
-import React, { useState, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+import React, { useState, useEffect, useCallback } from 'react';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
-let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41]
-});
+const defaultCenter = { lat: -8.4095, lng: 115.1889 }; // Default to Bali coordinates
 
-L.Marker.prototype.options.icon = DefaultIcon;
-
-function MapUpdater({ center, zoom, onLocationSelect, position }) {
-    const map = useMap();
-    
-    useEffect(() => {
-        if (position) {
-            map.setView(position, zoom);
-        }
-    }, [position, zoom, map]);
-
-    useEffect(() => {
-        map.on('click', (e) => {
-            onLocationSelect(e.latlng);
-        });
-
-        return () => {
-            map.off('click');
-        };
-    }, [map, onLocationSelect]);
-
-    return null;
-}
-
-const LocationPicker = ({ 
-    initialLocation, 
-    onLocationSelect, 
-    address,  // Tambahkan prop address
-    city,     // Tambahkan prop city
-    district, // Tambahkan prop district
-    onAddressFieldFocus 
+const LocationPicker = ({
+    initialLocation,
+    onLocationSelect,
+    address,
+    city,
+    district,
+    onAddressFieldFocus
 }) => {
     const [position, setPosition] = useState(
-        initialLocation 
-            ? [initialLocation.lat, initialLocation.lng]
-            : [-8.4095, 115.1889]
+        initialLocation
+            ? { lat: initialLocation.lat, lng: initialLocation.lng }
+            : defaultCenter
     );
     const [zoom, setZoom] = useState(13);
     const [isLoading, setIsLoading] = useState(false);
-    const mapRef = useRef(null);
+    const [error, setError] = useState('');
+    const [map, setMap] = useState(null);
+    const [markerKey, setMarkerKey] = useState(Date.now());
+
+    const containerStyle = {
+        width: '100%',
+        height: '400px',
+        borderRadius: '8px'
+    };
 
     const searchLocation = async (searchAddress, searchCity, searchDistrict) => {
-        if (!searchAddress || !searchCity || !searchDistrict) return;
+        if (!searchAddress || !searchCity || !searchDistrict || !window.google) {
+            setError('Alamat tidak lengkap');
+            return;
+        }
 
         setIsLoading(true);
+        setError('');
+
         try {
+            // Cek apakah Geocoding API tersedia
+            if (!window.google.maps.Geocoder) {
+                throw new Error('Geocoding service tidak tersedia');
+            }
+
+            const geocoder = new window.google.maps.Geocoder();
             const searchQuery = `${searchAddress}, ${searchDistrict}, ${searchCity}, Bali, Indonesia`;
-            const response = await fetch(
-                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`,
-                {
-                    headers: {
-                        'Accept-Language': 'en-US,en;q=0.9',
+
+            geocoder.geocode({ address: searchQuery }, (results, status) => {
+                if (status === 'OK' && results[0]) {
+                    const newPos = {
+                        lat: results[0].geometry.location.lat(),
+                        lng: results[0].geometry.location.lng()
+                    };
+                    setPosition(newPos);
+                    setZoom(16);
+                    setMarkerKey(Date.now());
+                    onLocationSelect(newPos);
+                    if (map) {
+                        map.panTo(newPos);
+                        map.setZoom(16);
+                    }
+                } else {
+                    // Handle berbagai status error dari Geocoding API
+                    switch (status) {
+                        case 'ZERO_RESULTS':
+                            setError('Lokasi tidak ditemukan');
+                            break;
+                        case 'OVER_QUERY_LIMIT':
+                            setError('Terlalu banyak permintaan, coba lagi nanti');
+                            break;
+                        case 'REQUEST_DENIED':
+                            setError('Silakan pilih lokasi secara manual dengan mengklik peta');
+                            break;
+                        default:
+                            setError('Terjadi kesalahan saat mencari lokasi');
                     }
                 }
-            );
-            
-            if (!response.ok) throw new Error('Network response was not ok');
-            
-            const data = await response.json();
-            
-            if (data && data.length > 0) {
-                const newPos = [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-                setPosition(newPos);
-                setZoom(16);
-                onLocationSelect({ lat: newPos[0], lng: newPos[1] });
-            }
+                setIsLoading(false);
+            });
         } catch (error) {
             console.error('Error searching location:', error);
-        } finally {
+            setError('Silakan pilih lokasi secara manual dengan mengklik peta');
             setIsLoading(false);
         }
     };
 
-    // Perbaiki handleAddressFieldFocus
-    const handleAddressFieldFocus = () => {
+    const handleAddressFieldFocus = useCallback(() => {
         if (address && city && district) {
             searchLocation(address, city, district);
         }
-    };
+    }, [address, city, district]);
 
     useEffect(() => {
         if (address && city && district) {
@@ -101,15 +99,39 @@ const LocationPicker = ({
 
     useEffect(() => {
         if (onAddressFieldFocus) {
-            onAddressFieldFocus(handleAddressFieldFocus);
+            onAddressFieldFocus((searchQuery) => {
+                if (searchQuery) {
+                    searchLocation(searchQuery);
+                }
+            });
         }
-    }, [onAddressFieldFocus, address, city, district]);
+    }, [onAddressFieldFocus]);
 
-    const handleMarkerDrag = (e) => {
-        const newPos = e.target.getLatLng();
-        setPosition([newPos.lat, newPos.lng]);
+    const onMapClick = (e) => {
+        const newPos = {
+            lat: e.latLng.lat(),
+            lng: e.latLng.lng()
+        };
+        setPosition(newPos);
+        setMarkerKey(Date.now());
         onLocationSelect(newPos);
+        setError(''); // Clear any existing errors when user manually selects location
     };
+
+    const onMarkerDragEnd = (e) => {
+        const newPos = {
+            lat: e.latLng.lat(),
+            lng: e.latLng.lng()
+        };
+        setPosition(newPos);
+        setMarkerKey(Date.now());
+        onLocationSelect(newPos);
+        setError(''); // Clear any existing errors when user manually selects location
+    };
+
+    const onLoad = useCallback((map) => {
+        setMap(map);
+    }, []);
 
     return (
         <div style={{ position: 'relative', height: '400px', width: '100%', marginBottom: '20px' }}>
@@ -129,33 +151,49 @@ const LocationPicker = ({
                 </div>
             )}
 
-            <MapContainer
-                center={position}
-                zoom={zoom}
-                style={{ height: '100%', width: '100%', borderRadius: '8px', zIndex: 1 }}
-                ref={mapRef}
-            >
-                <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                />
-                <Marker 
-                    position={position}
-                    draggable={true}
-                    eventHandlers={{
-                        dragend: handleMarkerDrag,
+            {error && (
+                <div style={{
+                    position: 'absolute',
+                    top: '10px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 1000,
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    padding: '8px 16px',
+                    borderRadius: '4px',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                    color: '#dc2626',
+                    fontSize: '14px'
+                }}>
+                    {error}
+                </div>
+            )}
+
+              <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+                <GoogleMap
+                    mapContainerStyle={containerStyle}
+                    center={position}
+                    zoom={zoom}
+                    onClick={onMapClick}
+                    onLoad={onLoad}
+                    options={{
+                        streetViewControl: false,
+                        mapTypeControl: false,
+                        fullscreenControl: true,
+                        zoomControl: true,
                     }}
-                />
-                <MapUpdater 
-                    center={position} 
-                    zoom={zoom} 
-                    onLocationSelect={(latlng) => {
-                        setPosition([latlng.lat, latlng.lng]);
-                        onLocationSelect(latlng);
-                    }}
-                    position={position}
-                />
-            </MapContainer>
+                >
+                    {position && (
+                        <Marker
+                            key={markerKey}
+                            position={position}
+                            draggable={true}
+                            onDragEnd={onMarkerDragEnd}
+                            visible={true}
+                        />
+                    )}
+                </GoogleMap>
+            </LoadScript>
         </div>
     );
 };

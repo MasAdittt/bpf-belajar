@@ -11,6 +11,8 @@ import ExploreAreaMap from '../kebutuhan/Explore';
 import Loading from '../components/Loading';
 import { ref as storageRef, deleteObject } from 'firebase/storage';
 import { storage } from '../config/firebase';
+import { LoadScript } from '@react-google-maps/api';
+
 
 const Listingbaru = () => {
   const { id } = useParams();
@@ -263,7 +265,7 @@ const Listingbaru = () => {
               </div>
 
                 {/* Updated Action Links */}
-            <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-4 py-2 md:py-4 font-['Quicksand'] text-[#3A3A3A]">
+            <div className="flex flex-wrap md:flex-nowrap items-center gap-2 md:gap-4 py-2 md:py-4 font-['Lexend'] text-[#3A3A3A]">
               {listing.menuLink && (
                 <>
                   <ActionLink 
@@ -300,14 +302,32 @@ const Listingbaru = () => {
                 </>
               )}
             </div>
-          
+            <p className='text-lg text-[#3A3A3A] font-lexend font-bold'>Open in:</p>
+                <div className="flex flex-wrap gap-3">
+          {listing.Gmaps && (
+            <a 
+              href={listing.Gmaps}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors duration-200 border border-gray-200"
+            >
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Google_Maps_icon_%282020%29.svg/1428px-Google_Maps_icon_%282020%29.svg.png" 
+                alt="Google Maps"
+                className="w-5 h-5 object-contain"
+              />
+              <span className="font-lexend text-sm text-[#3A3A3A] font-semibold ">Google Maps</span>
+            </a>
+          )}
+        </div>
             </div>
 
             {/* Map Section */}
             <div className="w-full h-full">
+                           <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
              
               <ExploreAreaMap location={listing.location} address={listing.address} />
-            
+            </LoadScript>
             </div>
           </div>
 

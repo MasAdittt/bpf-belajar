@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Star, Menu, Phone, Instagram, Globe } from 'lucide-react';
+import { Star, Menu, Phone, Instagram, Globe,Map } from 'lucide-react';
 import Navbaru from '../components/Navbaru';
 import { ref, onValue, off, get, set, serverTimestamp } from 'firebase/database';
 import { database } from '../config/firebase';
@@ -9,6 +9,7 @@ import Bawah from '../components/Bawah';
 import Loading from '../components/Loading';
 import Featuredbawah from '../components/Featuredbawah';
 import ExploreAreaMap from '../kebutuhan/Explore';
+import { LoadScript } from '@react-google-maps/api';
 
 const PublicTemplate = () => {
   const { id } = useParams();
@@ -200,13 +201,33 @@ const PublicTemplate = () => {
                     </>
                   )}
                 </div>
+                <p className='text-lg text-[#3A3A3A] font-lexend font-bold'>Open in:</p>
+                <div className="flex flex-wrap gap-3">
+          {listing.Gmaps && (
+            <a 
+              href={listing.Gmaps}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors duration-200 border border-gray-200"
+            >
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Google_Maps_icon_%282020%29.svg/1428px-Google_Maps_icon_%282020%29.svg.png" 
+                alt="Google Maps"
+                className="w-5 h-5 object-contain"
+              />
+              <span className="font-lexend text-sm text-[#3A3A3A] font-semibold ">Google Maps</span>
+            </a>
+          )}
+        </div>
               </div>
             </div>
 
             {/* Map Section */}
             <div className="w-full">
               <div className="h-full">
-                <ExploreAreaMap location={listing.location} address={listing.address} />
+              <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+                  <ExploreAreaMap location={listing.location} address={listing.address} />
+                </LoadScript>
               </div>
             </div>
           </div>

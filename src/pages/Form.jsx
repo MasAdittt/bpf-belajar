@@ -1,4 +1,4 @@
-    import React, { useState, useEffect } from 'react';
+    import React, { useState, useEffect,useCallback } from 'react';
     import { Box, TextField, Button, Typography, Card, CardContent, Select, MenuItem,CircularProgress } from '@mui/material';
     import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
     import { faStore, faImage, faClock } from '@fortawesome/free-solid-svg-icons';
@@ -35,6 +35,8 @@
             website: '',
             latitude:'',
             longitude:'',
+            Gmaps:'',
+            placeId: '',    
             imageUrls: []   
         });
         const [addressFieldFocusHandler, setAddressFieldFocusHandler] = useState(null);
@@ -44,6 +46,10 @@
         const [uploadedImages, setUploadedImages] = useState([]); 
         const categories = ["Cafe", "Villa", "Bar", "Restaurant", "Hotel"];
         const [imageFiles, setImageFiles] = useState([]);
+        const [autocomplete, setAutocomplete] = useState(null);
+        const handleAddressFieldFocus = useCallback((handler) => {
+            setAddressFieldFocusHandler(handler);
+        }, []);
         const districtMapping = {
             Badung: ['Kuta', 'North Kuta', 'South Kuta', 'Mengwi', 'Abiansemal', 'Petang'],
             Buleleng: ['Buleleng', 'Gerokgak', 'Seririt', 'Busungbiu', 'Banjar', 'Sukasada', 'Kubutambahan', 'Tejakula'],
@@ -56,15 +62,78 @@
             Tabanan: ['Tabanan', 'Kediri', 'Kerambitan', 'Marga', 'Penebel', 'Selemandeg', 'East Selemandeg', 'West Selemandeg', 'North Selemandeg', 'Pupuan']
         };
 
+        const extractPlaceId = (url) => {
+            if (!url) return null;
+            
+            // Log the incoming URL for debugging
+            console.log('Processing URL:', url);
+            
+            // Handle different Google Maps URL formats
+            const patterns = [
+                // Short URL format (maps.app.goo.gl)
+                {
+                    pattern: /maps\.app\.goo\.gl\/([a-zA-Z0-9_-]+)/,
+                    type: 'short_url'
+                },
+                // Regular place URL format
+                {
+                    pattern: /place\/[^\/]+\/([a-zA-Z0-9\-_]+)/,
+                    type: 'place_url'
+                },
+                // Maps URL with coordinates
+                {
+                    pattern: /maps\/place\/[^\/]+\/@[^\/]+\/([a-zA-Z0-9\-_]+)/,
+                    type: 'coordinates_url'
+                },
+                // URLs with CID
+                {
+                    pattern: /\?cid=([0-9]+)/,
+                    type: 'cid_url'
+                }
+            ];
+        
+            for (const {pattern, type} of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) {
+                    console.log(`Matched ${type}:`, match[1]);
+                    return match[1];
+                }
+            }
+            
+            console.log('No pattern matched for URL');
+            return null;
+        };
+        
         const handleCityChange = (event) => {
             const { value } = event.target;
             setFormData(prev => ({
                 ...prev,
                 city: value,
-                district: ''
+                district: '',
+                // Reset coordinates when city changes
+                latitude: '',
+                longitude: ''
             }));
+            
+            // Center map on selected city
+            const cityCoordinates = {
+                Badung: { lat: -8.5819, lng: 115.1771 },
+                Buleleng: { lat: -8.1146, lng: 115.0919 },
+                Bangli: { lat: -8.4546, lng: 115.3549 },
+                Denpasar: { lat: -8.6705, lng: 115.2126 },
+                Gianyar: { lat: -8.5449, lng: 115.3246 },
+                Jembrana: { lat: -8.3233, lng: 114.6667 },
+                Karangasem: { lat: -8.3466, lng: 115.5206 },
+                Klungkung: { lat: -8.7878, lng: 115.5444 },
+                Tabanan: { lat: -8.5444, lng: 115.1213 }
+            };
+    
+            if (cityCoordinates[value]) {
+                setMapCenter(cityCoordinates[value]);
+            }
         };
 
+        
         const handleImageSelect = (imageData) => {
             setImageFiles(prev => [...prev, imageData.file]);
             setUploadedImages(prev => [...prev, imageData.preview]);
@@ -74,28 +143,57 @@
             const { value } = event.target;
             setFormData(prev => ({
                 ...prev,
-                district: value
+                district: value,
+                latitude: '',
+                longitude: ''
             }));
-        };
-
-
-        const handleChange = (e) => {
-            const { name, value } = e.target;
-            
-            // Reset menuLink when changing category to non-Cafe/Restaurant
-            if (name === 'category' && value !== 'Cafe' && value !== 'Restaurant') {
-                setFormData(prev => ({
-                    ...prev,
-                    [name]: value,
-                    menuLink: ''
-                }));
-            } else {
-                setFormData(prev => ({
-                    ...prev,
-                    [name]: value
-                }));
+        
+            // Move this logic to useEffect instead of doing it directly in the handler
+            if (formData.city && value) {
+                const searchQuery = `${formData.address}, ${value}, ${formData.city}, Bali, Indonesia`;
+                if (addressFieldFocusHandler) {
+                    addressFieldFocusHandler(searchQuery);
+                }
             }
         };
+useEffect(() => {
+    if (formData.address && formData.city && formData.district && addressFieldFocusHandler) {
+        const searchQuery = `${formData.address}, ${formData.district}, ${formData.city}, Bali, Indonesia`;
+        addressFieldFocusHandler(searchQuery);
+    }
+}, [formData.address, formData.city, formData.district, addressFieldFocusHandler]);
+        
+const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === 'Gmaps') {
+        // Extract placeId from Google Maps link
+        const placeId = extractPlaceId(value);
+        console.log('Extracted Place ID:', placeId);
+        setFormData(prev => ({
+            ...prev,
+            [name]: value,
+            placeId: placeId // Store the extracted placeId
+        }));
+    } else if (name === 'category' && value !== 'Cafe' && value !== 'Restaurant') {
+        setFormData(prev => ({
+            ...prev,
+            [name]: value,
+            menuLink: ''
+        }));
+    } else {
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    }
+};
+
+
+        const [mapCenter, setMapCenter] = useState({
+            lat: -8.4095,
+            lng: 115.1889
+        });
 
         const handleLocationSelect = (location) => {
             setFormData(prev => ({
@@ -103,7 +201,10 @@
                 latitude: location.lat,
                 longitude: location.lng
             }));
+            setMapCenter(location);
         };
+
+        
 
         useEffect(() => {
             const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -173,6 +274,8 @@
                     menuLink: formData.menuLink,
                     instagram: formData.instagram || "",
                     website: formData.website || "",
+                    Gmaps: formData.Gmaps || "",
+                    placeId: formData.placeId || "",
                     userId: user.uid,
                     userEmail: user.email,
                     username: user.displayName || 'Anonymous User',
@@ -220,6 +323,8 @@
                 district: '',
                 phone: '',
                 instagram: '',
+                Gmaps: '',
+                placeId: '',
                 website: '',
                 imageUrls:[],
                 latitude:'',
@@ -491,18 +596,21 @@
 
                              
 
-                    <TextField
-                        label="Address"
-                        variant="outlined"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        onFocus={() => {
-                            if (addressFieldFocusHandler) {
-                                addressFieldFocusHandler();
-                            }
-                        }}
-                        required
+    <TextField
+    label="Address"
+    variant="outlined"
+    name="address"
+    value={formData.address}
+    onChange={handleChange}
+    onBlur={() => {
+        if (formData.city && formData.district && formData.address) {
+            if (addressFieldFocusHandler) {
+                const searchQuery = `${formData.address}, ${formData.district}, ${formData.city}, Bali, Indonesia`;
+                addressFieldFocusHandler(searchQuery);
+            }
+        }
+    }}
+    required
                         inputProps={{ maxLength: 100 }}
                         InputProps={{
                             sx: { fontFamily: 'Lexend' }
@@ -585,11 +693,8 @@
     address={formData.address}
     city={formData.city}
     district={formData.district}
-    onAddressFieldFocus={setAddressFieldFocusHandler}
-    initialLocation={formData.latitude && formData.longitude ? {
-        lat: formData.latitude,
-        lng: formData.longitude
-    } : null}
+    onAddressFieldFocus={handleAddressFieldFocus}
+    initialLocation={mapCenter}
 />
 {(formData.category === "Cafe" || formData.category === "Restaurant") && (
     <TextField
@@ -631,6 +736,23 @@
                                     value={formData.instagram}
                                     onChange={handleChange}
                                     placeholder='Enter your url profile'
+                                    inputProps={{ maxLength: 100 }}
+                                    InputProps={{
+                                        sx: { fontFamily: 'Lexend' }
+                                    }}
+                                    InputLabelProps={{
+                                        sx: { fontFamily: 'Lexend' }
+                                    }}
+                                />
+
+                                    <TextField
+                                    label="Google Maps Link"
+                                    variant="outlined"
+                                    name="Gmaps"
+                                    value={formData.Gmaps}
+                                    onChange={handleChange}
+                                    placeholder='Enter your url Google Maps'
+                                    required
                                     inputProps={{ maxLength: 100 }}
                                     InputProps={{
                                         sx: { fontFamily: 'Lexend' }
