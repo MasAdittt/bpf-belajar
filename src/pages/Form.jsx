@@ -16,6 +16,7 @@
 
     const ListingForm = () => {
         const navigate = useNavigate();
+        const [googleMapsApi, setGoogleMapsApi] = useState(null);
         const [showSuccessModal, setShowSuccessModal] = useState(false);
         const [formData, setFormData] = useState({
             placeName: '',
@@ -62,48 +63,66 @@
             Tabanan: ['Tabanan', 'Kediri', 'Kerambitan', 'Marga', 'Penebel', 'Selemandeg', 'East Selemandeg', 'West Selemandeg', 'North Selemandeg', 'Pupuan']
         };
 
-        const extractPlaceId = (url) => {
+        const getPlaceIdFromGmapsLink = async (url) => {
             if (!url) return null;
             
-            // Log the incoming URL for debugging
-            console.log('Processing URL:', url);
-            
-            // Handle different Google Maps URL formats
-            const patterns = [
-                // Short URL format (maps.app.goo.gl)
-                {
-                    pattern: /maps\.app\.goo\.gl\/([a-zA-Z0-9_-]+)/,
-                    type: 'short_url'
-                },
-                // Regular place URL format
-                {
-                    pattern: /place\/[^\/]+\/([a-zA-Z0-9\-_]+)/,
-                    type: 'place_url'
-                },
-                // Maps URL with coordinates
-                {
-                    pattern: /maps\/place\/[^\/]+\/@[^\/]+\/([a-zA-Z0-9\-_]+)/,
-                    type: 'coordinates_url'
-                },
-                // URLs with CID
-                {
-                    pattern: /\?cid=([0-9]+)/,
-                    type: 'cid_url'
+            try {
+                console.log("URL yang diterima:", url); // Log URL input
+                
+                if (url.includes('@')) {
+                    // Format URL dengan koordinat
+                    const matches = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+                    console.log("Matches koordinat:", matches); // Log hasil ekstraksi koordinat
+                    
+                    if (matches) {
+                        const [_, lat, lng] = matches;
+                        const response = await fetch(
+                            `https://maps.googleapis.com/maps/api/geocode/json?` +
+                            `latlng=${lat},${lng}` +
+                            `&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`
+                        );
+                        const data = await response.json();
+                        console.log("Response dari Geocoding API:", data); // Log response API
+                        
+                        if (data.results && data.results[0]) {
+                            console.log("Place ID yang ditemukan:", data.results[0].place_id);
+                            return data.results[0].place_id;
+                        }
+                    }
+                } else {
+                    // Coba ekstrak nama tempat dari URL
+                    const urlParts = url.split('/');
+                    const searchQuery = urlParts[urlParts.length - 1]
+                        .replace(/\+/g, ' ')
+                        .replace(/@.*$/, '');
+                    
+                    console.log("Query pencarian:", searchQuery); // Log query yang akan digunakan
+                        
+                    const response = await fetch(
+                        `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?` +
+                        `input=${encodeURIComponent(searchQuery)}` +
+                        `&inputtype=textquery` +
+                        `&fields=place_id` +
+                        `&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`
+                    );
+                    
+                    const data = await response.json();
+                    console.log("Response dari Places API:", data); // Log response API
+                    
+                    if (data.candidates && data.candidates[0]) {
+                        console.log("Place ID yang ditemukan:", data.candidates[0].place_id);
+                        return data.candidates[0].place_id;
+                    }
                 }
-            ];
-        
-            for (const {pattern, type} of patterns) {
-                const match = url.match(pattern);
-                if (match && match[1]) {
-                    console.log(`Matched ${type}:`, match[1]);
-                    return match[1];
-                }
+                
+                console.log("Tidak ditemukan Place ID"); // Log jika tidak ada hasil
+                return null;
+            } catch (error) {
+                console.error("Error detail:", error); // Log error detail
+                return null;
             }
-            
-            console.log('No pattern matched for URL');
-            return null;
         };
-        
+        // Update handl
         const handleCityChange = (event) => {
             const { value } = event.target;
             setFormData(prev => ({
@@ -163,23 +182,16 @@ useEffect(() => {
     }
 }, [formData.address, formData.city, formData.district, addressFieldFocusHandler]);
         
-const handleChange = (e) => {
+const handleChange = async (e) => {
     const { name, value } = e.target;
 
     if (name === 'Gmaps') {
-        // Extract placeId from Google Maps link
-        const placeId = extractPlaceId(value);
-        console.log('Extracted Place ID:', placeId);
+        const placeId = await getPlaceIdFromGmapsLink(value);
+        console.log('Place ID yang ditemukan:', placeId);
         setFormData(prev => ({
             ...prev,
             [name]: value,
-            placeId: placeId // Store the extracted placeId
-        }));
-    } else if (name === 'category' && value !== 'Cafe' && value !== 'Restaurant') {
-        setFormData(prev => ({
-            ...prev,
-            [name]: value,
-            menuLink: ''
+            placeId: placeId || '' // Jika null, set string kosong
         }));
     } else {
         setFormData(prev => ({
@@ -188,6 +200,21 @@ const handleChange = (e) => {
         }));
     }
 };
+useEffect(() => {
+    // Fungsi untuk memuat Google Maps API
+    const loadGoogleMapsApi = () => {
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places`;       
+     script.async = true;
+        script.defer = true;
+        script.onload = () => {
+            setGoogleMapsApi(window.google);
+        };
+        document.head.appendChild(script);
+    };
+
+    loadGoogleMapsApi();
+}, []);
 
 
         const [mapCenter, setMapCenter] = useState({

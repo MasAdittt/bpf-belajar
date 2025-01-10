@@ -227,7 +227,7 @@ function Area() {
         {listing.city ? listing.city : 'Unknown'}, {listing.district}
       </p>
     </div>
-\
+
   </div>
         
       </div>

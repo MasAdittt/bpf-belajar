@@ -230,28 +230,26 @@ const Listingbaru = () => {
             ))}
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-end space-x-4 mb-6">
-            <button
-              onClick={handleDelete}
-              className="bg-transparent text-[#3A3A3A] border-2 border-[#EC8E2E] px-4 py-2 rounded-lg hover:bg-[#EC8E2E] hover:text-white transition-colors duration-300 font-lexend"
-              >
-              Delete
-            </button>
-            <button
-      onClick={handleEdit}
-      className="bg-transparent text-[#3A3A3A] border-2 border-[#3A3A3A] px-4 py-2 rounded-lg hover:bg-[#3A3A3A] hover:text-white transition-colors duration-300 font-lexend"
-    >
-      Edit
-    </button>
-            <button
-              onClick={handlePost}
-              className="bg-transparent text-[#3A3A3A] border-2 border-[#1DA19E] px-4 py-2 rounded-lg hover:bg-[#1DA19E] hover:text-white transition-colors duration-300 font-lexend"
-              >
-              Post for Approval
-            </button>
-          </div>
-
+          <div className="flex justify-end space-x-2 md:space-x-4 mb-6">
+      <button
+        onClick={handleDelete}
+        className="bg-transparent text-[#3A3A3A] border-2 border-[#EC8E2E] px-2 py-1 md:px-4 md:py-2 text-sm md:text-base rounded-lg hover:bg-[#EC8E2E] hover:text-white transition-colors duration-300 font-lexend"
+      >
+        Delete
+      </button>
+      <button
+        onClick={handleEdit}
+        className="bg-transparent text-[#3A3A3A] border-2 border-[#3A3A3A] px-2 py-1 md:px-4 md:py-2 text-sm md:text-base rounded-lg hover:bg-[#3A3A3A] hover:text-white transition-colors duration-300 font-lexend"
+      >
+        Edit
+      </button>
+      <button
+        onClick={handlePost}
+        className="bg-transparent text-[#3A3A3A] border-2 border-[#1DA19E] px-2 py-1 md:px-4 md:py-2 text-sm md:text-base rounded-lg hover:bg-[#1DA19E] hover:text-white transition-colors duration-300 font-lexend"
+      >
+        Post for Approval
+      </button>
+    </div>
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 min-h-[400px]">
             <div className="md:col-span-2 flex flex-col">
