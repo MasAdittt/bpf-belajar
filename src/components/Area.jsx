@@ -2,14 +2,16 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { ref, onValue, off, set, get } from 'firebase/database';
 import { database } from '../config/firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Star, Heart,MapPin } from 'lucide-react';
-import { faUser, faStar,faLocationDot, faMapMarkerAlt, faEnvelope, faPhone, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { Star, Heart, MapPin } from 'lucide-react';
+import { faUser, faStar, faLocationDot, faMapMarkerAlt, faEnvelope, faPhone, faUpload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getAuth } from 'firebase/auth';
 import LoginNotificationModal from '../kebutuhan/LoginNotif';
 
 import '../style/Area.css';
 import Loading from './Loading';
+
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 function Area() {
   const [listings, setListings] = useState([]);
@@ -18,6 +20,9 @@ function Area() {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [favorites, setFavorites] = useState({});
+  const [googleRatings, setGoogleRatings] = useState({});
+  const [isLoadingRatings, setIsLoadingRatings] = useState(true);
+  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
   const itemsPerPage = 6;
   const navigate = useNavigate();
   const location = useLocation();
@@ -66,12 +71,63 @@ function Area() {
       }
       setIsLoading(false);
     }, (error) => {
-      setError(error.message);
+      setError(error.message);  
       setIsLoading(false);
     });
 
     return () => off(listingsRef, 'value', listener);
   }, [location.search]);
+
+
+useEffect(() => {
+  if (window.google?.maps) {
+    setIsGoogleLoaded(true);
+    return;
+  }
+
+  const script = document.createElement('script');
+  script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places`;
+  script.async = true;
+  script.onload = () => setIsGoogleLoaded(true);
+  document.head.appendChild(script);
+
+  return () => {
+    const scriptElement = document.querySelector(`script[src="${script.src}"]`);
+    if (scriptElement) document.head.removeChild(scriptElement);
+  };
+}, []);
+
+// Update ratings fetch useEffect
+useEffect(() => {
+  if (!isGoogleLoaded || !listings.length) return;
+
+  const fetchRatings = () => {
+    setIsLoadingRatings(true);
+    const service = new window.google.maps.places.PlacesService(document.createElement('div'));
+
+    listings.forEach((listing) => {
+      if (listing.location?.placeId) {
+        service.getDetails(
+          {
+            placeId: listing.location.placeId,
+            fields: ['rating']
+          },
+          (place, status) => {
+            if (status === 'OK' && place?.rating) {
+              setGoogleRatings(prev => ({
+                ...prev,
+                [listing.location.placeId]: place.rating
+              }));
+            }
+          }
+        );
+      }
+    });
+    setIsLoadingRatings(false);
+  };
+
+  fetchRatings();
+}, [listings, isGoogleLoaded]);
 
   const calculateAverageRating = (reviews) => {
     if (!reviews || Object.keys(reviews).length === 0) return 0;
@@ -220,14 +276,26 @@ function Area() {
       {/* Content */}
       <div>
       <div className="flex flex-col -space-y-2">
-    <h6 className="font-['Lexend'] text-base md:text-lg leading-none">{listing.title}</h6>
+      <h6 className="font-['Lexend'] text-base md:text-lg leading-none flex items-center">
+  {listing.title}
+  {listing.location?.placeId && googleRatings[listing.location.placeId] && (
+  <div className="flex items-center mt-1">
+    {renderStars(googleRatings[listing.location.placeId])}
+    <span className="ml-1 text-sm text-gray-600">
+      {googleRatings[listing.location.placeId]}
+    </span>
+  </div>
+)}
+</h6>
     <div className="flex items-center -mb-2">
       <MapPin className="w-4 h-4 text-[#6B6B6B]" />
       <p className="font-['Lexend'] text-sm leading-none">
         {listing.city ? listing.city : 'Unknown'}, {listing.district}
       </p>
     </div>
-
+    {/* <p className="font-['Lexend'] text-[#6B6B6B] font-light text-sm leading-none">
+      "{listing.tags}"
+    </p> */}
   </div>
         
       </div>

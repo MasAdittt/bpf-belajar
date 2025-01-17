@@ -34,6 +34,10 @@ const EditListing = () => {
         phone: '',
         instagram: '',
         website: '',
+        latitude:'',
+        longitude:'',
+        Gmaps:'',
+        placeId: '', 
         imageUrls: []
     });
     
@@ -80,10 +84,11 @@ const EditListing = () => {
         // Add your address field focus logic here if needed
     };
 
+   
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        
-        // Reset menuLink when changing category to non-Cafe/Restaurant
+    
         if (name === 'category' && value !== 'Cafe' && value !== 'Restaurant') {
             setFormData(prev => ({
                 ...prev,
@@ -97,18 +102,19 @@ const EditListing = () => {
             }));
         }
     };
+    
 
     const handleLocationSelect = (latlng) => {
         setLocation({
             latitude: latlng.lat,
             longitude: latlng.lng,
+            placeId: latlng.place_id // Ensure placeId is set
         });
         setFormData(prev => ({
             ...prev,
-            location: {
-                latitude: latlng.lat,
-                longitude: latlng.lng
-            }
+            latitude: latlng.lat,
+            longitude: latlng.lng,
+            placeId: latlng.place_id // Ensure placeId is set
         }));
     };
 
@@ -150,6 +156,9 @@ const EditListing = () => {
                       phone: pendingChanges.phone?.newValue || approvedData.phone || '',
                       instagram: pendingChanges.instagram?.newValue || approvedData.instagram || '',
                       website: pendingChanges.website?.newValue || approvedData.website || '',
+                      Gmaps: pendingChanges.website?.newValue || approvedData.Gmaps || '',
+                      placeId: pendingChanges.placeId?.newValue || approvedData.placeId || '',
+
                       imageUrls: pendingChanges.imageUrls?.newValue || approvedData.imageUrls || []
                   });
   
@@ -228,6 +237,7 @@ const EditListing = () => {
                   phone: originalData.phone || '',
                   instagram: originalData.instagram || '',
                   website: originalData.website || '',
+                  Gmaps: originalData.Gmaps || '',
                   imageUrls: originalData.imageUrls || []
               });
       
@@ -300,27 +310,30 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
             if (currentValue !== baseValue) {
               changedFields[key] = currentValue;
               pendingChanges[key] = {
-                oldValue: baseValue,
+                oldValue: baseValue || '', // Ensure oldValue is not undefined
                 newValue: currentValue,
                 status: 'pending'
               };
             }
           };
-      
+          checkChange('placeId', formData.placeId, baseData.placeId);
           // Periksa perubahan lokasi
           if (
             location.latitude !== baseData.location?.latitude || 
-            location.longitude !== baseData.location?.longitude
+            location.longitude !== baseData.location?.longitude ||
+            location.placeId !== baseData.location?.placeId // Check placeId
           ) {
             changedFields.location = {
               latitude: location.latitude,
               longitude: location.longitude,
+              placeId: location.placeId // Include placeId
             };
             pendingChanges.location = {
               oldValue: baseData.location,
               newValue: {
                 latitude: location.latitude,
                 longitude: location.longitude,
+                placeId: location.placeId // Include placeId
               },
               status: 'pending'
             };
@@ -355,6 +368,7 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
           checkChange('phone', formData.phone, baseData.phone);
           checkChange('instagram', formData.instagram, baseData.instagram);
           checkChange('website', formData.website, baseData.website);
+          checkChange('Gmaps', formData.Gmaps, baseData.Gmaps);
       
           // Check if image URLs have changed
           if (JSON.stringify(updatedImageUrls) !== JSON.stringify(baseData.imageUrls)) {
@@ -556,7 +570,7 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
                                   }}
                               />
 
-                              <TextField
+                              {/* <TextField
                                   label="Short Description"
                                   variant="outlined"
                                   name="shortDescription"
@@ -571,7 +585,7 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
                                   InputLabelProps={{
                                       sx: { fontFamily: 'Lexend' }
                                   }}
-                              />
+                              /> */}
     <Editimage 
       ref={imageComponentRef}
       listingUid={id}
@@ -788,7 +802,6 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
                                   name="phone"
                                   value={formData.phone}
                                   onChange={handleChange}
-                                  required
                                   placeholder='+62'
                                   inputProps={{ maxLength: 100 }}
                                   InputProps={{
@@ -814,6 +827,23 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
                                       sx: { fontFamily: 'Lexend' }
                                   }}
                               />
+
+                               <TextField
+                                                                  label="Google Maps Link"
+                                                                  variant="outlined"
+                                                                  name="Gmaps"
+                                                                  value={formData.Gmaps}
+                                                                  onChange={handleChange}
+                                                                  placeholder='Enter your url Google Maps'
+                                                                  required
+                                                                  inputProps={{ maxLength: 100 }}
+                                                                  InputProps={{
+                                                                      sx: { fontFamily: 'Lexend' }
+                                                                  }}
+                                                                  InputLabelProps={{
+                                                                      sx: { fontFamily: 'Lexend' }
+                                                                  }}
+                                                              />
 
                               <TextField
                                   label="Website Link"

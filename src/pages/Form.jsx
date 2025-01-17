@@ -1,4 +1,4 @@
-    import React, { useState, useEffect,useCallback } from 'react';
+import React, { useState, useEffect,useCallback } from 'react';
     import { Box, TextField, Button, Typography, Card, CardContent, Select, MenuItem,CircularProgress } from '@mui/material';
     import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
     import { faStore, faImage, faClock } from '@fortawesome/free-solid-svg-icons';
@@ -13,12 +13,19 @@
     import { toast } from 'react-toastify';
     import SuccessModal from '../kebutuhan/Notif';
     import LocationPicker from '../kebutuhan/Location';
+    import { loadGoogleMapsScript } from '../../maps';
+    import { extractMapInfo,getPlaceDetails} from '../data/Url';
+    import PlaceDetailsCard from '../components/ui/Detail';
+    import { Map } from 'lucide-react';
+    import LocationSearchBar from '../data/Nyari';
 
     const ListingForm = () => {
         const navigate = useNavigate();
-        const [googleMapsApi, setGoogleMapsApi] = useState(null);
         const [showSuccessModal, setShowSuccessModal] = useState(false);
-        const [formData, setFormData] = useState({
+        const [mapUrl, setMapUrl] = useState('');
+        const [isLoadingMap, setIsLoadingMap] = useState(false);
+        const [placeDetails, setPlaceDetails] = useState(null);
+                const [formData, setFormData] = useState({
             placeName: '',
             category: '',
             description: '',
@@ -38,7 +45,10 @@
             longitude:'',
             Gmaps:'',
             placeId: '',    
-            imageUrls: []   
+            imageUrls: [],
+            rating: 0,
+            user_ratings_total: 0,
+            
         });
         const [addressFieldFocusHandler, setAddressFieldFocusHandler] = useState(null);
         const [isLoading, setIsLoading] = useState(false);
@@ -47,7 +57,6 @@
         const [uploadedImages, setUploadedImages] = useState([]); 
         const categories = ["Cafe", "Villa", "Bar", "Restaurant", "Hotel"];
         const [imageFiles, setImageFiles] = useState([]);
-        const [autocomplete, setAutocomplete] = useState(null);
         const handleAddressFieldFocus = useCallback((handler) => {
             setAddressFieldFocusHandler(handler);
         }, []);
@@ -63,66 +72,59 @@
             Tabanan: ['Tabanan', 'Kediri', 'Kerambitan', 'Marga', 'Penebel', 'Selemandeg', 'East Selemandeg', 'West Selemandeg', 'North Selemandeg', 'Pupuan']
         };
 
-        const getPlaceIdFromGmapsLink = async (url) => {
-            if (!url) return null;
+        const handleGmapsChange = async (event) => {
+            const { value } = event.target;
+            handleChange(event);
             
-            try {
-                console.log("URL yang diterima:", url); // Log URL input
+            if (value.includes('maps')) {
+                console.log('🔍 URL Maps terdeteksi:', value);
+                setIsLoadingMap(true);
                 
-                if (url.includes('@')) {
-                    // Format URL dengan koordinat
-                    const matches = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-                    console.log("Matches koordinat:", matches); // Log hasil ekstraksi koordinat
+                try {
+                    console.log('⏳ Memulai proses ekstraksi info Maps...');
+                    const mapInfo = await extractMapInfo(value);
                     
-                    if (matches) {
-                        const [_, lat, lng] = matches;
-                        const response = await fetch(
-                            `https://maps.googleapis.com/maps/api/geocode/json?` +
-                            `latlng=${lat},${lng}` +
-                            `&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`
-                        );
-                        const data = await response.json();
-                        console.log("Response dari Geocoding API:", data); // Log response API
+                    if (mapInfo) {
+                        console.log('✅ Info Maps berhasil diekstrak:', mapInfo);
+                        console.log('⏳ Mencoba mendapatkan detail tempat...');
                         
-                        if (data.results && data.results[0]) {
-                            console.log("Place ID yang ditemukan:", data.results[0].place_id);
-                            return data.results[0].place_id;
+                        const details = await getPlaceDetails(mapInfo);
+                        if (details) {
+                            console.log('✅ Detail tempat berhasil didapat:', details);
+                            
+                            setFormData(prev => {
+                                const newData = {
+                                    ...prev,
+                                    placeName: details.name || prev.placeName,
+                                    address: details.address || prev.address,
+                                    latitude: details.latitude || prev.latitude,
+                                    longitude: details.longitude || prev.longitude,
+                                    rating: details.rating || prev.rating,
+                                    placeId: mapInfo.placeId || prev.placeId,
+                                    Gmaps: value
+                                };
+                                console.log('📝 Form data diupdate:', newData);
+                                return newData;
+                            });
+                            
+                            setPlaceDetails(details);
+                            toast.success('Berhasil mendapatkan informasi lokasi');
+                        } else {
+                            console.log('❌ Tidak ada detail tempat yang ditemukan');
                         }
+                    } else {
+                        console.log('❌ Tidak ada info Maps yang bisa diekstrak');
                     }
-                } else {
-                    // Coba ekstrak nama tempat dari URL
-                    const urlParts = url.split('/');
-                    const searchQuery = urlParts[urlParts.length - 1]
-                        .replace(/\+/g, ' ')
-                        .replace(/@.*$/, '');
-                    
-                    console.log("Query pencarian:", searchQuery); // Log query yang akan digunakan
-                        
-                    const response = await fetch(
-                        `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?` +
-                        `input=${encodeURIComponent(searchQuery)}` +
-                        `&inputtype=textquery` +
-                        `&fields=place_id` +
-                        `&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`
-                    );
-                    
-                    const data = await response.json();
-                    console.log("Response dari Places API:", data); // Log response API
-                    
-                    if (data.candidates && data.candidates[0]) {
-                        console.log("Place ID yang ditemukan:", data.candidates[0].place_id);
-                        return data.candidates[0].place_id;
-                    }
+                } catch (error) {
+                    console.error('❌ Error dalam handleGmapsChange:', error);
+                    toast.error('Gagal memproses URL Maps. Pastikan URL valid dan lengkap.');
+                } finally {
+                    console.log('✅ Proses selesai, loading dimatikan');
+                    setIsLoadingMap(false);
                 }
-                
-                console.log("Tidak ditemukan Place ID"); // Log jika tidak ada hasil
-                return null;
-            } catch (error) {
-                console.error("Error detail:", error); // Log error detail
-                return null;
             }
         };
-        // Update handl
+
         const handleCityChange = (event) => {
             const { value } = event.target;
             setFormData(prev => ({
@@ -182,16 +184,14 @@ useEffect(() => {
     }
 }, [formData.address, formData.city, formData.district, addressFieldFocusHandler]);
         
-const handleChange = async (e) => {
+const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === 'Gmaps') {
-        const placeId = await getPlaceIdFromGmapsLink(value);
-        console.log('Place ID yang ditemukan:', placeId);
+    if (name === 'category' && value !== 'Cafe' && value !== 'Restaurant') {
         setFormData(prev => ({
             ...prev,
             [name]: value,
-            placeId: placeId || '' // Jika null, set string kosong
+            menuLink: ''
         }));
     } else {
         setFormData(prev => ({
@@ -200,22 +200,6 @@ const handleChange = async (e) => {
         }));
     }
 };
-useEffect(() => {
-    // Fungsi untuk memuat Google Maps API
-    const loadGoogleMapsApi = () => {
-        const script = document.createElement('script');
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places`;       
-     script.async = true;
-        script.defer = true;
-        script.onload = () => {
-            setGoogleMapsApi(window.google);
-        };
-        document.head.appendChild(script);
-    };
-
-    loadGoogleMapsApi();
-}, []);
-
 
         const [mapCenter, setMapCenter] = useState({
             lat: -8.4095,
@@ -223,14 +207,26 @@ useEffect(() => {
         });
 
         const handleLocationSelect = (location) => {
-            setFormData(prev => ({
-                ...prev,
-                latitude: location.lat,
-                longitude: location.lng
-            }));
+            console.log('Raw location data:', location); // Log seluruh data lokasi
+            console.log('Latitude:', location.lat);
+            console.log('Longitude:', location.lng);
+            console.log('Place ID:', location.place_id);
+            
+            
+            setFormData(prev => {
+                const newState = {
+                    ...prev,
+                    latitude: location.lat,
+                    longitude: location.lng,
+                    placeId: location.place_id || '' // Ensure placeId is set or default to empty string
+                };
+                console.log('Updated form data:', newState); // Log state form yang baru
+                return newState;
+            });
+            
+            console.log('Setting map center to:', location); // Log perubahan map center
             setMapCenter(location);
         };
-
         
 
         useEffect(() => {
@@ -302,14 +298,21 @@ useEffect(() => {
                     instagram: formData.instagram || "",
                     website: formData.website || "",
                     Gmaps: formData.Gmaps || "",
-                    placeId: formData.placeId || "",
                     userId: user.uid,
                     userEmail: user.email,
                     username: user.displayName || 'Anonymous User',
                     imageUrls: uploadedImageUrls,
-                    location:{
+
+                    location: {
                         latitude: formData.latitude,
-                        longitude: formData.longitude
+                        longitude: formData.longitude,
+                        placeId: formData.placeId, // Pastikan ini sudah ada
+                        googleData: {
+                            rating: formData.rating || 0, // Tambahkan rating
+                            user_ratings_total: formData.user_ratings_total ||0, // Tambahkan total rating
+                            google_url: formData.url || '', // URL Google Maps dari tempat tersebut
+
+                        }
                     }
                 };
         
@@ -351,13 +354,32 @@ useEffect(() => {
                 phone: '',
                 instagram: '',
                 Gmaps: '',
-                placeId: '',
+                placeId: '',    
                 website: '',
                 imageUrls:[],
                 latitude:'',
                 longitude:''
             });
             setImageFiles([]);
+        };
+
+        const handlePlaceSelect = (details) => {
+            // Simpan detail tempat ke state placeDetails
+            setPlaceDetails(details);
+            
+            // Update formData dengan informasi lokasi
+            setFormData(prev => ({
+                ...prev,
+                placeName: details.name || prev.placeName,
+                address: details.address || prev.address,
+                latitude: details.latitude || prev.latitude,
+                longitude: details.longitude || prev.longitude,
+                placeId: details.placeId || prev.placeId,
+                // Anda bisa menambahkan field lain yang ingin disimpan
+                rating: details.rating || prev.rating,
+                user_ratings_total: details.user_ratings_total || 0,
+                Gmaps: details.url || prev.Gmaps
+            }));
         };
 
         return (
@@ -444,25 +466,44 @@ useEffect(() => {
                                     }
                                 }}
                             >
-                                <TextField
-                                    label="Place Name"
-                                    variant="outlined"
-                                    name="placeName"
-                                    value={formData.placeName}
-                                    onChange={handleChange}
-                                    required
-                                    InputProps={{
-                                        sx: { 
-                                            fontFamily: 'Lexend'
-                                        }
-                                    }}
-                                    InputLabelProps={{
-                                        sx: { 
-                                            fontFamily: 'Lexend',zIndex:10
-                                        
-                                        }
-                                    }}
-                                />
+                          <TextField
+    label="Place Name"
+    variant="outlined"
+    name="placeName"
+    value={formData.placeName}
+    onChange={handleChange}
+    required
+    sx={{ 
+        display: 'none',
+        '& .MuiInputBase-root': {
+            fontFamily: 'Lexend'
+        },
+        '& .MuiInputLabel-root': {
+            fontFamily: 'Lexend',
+            zIndex: 10
+        }
+    }}
+/>
+                            <LocationSearchBar
+                            required
+  onPlaceSelect={handlePlaceSelect}
+  isLoading={isLoading}
+  value={formData.placeName} // Tambahkan value dari formData.placeName
+  onInputChange={(value) => { // Tambahkan handler untuk update placeName
+    setFormData(prev => ({
+      ...prev,
+      placeName: value
+    }));
+  }}
+/>
+
+<PlaceDetailsCard 
+  isLoading={isLoading}
+  placeDetails={placeDetails}
+/>
+
+
+
 
     <TextField
         select
@@ -505,7 +546,7 @@ useEffect(() => {
                                     }}
                                 />
 
-                                <TextField
+                                {/* <TextField
                                     label="Short Description"
                                     variant="outlined"
                                     name="shortDescription"
@@ -520,7 +561,7 @@ useEffect(() => {
                                     InputLabelProps={{
                                         sx: { fontFamily: 'Lexend' }
                                     }}
-                                />
+                                /> */}
 
                                 <ImageUpload   onFileSelect={handleImageSelect}/>
 
@@ -772,22 +813,35 @@ useEffect(() => {
                                     }}
                                 />
 
-                                    <TextField
-                                    label="Google Maps Link"
-                                    variant="outlined"
-                                    name="Gmaps"
-                                    value={formData.Gmaps}
-                                    onChange={handleChange}
-                                    placeholder='Enter your url Google Maps'
-                                    required
-                                    inputProps={{ maxLength: 100 }}
-                                    InputProps={{
-                                        sx: { fontFamily: 'Lexend' }
-                                    }}
-                                    InputLabelProps={{
-                                        sx: { fontFamily: 'Lexend' }
-                                    }}
-                                />
+{/* <TextField
+  fullWidth
+  label="Google Maps URL"
+  name="Gmaps"
+  value={formData.Gmaps}
+  onChange={handleGmapsChange}
+  InputProps={{
+    startAdornment: (
+      <Box sx={{ display: 'flex', alignItems: 'center', color: '#6B6B6B' }}>
+        <Map size={20} style={{ marginRight: '8px' }} />
+      </Box>
+    ),
+    endAdornment: isLoadingMap && (
+      <CircularProgress size={20} />
+    ),
+    sx: { fontFamily: 'Lexend' }
+  }}
+  InputLabelProps={{
+    sx: { fontFamily: 'Lexend' }
+  }}
+  disabled={isLoadingMap}
+  placeholder="Paste Google Maps URL here"
+  helperText={isLoadingMap ? "Mengekstrak informasi lokasi..." : ""}
+/> */}
+
+
+
+
+
 
                                 <TextField
                                     label="Website Link"
