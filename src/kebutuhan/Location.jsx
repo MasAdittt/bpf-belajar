@@ -1,106 +1,26 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import React, { useState, useCallback } from 'react';
+import { GoogleMap, Marker } from '@react-google-maps/api';
 
-const defaultCenter = { lat: -8.4095, lng: 115.1889 };
+const defaultCenter = { lat: -8.4095, lng: 115.1889 }; 
 
-const LocationPicker = ({
-    initialLocation,
+const LocationPicker = ({ 
+    initialLocation, 
     onLocationSelect,
     address,
     city,
     district,
     onAddressFieldFocus
 }) => {
-    const [position, setPosition] = useState(
-        initialLocation
-            ? { lat: initialLocation.lat, lng: initialLocation.lng }
-            : defaultCenter
-    );
-    const [placeId, setPlaceId] = useState('');
-    const [zoom, setZoom] = useState(13);
+    const [position, setPosition] = useState(initialLocation || defaultCenter);
+    const [map, setMap] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
-    const [map, setMap] = useState(null);
-    const [markerKey, setMarkerKey] = useState(Date.now());
+    const [markerKey, setMarkerKey] = useState(Date.now()); // Tambah state untuk marker key
 
     const containerStyle = {
         width: '100%',
         height: '400px',
         borderRadius: '8px'
-    };
-
-    const getPlaceDetails = async (placeId) => {
-        if (!window.google) {
-            setError('Google Maps belum dimuat');
-            return { rating: null, name: null, user_ratings_total: null };
-        }
-
-        try {
-            const service = new window.google.maps.places.PlacesService(map);
-            return new Promise((resolve, reject) => {
-                service.getDetails({ placeId }, (result, status) => {
-                    if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-                        const { rating, name, formatted_address, user_ratings_total } = result;
-                        resolve({ rating, name, formatted_address, user_ratings_total });
-                    } else {
-                        console.error('Failed to fetch place details:', status);
-                        reject({ rating: null, name: null, user_ratings_total: null });
-                    }
-                });
-            });
-        } catch (error) {
-            console.error('Error fetching place details:', error);
-            return { rating: null, name: null, user_ratings_total: null };
-        }
-    };
-
-    const getPlaceId = async (lat, lng) => {
-        if (!window.google) {
-            setError('Google Maps belum dimuat');
-            return;
-        }
-
-        try {
-            const geocoder = new window.google.maps.Geocoder();
-            const latlng = { lat, lng };
-
-            const response = await new Promise((resolve, reject) => {
-                geocoder.geocode({ location: latlng }, (results, status) => {
-                    if (status === 'OK' && results && results[0]) {
-                        resolve(results);
-                    } else {
-                        reject(status);
-                    }
-                });
-            });
-
-            if (response && response[0] && response[0].place_id) {
-                const placeId = response[0].place_id;
-                setPlaceId(placeId);
-
-                const placeDetails = await getPlaceDetails(placeId);
-                onLocationSelect({
-                    lat,
-                    lng,
-                    place_id: placeId,
-                    ...placeDetails, // Menyertakan rating, nama, dan total rating pengguna
-                });
-            } else {
-                onLocationSelect({
-                    lat,
-                    lng,
-                    place_id: null,
-                });
-            }
-        } catch (error) {
-            console.error('Error getting Place ID:', error);
-            setError('Gagal mendapatkan Place ID');
-            onLocationSelect({
-                lat,
-                lng,
-                place_id: null,
-            });
-        }
     };
 
     const searchLocation = async (searchAddress, searchCity, searchDistrict) => {
@@ -116,76 +36,69 @@ const LocationPicker = ({
             const geocoder = new window.google.maps.Geocoder();
             const searchQuery = `${searchAddress}, ${searchDistrict}, ${searchCity}, Bali, Indonesia`;
 
-            geocoder.geocode({ address: searchQuery }, async (results, status) => {
+            geocoder.geocode({ address: searchQuery }, (results, status) => {
                 if (status === 'OK' && results[0]) {
                     const newPos = {
                         lat: results[0].geometry.location.lat(),
                         lng: results[0].geometry.location.lng()
                     };
                     setPosition(newPos);
-                    setZoom(16);
-                    setMarkerKey(Date.now());
-                    // Dapatkan Place ID untuk lokasi baru
-                    await getPlaceId(newPos.lat, newPos.lng);
+                    setMarkerKey(Date.now()); // Update marker key
+                    onLocationSelect(newPos);
+                    
                     if (map) {
                         map.panTo(newPos);
                         map.setZoom(16);
                     }
                 } else {
-                    handleGeocodeError(status);
+                    setError('Lokasi tidak ditemukan');
                 }
                 setIsLoading(false);
             });
         } catch (error) {
-            console.error('Error searching location:', error);
-            setError('Silakan pilih lokasi secara manual dengan mengklik peta');
+            setError('Gagal mencari lokasi');
             setIsLoading(false);
         }
     };
 
-    const handleGeocodeError = (status) => {
-        switch (status) {
-            case 'ZERO_RESULTS':
-                setError('Lokasi tidak ditemukan');
-                break;
-            case 'OVER_QUERY_LIMIT':
-                setError('Terlalu banyak permintaan, coba lagi nanti');
-                break;
-            case 'REQUEST_DENIED':
-                setError('Silakan pilih lokasi secara manual dengan mengklik peta');
-                break;
-            default:
-                setError('Terjadi kesalahan saat mencari lokasi');
-        }
-    };
-
-    const onMapClick = async (e) => {
+    const onMapClick = (e) => {
         const newPos = {
             lat: e.latLng.lat(),
             lng: e.latLng.lng()
         };
         setPosition(newPos);
-        setMarkerKey(Date.now());
-        await getPlaceId(newPos.lat, newPos.lng);
-        setError('');
+        setMarkerKey(Date.now()); // Update marker key
+        onLocationSelect(newPos);
     };
 
-    const onMarkerDragEnd = async (e) => {
+    const onMarkerDragEnd = (e) => {
         const newPos = {
             lat: e.latLng.lat(),
             lng: e.latLng.lng()
         };
         setPosition(newPos);
-        setMarkerKey(Date.now());
-        await getPlaceId(newPos.lat, newPos.lng);
-        setError('');
+        setMarkerKey(Date.now()); // Update marker key
+        onLocationSelect(newPos);
     };
 
-    const onLoad = useCallback((map) => {
-        setMap(map);
+    const onLoad = useCallback((mapInstance) => {
+        setMap(mapInstance);
     }, []);
 
-    useEffect(() => {
+    // Effect untuk menangani perubahan initialLocation
+    React.useEffect(() => {
+        if (initialLocation) {
+            setPosition(initialLocation);
+            setMarkerKey(Date.now());
+            if (map) {
+                map.panTo(initialLocation);
+                map.setZoom(16);
+            }
+        }
+    }, [initialLocation, map]);
+
+    // Effect untuk pencarian alamat
+    React.useEffect(() => {
         if (address && city && district) {
             searchLocation(address, city, district);
         }
@@ -227,31 +140,29 @@ const LocationPicker = ({
                 </div>
             )}
 
-            <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY} libraries={['places']}>
-                <GoogleMap
-                    mapContainerStyle={containerStyle}
-                    center={position}
-                    zoom={zoom}
-                    onClick={onMapClick}
-                    onLoad={onLoad}
-                    options={{
-                        streetViewControl: false,
-                        mapTypeControl: false,
-                        fullscreenControl: true,
-                        zoomControl: true,
-                    }}
-                >
-                    {position && (
-                        <Marker
-                            key={markerKey}
-                            position={position}
-                            draggable={true}
-                            onDragEnd={onMarkerDragEnd}
-                            visible={true}
-                        />
-                    )}
-                </GoogleMap>
-            </LoadScript>
+            <GoogleMap
+                mapContainerStyle={containerStyle}
+                center={position}
+                zoom={13}
+                onClick={onMapClick}
+                onLoad={onLoad}
+                options={{
+                    streetViewControl: false,
+                    mapTypeControl: false,
+                    fullscreenControl: true,
+                    zoomControl: true,
+                }}
+            >
+                {position && (
+                    <Marker
+                        key={markerKey}
+                        position={position}
+                        draggable={true}
+                        onDragEnd={onMarkerDragEnd}
+                        visible={true}
+                    />
+                )}
+            </GoogleMap>
         </div>
     );
 };

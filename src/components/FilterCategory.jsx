@@ -8,7 +8,7 @@ const FilterCategory = ({ categories, selectedCategories, onCategoryChange }) =>
   const places = ['Cafe', 'Restaurant', 'Mall', 'Hotel', 'Villa', 'Bar'];
 
   // Handle body scroll lock
-  useEffect(() => {
+  useEffect(() => { 
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {

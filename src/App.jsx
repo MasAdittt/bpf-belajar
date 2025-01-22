@@ -24,9 +24,11 @@ import FavoriteListings from './pages/Favorite.jsx'
 import ListingForm from './pages/Form.jsx'
 import ContactForm from './pages/Contat.jsx'
 import AnalyticsTracker from './components/Analytic.jsx'
+import GoogleMapsProvider from './components/ui/GoogleMaps.jsx'
 function App() {
   return (
     <AuthProvider>
+      <GoogleMapsProvider>
       <Router>
         <Routes>
           {/* Public Routes */}
@@ -113,6 +115,7 @@ function App() {
           }/>
         </Routes>
       </Router>
+      </GoogleMapsProvider>
     </AuthProvider>
   )
 } 

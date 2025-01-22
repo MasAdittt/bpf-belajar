@@ -13,8 +13,6 @@ import React, { useState, useEffect,useCallback } from 'react';
     import { toast } from 'react-toastify';
     import SuccessModal from '../kebutuhan/Notif';
     import LocationPicker from '../kebutuhan/Location';
-    import { loadGoogleMapsScript } from '../../maps';
-    import { extractMapInfo,getPlaceDetails} from '../data/Url';
     import PlaceDetailsCard from '../components/ui/Detail';
     import { Map } from 'lucide-react';
     import LocationSearchBar from '../data/Nyari';
@@ -72,58 +70,7 @@ import React, { useState, useEffect,useCallback } from 'react';
             Tabanan: ['Tabanan', 'Kediri', 'Kerambitan', 'Marga', 'Penebel', 'Selemandeg', 'East Selemandeg', 'West Selemandeg', 'North Selemandeg', 'Pupuan']
         };
 
-        const handleGmapsChange = async (event) => {
-            const { value } = event.target;
-            handleChange(event);
-            
-            if (value.includes('maps')) {
-                console.log('🔍 URL Maps terdeteksi:', value);
-                setIsLoadingMap(true);
-                
-                try {
-                    console.log('⏳ Memulai proses ekstraksi info Maps...');
-                    const mapInfo = await extractMapInfo(value);
-                    
-                    if (mapInfo) {
-                        console.log('✅ Info Maps berhasil diekstrak:', mapInfo);
-                        console.log('⏳ Mencoba mendapatkan detail tempat...');
-                        
-                        const details = await getPlaceDetails(mapInfo);
-                        if (details) {
-                            console.log('✅ Detail tempat berhasil didapat:', details);
-                            
-                            setFormData(prev => {
-                                const newData = {
-                                    ...prev,
-                                    placeName: details.name || prev.placeName,
-                                    address: details.address || prev.address,
-                                    latitude: details.latitude || prev.latitude,
-                                    longitude: details.longitude || prev.longitude,
-                                    rating: details.rating || prev.rating,
-                                    placeId: mapInfo.placeId || prev.placeId,
-                                    Gmaps: value
-                                };
-                                console.log('📝 Form data diupdate:', newData);
-                                return newData;
-                            });
-                            
-                            setPlaceDetails(details);
-                            toast.success('Berhasil mendapatkan informasi lokasi');
-                        } else {
-                            console.log('❌ Tidak ada detail tempat yang ditemukan');
-                        }
-                    } else {
-                        console.log('❌ Tidak ada info Maps yang bisa diekstrak');
-                    }
-                } catch (error) {
-                    console.error('❌ Error dalam handleGmapsChange:', error);
-                    toast.error('Gagal memproses URL Maps. Pastikan URL valid dan lengkap.');
-                } finally {
-                    console.log('✅ Proses selesai, loading dimatikan');
-                    setIsLoadingMap(false);
-                }
-            }
-        };
+      
 
         const handleCityChange = (event) => {
             const { value } = event.target;
@@ -311,6 +258,7 @@ const handleChange = (e) => {
                             rating: formData.rating || 0, // Tambahkan rating
                             user_ratings_total: formData.user_ratings_total ||0, // Tambahkan total rating
                             google_url: formData.url || '', // URL Google Maps dari tempat tersebut
+                            last_updated: serverTimestamp()
 
                         }
                     }
@@ -319,7 +267,26 @@ const handleChange = (e) => {
                 const listingsRef = ref(database, 'listings');
                 const newListingRef = push(listingsRef);
                 await set(newListingRef, listingData);
-        
+        // Set up listener untuk update rating
+    const ratingUpdateRef = ref(database, `listings/${newListingRef.key}/location/googleData`);
+    
+      // Update rating setiap 24 jam
+      setInterval(async () => {
+        try {
+          if (formData.placeId) {
+            const updatedData = await getUpdatedPlaceDetails(formData.placeId);
+            
+            await update(ratingUpdateRef, {
+              rating: updatedData.rating,
+              user_ratings_total: updatedData.user_ratings_total,
+              last_updated: serverTimestamp()
+            });
+          }
+        } catch (error) {
+          console.error('Error updating rating:', error);
+        }
+      }, 24 * 60 * 60 * 1000); // Update setiap 24 jam
+  
                 setShowSuccessModal(true);
                 handleReset();
         
@@ -700,7 +667,7 @@ const handleChange = (e) => {
                     name="city"
                     value={formData.city}
                     onChange={handleCityChange}
-                    required
+                  required
                     fullWidth
                     InputProps={{
                         sx: { fontFamily: 'Lexend' }

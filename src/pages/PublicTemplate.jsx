@@ -9,7 +9,6 @@ import Bawah from '../components/Bawah';
 import Loading from '../components/Loading';
 import Featuredbawah from '../components/Featuredbawah';
 import ExploreAreaMap from '../kebutuhan/Explore';
-import { LoadScript } from '@react-google-maps/api';
 
 const PublicTemplate = () => {
   const { id } = useParams();
@@ -225,9 +224,7 @@ const PublicTemplate = () => {
             {/* Map Section */}
             <div className="w-full">
               <div className="h-full">
-              <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
                   <ExploreAreaMap location={listing.location} address={listing.address} />
-                </LoadScript>
               </div>
             </div>
           </div>

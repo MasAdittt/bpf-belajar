@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Box, TextField, Button, Typography, Card, CardContent, Select, MenuItem } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStore, faImage, faClock } from '@fortawesome/free-solid-svg-icons';
@@ -13,6 +13,9 @@ import { onValue } from 'firebase/database';
 import { toast } from 'react-toastify';
 import LocationPicker from '../kebutuhan/Location';
 import SuccessModal from '../kebutuhan/Notif';
+import LocationSearchBar from '../data/Nyari';
+import PlaceDetailsCard from '../components/ui/Detail';
+import { serverTimestamp } from 'firebase/database';
 
 const EditListing = () => {
     const navigate = useNavigate();
@@ -36,6 +39,14 @@ const EditListing = () => {
         website: '',
         latitude:'',
         longitude:'',
+        location: {
+            googleData: {
+                rating: 0,
+                user_ratings_total: 0,
+                google_url: '',
+                last_updated: null
+            }
+        },
         Gmaps:'',
         placeId: '', 
         imageUrls: []
@@ -52,6 +63,13 @@ const EditListing = () => {
     const [imageFiles, setImageFiles] = useState([]);
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const imageComponentRef = useRef();
+    const [placeDetails, setPlaceDetails] = useState(null);
+    const [addressFieldFocusHandler, setAddressFieldFocusHandler] = useState(null);
+
+
+    const handleAddressFieldFocus = useCallback((handler) => {
+        setAddressFieldFocusHandler(handler);
+    }, []);
 
     const categories = ["Cafe", "Villa", "Bar", "Restaurant", "Hotel"];
     const districtMapping = {
@@ -104,19 +122,72 @@ const EditListing = () => {
     };
     
 
-    const handleLocationSelect = (latlng) => {
+    const handleLocationSelect = (location) => {
+        if (!location) return;
+        
+        setFormData(prev => ({
+          ...prev,
+          latitude: location.lat,
+          longitude: location.lng,
+          placeId: location.place_id || null // Use null as fallback instead of undefined
+        }));
+        
         setLocation({
-            latitude: latlng.lat,
-            longitude: latlng.lng,
-            placeId: latlng.place_id // Ensure placeId is set
+          latitude: location.lat,
+          longitude: location.lng
         });
+      };
+    const handlePlaceSelect = (details) => {
+        if (!details) return;
+        
+        // Update place details with proper structure
+        setPlaceDetails({
+            name: details.name || '',
+            rating: details.rating || 0,
+            user_ratings_total: details.user_ratings_total || 0,
+            address: details.address || '',
+            phone: details.formatted_phone_number || '',
+            image_url: details.photos?.[0]?.getUrl?.() || null
+        });
+    
+        // Update location state
+        setLocation({
+            latitude: details.latitude,
+            longitude: details.longitude
+        });
+    
+        // Update form data with all place details
         setFormData(prev => ({
             ...prev,
-            latitude: latlng.lat,
-            longitude: latlng.lng,
-            placeId: latlng.place_id // Ensure placeId is set
+            placeName: details.name || prev.placeName,
+            address: details.address || prev.address, // Auto-fill address
+            latitude: details.latitude || prev.latitude,
+            longitude: details.longitude || prev.longitude,
+            placeId: details.placeId || prev.placeId,
+            location: {
+                googleData: {
+                    rating: 0,
+                    user_ratings_total: 0,
+                    google_url: '',
+                    last_updated: null
+                }
+            }
         }));
     };
+    
+    // Add this useEffect to sync placeDetails when component mounts
+    useEffect(() => {
+        if (originalData) {
+            setPlaceDetails({
+                name: originalData.placeName || '',
+                rating: originalData.location?.googleData?.rating || 0,
+                user_ratings_total: originalData.location?.googleData?.user_ratings_total || 0,
+                address: originalData.address || '',
+                phone: originalData.phone || '',
+                image_url: originalData.imageUrls?.[0] || null
+            });
+        }
+    }, [originalData]);
 
     useEffect(() => {
         if (originalData?.location) {
@@ -161,6 +232,18 @@ const EditListing = () => {
 
                       imageUrls: pendingChanges.imageUrls?.newValue || approvedData.imageUrls || []
                   });
+
+                   // Tambahkan ini untuk mengatur placeDetails
+        if (approvedData.location?.googleData) {
+            setPlaceDetails({
+              name: approvedData.title,
+              rating: approvedData.location.googleData.rating,
+              user_ratings_total: approvedData.location.googleData.user_ratings_total,
+              address: approvedData.address,
+              image_url: approvedData.imageUrls?.[0], // Gunakan gambar pertama dari listing
+              place_id: approvedData.location.placeId
+            });
+          }
   
                   setOriginalData(data);
                   setLocation({
@@ -217,6 +300,15 @@ const EditListing = () => {
                 toast.error("Failed to remove image");
             }
         };
+
+        useEffect(() => {
+            if (formData.latitude && formData.longitude) {
+                setLocation({
+                    latitude: parseFloat(formData.latitude),
+                    longitude: parseFloat(formData.longitude)
+                });
+            }
+        }, [formData.latitude, formData.longitude]);
 
         const handleReset = () => {
           // Kembalikan form data ke data asli
@@ -276,151 +368,78 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
           navigate('/Personal'); // Navigate to the listings page
       };
 
-      const handleSubmitChanges = async (e) => {
-        e.preventDefault();
-        setIsSubmitting(true);
-      
-        try {
-          // Upload new images if any
-          const newImageUrls = await imageComponentRef.current.uploadImages();
-          
-          // Start with existing image URLs from formData
-          const updatedImageUrls = [...formData.imageUrls];
-          
-          if (newImageUrls && newImageUrls.length > 0) {
+     const handleSubmitChanges = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+        const newImageUrls = await imageComponentRef.current.uploadImages();
+        
+        const updatedImageUrls = [...formData.imageUrls];
+        if (newImageUrls?.length > 0) {
             newImageUrls.forEach((url, index) => {
-              if (url) {
-                if (index < updatedImageUrls.length) {
-                  updatedImageUrls[index] = url;
-                } else {
-                  updatedImageUrls.push(url);
+                if (url) {
+                    if (index < updatedImageUrls.length) {
+                        updatedImageUrls[index] = url;
+                    } else {
+                        updatedImageUrls.push(url);
+                    }
                 }
-              }
             });
-          }
-      
-          // Get the base data to compare against (last approved version)
-          const baseData = originalData.lastApprovedVersion || originalData;
-          
-          const changedFields = {};
-          const pendingChanges = {};
-      
-          // Fungsi pembantu untuk memeriksa perubahan
-          const checkChange = (key, currentValue, baseValue) => {
-            if (currentValue !== baseValue) {
-              changedFields[key] = currentValue;
-              pendingChanges[key] = {
-                oldValue: baseValue || '', // Ensure oldValue is not undefined
-                newValue: currentValue,
-                status: 'pending'
-              };
-            }
-          };
-          checkChange('placeId', formData.placeId, baseData.placeId);
-          // Periksa perubahan lokasi
-          if (
-            location.latitude !== baseData.location?.latitude || 
-            location.longitude !== baseData.location?.longitude ||
-            location.placeId !== baseData.location?.placeId // Check placeId
-          ) {
-            changedFields.location = {
-              latitude: location.latitude,
-              longitude: location.longitude,
-              placeId: location.placeId // Include placeId
-            };
-            pendingChanges.location = {
-              oldValue: baseData.location,
-              newValue: {
+        }
+
+        const updateData = {
+            title: formData.placeName,
+                        category: formData.category,
+            description: formData.description,
+            shortDescription: formData.shortDescription,
+            businessHours: {
+                opening: formData.openingHours,
+                closing: formData.closingHours
+            },
+            foodCategory: formData.foodCategory,
+            halalStatus: formData.halalStatus,
+            menuLink: formData.menuLink,
+            address: formData.address,
+            city: formData.city,
+            district: formData.district,
+            phone: formData.phone,
+            instagram: formData.instagram,
+            website: formData.website,
+            Gmaps: formData.Gmaps,
+            location: {
                 latitude: location.latitude,
                 longitude: location.longitude,
-                placeId: location.placeId // Include placeId
-              },
-              status: 'pending'
-            };
-          }
-      
-          // Periksa setiap field terhadap versi yang terakhir diapprove
-          checkChange('title', formData.placeName, baseData.title);
-          checkChange('description', formData.description, baseData.description);
-          checkChange('tags', formData.shortDescription, baseData.tags);
-          
-          if (formData.openingHours !== baseData.businessHours?.opening || 
-              formData.closingHours !== baseData.businessHours?.closing) {
-            const businessHours = {
-              opening: formData.openingHours,
-              closing: formData.closingHours
-            };
-            changedFields.businessHours = businessHours;
-            pendingChanges.businessHours = {
-              oldValue: baseData.businessHours,
-              newValue: businessHours,
-              status: 'pending'
-            };
-          }
-      
-          checkChange('category', formData.category, baseData.category);
-          checkChange('foodCategory', formData.foodCategory, baseData.foodCategory);
-          checkChange('halalStatus', formData.halalStatus, baseData.halalStatus);
-          checkChange('menuLink', formData.menuLink, baseData.menuLink);
-          checkChange('address', formData.address, baseData.address);
-          checkChange('city', formData.city, baseData.city);
-          checkChange('district', formData.district, baseData.district);
-          checkChange('phone', formData.phone, baseData.phone);
-          checkChange('instagram', formData.instagram, baseData.instagram);
-          checkChange('website', formData.website, baseData.website);
-          checkChange('Gmaps', formData.Gmaps, baseData.Gmaps);
-      
-          // Check if image URLs have changed
-          if (JSON.stringify(updatedImageUrls) !== JSON.stringify(baseData.imageUrls)) {
-            changedFields.imageUrls = updatedImageUrls;
-            pendingChanges.imageUrls = {
-              oldValue: baseData.imageUrls,
-              newValue: updatedImageUrls,
-              status: 'pending'
-            };
-          }
-      
-          // Only proceed if there are changes
-          if (Object.keys(changedFields).length === 0) {
-            toast.info("No changes detected");
-            setIsSubmitting(false);
-            return;
-          }
-      
-          // Create edit history entry
-          const editHistoryEntry = {
-            timestamp: Date.now(),
-            userEmail: auth.currentUser?.email || 'Unknown',
-            changes: changedFields,
-            status: 'pending'
-          };
-      
-          // Update data in Firebase
-          const updateData = {
-            pendingChanges,
-            lastEditRequest: {
-              timestamp: Date.now(),
-              changes: changedFields,
-              status: 'pending'
+                placeId: formData.placeId,
+                googleData: {
+                    rating: placeDetails?.rating || formData.location.googleData.rating,
+                    user_ratings_total: placeDetails?.user_ratings_total || formData.location.googleData.user_ratings_total,
+                    google_url: placeDetails?.url || formData.location.googleData.google_url,
+                    last_updated: serverTimestamp()
+                }
             },
-            isEdited: true,
-            editStatus: 'pending',
+            imageUrls: updatedImageUrls,
             lastModified: Date.now(),
-            editHistory: [...currentEditHistory, editHistoryEntry]
-          };
-      
-          const listingRef = ref(database, `listings/${id}`);
-          await update(listingRef, updateData);
-      
-          setIsSuccessModalOpen(true);
-      
-        } catch (error) {
-          console.error("Update failed:", error);
-          toast.error(`Update failed: ${error.message}`);
-        } finally {
-          setIsSubmitting(false);
-        }
-      };
+            status: 'approved',
+            isEdited: false,
+            editStatus: 'approved'
+        };
+
+        // Update listing in database
+        const listingRef = ref(database, `listings/${id}`);
+        await update(listingRef, updateData);
+
+        setIsSuccessModalOpen(true);
+        setTimeout(() => {
+            navigate(`/personal/${user.uid}`);
+        }, 2000);
+
+    } catch (error) {
+        console.error("Update failed:", error);
+        toast.error(`Update failed: ${error.message}`);
+    } finally {
+        setIsSubmitting(false);
+    }
+};
         if (isLoading) {
             return <Typography>Loading...</Typography>;
         }
@@ -509,26 +528,43 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
                                   }
                               }}
                           >
-                              <TextField
+                   <LocationSearchBar
+  required
+  onPlaceSelect={handlePlaceSelect}
+  onLocationSelect={handleLocationSelect} // Add this prop
+  isLoading={isLoading}
+  value={formData.placeName}
+  initialValue={formData.placeName}
+  onInputChange={(value) => {
+    setFormData(prev => ({
+      ...prev,
+      placeName: value
+    }));
+  }}
+/>
+                              <PlaceDetailsCard 
+                                  isLoading={isLoading}
+                                  placeDetails={placeDetails}
+                              />
+
+                                               <TextField
                                   label="Place Name"
                                   variant="outlined"
                                   name="placeName"
                                   value={formData.placeName}
                                   onChange={handleChange}
                                   required
-                                  InputProps={{
-                                      sx: { 
+                                  sx={{ 
+                                      display: 'none',
+                                      '& .MuiInputBase-root': {
                                           fontFamily: 'Lexend'
-                                      }
-                                  }}
-                                  InputLabelProps={{
-                                      sx: { 
+                                      },
+                                      '& .MuiInputLabel-root': {
                                           fontFamily: 'Lexend',
-                                      
+                                          zIndex: 10
                                       }
                                   }}
                               />
-
     <TextField
       select
       label="Place Category"
@@ -785,13 +821,16 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
                   ))}
               </TextField>
           </Box>
-
           <LocationPicker 
     initialLocation={{
-        lat: location.latitude,
-        lng: location.longitude
+        lat: parseFloat(location.latitude) || -8.409,
+        lng: parseFloat(location.longitude) || 115.1889
     }}
     onLocationSelect={onLocationSelect}
+    center={{
+        lat: parseFloat(location.latitude) || -8.409,
+        lng: parseFloat(location.longitude) || 115.1889
+    }}
     originalData={originalData}
     onAddressFieldFocus={onAddressFieldFocus}
 />
@@ -828,23 +867,7 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
                                   }}
                               />
 
-                               <TextField
-                                                                  label="Google Maps Link"
-                                                                  variant="outlined"
-                                                                  name="Gmaps"
-                                                                  value={formData.Gmaps}
-                                                                  onChange={handleChange}
-                                                                  placeholder='Enter your url Google Maps'
-                                                                  required
-                                                                  inputProps={{ maxLength: 100 }}
-                                                                  InputProps={{
-                                                                      sx: { fontFamily: 'Lexend' }
-                                                                  }}
-                                                                  InputLabelProps={{
-                                                                      sx: { fontFamily: 'Lexend' }
-                                                                  }}
-                                                              />
-
+                          
                               <TextField
                                   label="Website Link"
                                   variant="outlined"

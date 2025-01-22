@@ -11,7 +11,6 @@ import ExploreAreaMap from '../kebutuhan/Explore';
 import Loading from '../components/Loading';
 import { ref as storageRef, deleteObject } from 'firebase/storage';
 import { storage } from '../config/firebase';
-import { LoadScript } from '@react-google-maps/api';
 
 
 const Listingbaru = () => {
@@ -322,10 +321,8 @@ const Listingbaru = () => {
 
             {/* Map Section */}
             <div className="w-full h-full">
-                           <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
              
               <ExploreAreaMap location={listing.location} address={listing.address} />
-            </LoadScript>
             </div>
           </div>
 

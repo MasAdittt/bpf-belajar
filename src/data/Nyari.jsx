@@ -1,28 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { Box, TextField, CircularProgress, List, ListItem, ListItemText, Paper } from '@mui/material';
-import { loadGoogleMapsScript } from '../../maps'; // sesuaikan dengan path Anda
 
-const LocationSearchBar = ({ onPlaceSelect, isLoading,value, onInputChange }) => {
-  const [searchQuery, setSearchQuery] = useState(value || '');  const [predictions, setPredictions] = useState([]);
+const LocationSearchBar = ({ onPlaceSelect, isLoading, value, onInputChange }) => {
+  const [searchQuery, setSearchQuery] = useState(value || '');  
+  const [predictions, setPredictions] = useState([]);
   const [autocomplete, setAutocomplete] = useState(null);
   const [showPredictions, setShowPredictions] = useState(false);
 
   useEffect(() => {
-    const initGoogleMaps = async () => {
-      try {
-        await loadGoogleMapsScript();
-        
-        if (window.google) {
-          const autocompleteService = new window.google.maps.places.AutocompleteService();
-          setAutocomplete(autocompleteService);
-        }
-      } catch (error) {
-        console.error('Error loading Google Maps:', error);
-      }
-    };
-
-    initGoogleMaps();
+    if (window.google) {
+      const autocompleteService = new window.google.maps.places.AutocompleteService();
+      setAutocomplete(autocompleteService);
+    }
   }, []);
+
+  useEffect(() => {
+    if (value !== searchQuery) {
+      setSearchQuery(value);
+    }
+  }, [value]);
 
   const handleInputChange = async (event) => {
     const value = event.target.value;
@@ -81,7 +77,6 @@ const LocationSearchBar = ({ onPlaceSelect, isLoading,value, onInputChange }) =>
             })
           };
           
-          setSearchQuery(place.name);
           setSearchQuery(place.name);
           setShowPredictions(false);
           onPlaceSelect(placeDetails);
