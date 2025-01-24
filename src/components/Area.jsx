@@ -8,7 +8,6 @@ import LoginNotificationModal from '../kebutuhan/LoginNotif';
 import '../style/Area.css';
 import Loading from './Loading';
 
-// Komponen Google Logo
 const GoogleLogo = () => (
   <div className="ml-1">
     <svg viewBox="0 0 24 24" width="16" height="16">
