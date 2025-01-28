@@ -15,6 +15,7 @@ import React, { useState, useEffect,useCallback } from 'react';
     import LocationPicker from '../kebutuhan/Location';
     import PlaceDetailsCard from '../components/ui/Detail';
     import { Map } from 'lucide-react';
+    import { serverTimestamp } from 'firebase/firestore';
     import LocationSearchBar from '../data/Nyari';
 
     const ListingForm = () => {
@@ -249,6 +250,7 @@ const handleChange = (e) => {
                     userEmail: user.email,
                     username: user.displayName || 'Anonymous User',
                     imageUrls: uploadedImageUrls,
+                    timestamp: serverTimestamp(),
 
                     location: {
                         latitude: formData.latitude,
@@ -451,15 +453,16 @@ const handleChange = (e) => {
         }
     }}
 />
-                            <LocationSearchBar
-                            required
+<LocationSearchBar
+  required
   onPlaceSelect={handlePlaceSelect}
   isLoading={isLoading}
-  value={formData.placeName} // Tambahkan value dari formData.placeName
-  onInputChange={(value) => { // Tambahkan handler untuk update placeName
+  value={formData.placeName}
+  onInputChange={(value) => {
     setFormData(prev => ({
       ...prev,
-      placeName: value
+      placeName: value,
+      timestamp: serverTimestamp() // Add timestamp when location changes
     }));
   }}
 />
