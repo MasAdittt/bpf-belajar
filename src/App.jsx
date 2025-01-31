@@ -25,8 +25,10 @@ import ListingForm from './pages/Form.jsx'
 import ContactForm from './pages/Contat.jsx'
 import AnalyticsTracker from './components/Analytic.jsx'
 import GoogleMapsProvider from './components/ui/GoogleMaps.jsx'
+import { HelmetProvider } from 'react-helmet-async'
 function App() {
   return (
+    <HelmetProvider>
     <AuthProvider>
       <GoogleMapsProvider>
       <Router>
@@ -41,6 +43,7 @@ function App() {
           <Route path='/public-listing' element={<PublicListing />} />
           <Route path='/PubTemplate/:id' element={<PublicTemplate />}/>
           <Route path='/pubtemplate/:id' element={<PublicTemplate />} />
+          <Route path='/:slug/:id' element={<PublicTemplate />}/> 
           <Route path='/Contact' element={<ContactForm />}/>
           <Route path='/Form' element={<ListingForm />}/>
 
@@ -117,6 +120,7 @@ function App() {
       </Router>
       </GoogleMapsProvider>
     </AuthProvider>
+    </HelmetProvider>
   )
 } 
 

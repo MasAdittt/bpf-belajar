@@ -365,81 +365,81 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
 
         const handleCloseSuccessModal = () => {
           setIsSuccessModalOpen(false);
-          navigate('/Personal'); // Navigate to the listings page
-      };
+          navigate(`/personal/${user.uid}`);
+        };
 
-     const handleSubmitChanges = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-        const newImageUrls = await imageComponentRef.current.uploadImages();
-        
-        const updatedImageUrls = [...formData.imageUrls];
-        if (newImageUrls?.length > 0) {
-            newImageUrls.forEach((url, index) => {
-                if (url) {
-                    if (index < updatedImageUrls.length) {
-                        updatedImageUrls[index] = url;
-                    } else {
-                        updatedImageUrls.push(url);
+      const handleSubmitChanges = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            const newImageUrls = await imageComponentRef.current.uploadImages();
+            
+            const updatedImageUrls = [...formData.imageUrls];
+            if (newImageUrls?.length > 0) {
+                newImageUrls.forEach((url, index) => {
+                    if (url) {
+                        if (index < updatedImageUrls.length) {
+                            updatedImageUrls[index] = url;
+                        } else {
+                            updatedImageUrls.push(url);
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
 
-        const updateData = {
-            title: formData.placeName,
-                        category: formData.category,
-            description: formData.description,
-            shortDescription: formData.shortDescription,
-            businessHours: {
-                opening: formData.openingHours,
-                closing: formData.closingHours
-            },
-            foodCategory: formData.foodCategory,
-            halalStatus: formData.halalStatus,
-            menuLink: formData.menuLink,
-            address: formData.address,
-            city: formData.city,
-            district: formData.district,
-            phone: formData.phone,
-            instagram: formData.instagram,
-            website: formData.website,
-            Gmaps: formData.Gmaps,
-            location: {
+            const locationData = {
                 latitude: location.latitude,
                 longitude: location.longitude,
                 placeId: formData.placeId,
                 googleData: {
-                    rating: placeDetails?.rating || formData.location.googleData.rating,
-                    user_ratings_total: placeDetails?.user_ratings_total || formData.location.googleData.user_ratings_total,
-                    google_url: placeDetails?.url || formData.location.googleData.google_url,
+                    rating: placeDetails?.rating || 0,
+                    user_ratings_total: placeDetails?.user_ratings_total || 0,
+                    google_url: placeDetails?.url || '',
                     last_updated: serverTimestamp()
                 }
-            },
-            imageUrls: updatedImageUrls,
-            lastModified: Date.now(),
-            status: 'approved',
-            isEdited: false,
-            editStatus: 'approved'
-        };
-
-        // Update listing in database
-        const listingRef = ref(database, `listings/${id}`);
-        await update(listingRef, updateData);
-
-        setIsSuccessModalOpen(true);
-        setTimeout(() => {
-            navigate(`/personal/${user.uid}`);
-        }, 2000);
-
-    } catch (error) {
-        console.error("Update failed:", error);
-        toast.error(`Update failed: ${error.message}`);
-    } finally {
-        setIsSubmitting(false);
-    }
-};
+            };
+            const updateData = {
+                title: formData.placeName,
+                category: formData.category,
+                description: formData.description,
+                shortDescription: formData.shortDescription,
+                businessHours: {
+                    opening: formData.openingHours,
+                    closing: formData.closingHours
+                },
+                foodCategory: formData.foodCategory,
+                halalStatus: formData.halalStatus,
+                menuLink: formData.menuLink,
+                address: formData.address,
+                city: formData.city,
+                district: formData.district,
+                phone: formData.phone,
+                instagram: formData.instagram,
+                website: formData.website,
+                Gmaps: formData.Gmaps,
+                location: locationData,
+                imageUrls: updatedImageUrls,
+                lastModified: Date.now(),
+                status: 'approved',
+                isEdited: false,
+                editStatus: 'approved'
+            };
+    
+            const listingRef = ref(database, `listings/${id}`);
+            await update(listingRef, updateData);
+    
+            setIsSuccessModalOpen(true);
+            setTimeout(() => {
+                navigate(`/personal/${user.uid}`);
+            }, 2000);
+    
+        } catch (error) {
+            console.error("Update failed:", error);
+            toast.error(`Update failed: ${error.message}`);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
         if (isLoading) {
             return <Typography>Loading...</Typography>;
         }

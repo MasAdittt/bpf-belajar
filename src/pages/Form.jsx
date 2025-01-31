@@ -54,7 +54,7 @@ import React, { useState, useEffect,useCallback } from 'react';
         const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
         const [user, setUser] = useState(null);
         const [uploadedImages, setUploadedImages] = useState([]); 
-        const categories = ["Cafe", "Villa", "Bar", "Restaurant", "Hotel"];
+        const categories = ["Cafe", "Villa", "Bar", "Restaurant", "Hotel","Mall"];
         const [imageFiles, setImageFiles] = useState([]);
         const handleAddressFieldFocus = useCallback((handler) => {
             setAddressFieldFocusHandler(handler);
