@@ -201,8 +201,8 @@ function Area() {
               <div
                 className="kotak relative bg-transparent rounded-lg overflow-hidden cursor-pointer"
                 key={listing.id}
-                onClick={() => navigate(`/PubTemplate/${listing.id}`)}
-              >
+                onClick={() => navigate(`/${listing.category}/${listing.title.toLowerCase().replace(/\s+/g, '-')}/${listing.id}`)}              
+                >
                 <div className="absolute left-4 z-10" style={{ marginTop: '15px' }}>
                   <span className="px-2 py-1 rounded-md font-['Lexend']" style={{ color: '#3A3A3A', backgroundColor: '#F2F2F2', fontSize: '12px' }}>
                     {listing.category}

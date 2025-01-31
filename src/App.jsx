@@ -41,10 +41,8 @@ function App() {
           <Route path='/Lupa' element={<Lupa />}/>
           <Route path='/Public' element={<PublicListing />} />
           <Route path='/public-listing' element={<PublicListing />} />
-          <Route path='/PubTemplate/:id' element={<PublicTemplate />}/>
           <Route path='/pubtemplate/:id' element={<PublicTemplate />} />
-          <Route path='/:slug/:id' element={<PublicTemplate />}/> 
-          <Route path='/Contact' element={<ContactForm />}/>
+          <Route path='/:category/:title/:id' element={<PublicTemplate />} />                              <Route path='/Contact' element={<ContactForm />}/>
           <Route path='/Form' element={<ListingForm />}/>
 
           {/* Protected Routes - Requires Authentication */}
