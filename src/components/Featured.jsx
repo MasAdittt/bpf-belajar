@@ -215,10 +215,10 @@ const FeaturedPlaces = () => {
     }
   };
 
-  const handleListingClick = (listingId) => {
-    navigate(`/PubTemplate/${listingId}`);
+  const handleListingClick = (listing) => {
+    const urlFriendlyTitle = listing.title.toLowerCase().replace(/\s+/g, '-');
+    navigate(`/${listing.category}/${urlFriendlyTitle}/${listing.id}`);
   };
-
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4">
@@ -243,17 +243,17 @@ const FeaturedPlaces = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {featuredListings.map((listing) => (
-          <FeaturedPlaceCard
-            key={listing.id}
-            listing={listing}
-            onClick={() => handleListingClick(listing.id)}
-            isFavorite={!!favorites[listing.id]}
-            onToggleFavorite={handleToggleFavorite}
-            clickCount={clickCounts[listing.id]}
-          />
-        ))}
-      </div>
+  {featuredListings.map((listing) => (
+    <FeaturedPlaceCard
+      key={listing.id}
+      listing={listing}
+      onClick={() => handleListingClick(listing)}
+      isFavorite={!!favorites[listing.id]}
+      onToggleFavorite={handleToggleFavorite}
+      clickCount={clickCounts[listing.id]}
+    />
+  ))}
+</div>
 
       <LoginNotificationModal 
         isOpen={isModalOpen}
