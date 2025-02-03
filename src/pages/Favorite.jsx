@@ -48,7 +48,7 @@ function FavoriteListings() {
 
   useEffect(() => {
     if (!auth.currentUser) {
-      navigate('/login');
+      navigate('/Coba');
       return;
     }
 
@@ -173,8 +173,8 @@ function FavoriteListings() {
                 <div 
                   className="kotak relative bg-transparent rounded-lg overflow-hidden cursor-pointer transform transition-transform hover:scale-[1.02]"
                   key={listing.id} 
-                  onClick={() => navigate(`/PubTemplate/${listing.id}`)}
-                >
+                  onClick={() => navigate(`/${listing.category}/${listing.title.toLowerCase().replace(/\s+/g, '-')}/${listing.id}`)}              
+                  >
                   {/* Category Label */}
                   <div className="absolute left-4 top-4 z-10">
                     <span className="px-2 py-1 rounded-md font-['Lexend'] text-xs sm:text-sm" style={{ color: '#3A3A3A', backgroundColor: '#F2F2F2' }}>

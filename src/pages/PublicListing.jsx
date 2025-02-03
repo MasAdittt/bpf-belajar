@@ -169,8 +169,8 @@ const ListingCard = ({ listing, onToggleFavorite, isFavorite }) => {
               
               <div className="flex justify-end">
                 <button 
-                  onClick={() => navigate(`/PubTemplate/${listing.id}`)}
-                  className="bg-[#1DA19E] text-white px-4 py-2 rounded-lg hover:bg-[#178784] transition-colors text-sm"
+                onClick={() => navigate(`/${listing.category}/${listing.title.toLowerCase().replace(/\s+/g, '-')}/${listing.id}`)}              
+                className="bg-[#1DA19E] text-white px-4 py-2 rounded-lg hover:bg-[#178784] transition-colors text-sm"
                   style={{fontFamily: "Lexend"}}
                 >
                   See More

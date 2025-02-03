@@ -212,10 +212,11 @@ const SearchBar = () => {
     }, 300);
   };
 
-  const handleSearch = (term, id) => {
+  const handleSearch = (term, id, category) => {
     const searchTerm = term || searchQuery;
     if (id) {
-      navigate(`/pubtemplate/${id}`);
+      const urlFriendlyTitle = searchTerm.toLowerCase().replace(/\s+/g, '-');
+      navigate(`/${category}/${urlFriendlyTitle}/${id}`);
     } else if (searchTerm.trim() && searchTerm.length >= 2) {
       saveToHistory(searchTerm);
       setSearchQuery(searchTerm);
@@ -304,8 +305,7 @@ const SearchBar = () => {
                     <div
                       key={item.id}
                       className="px-2 md:px-3 py-2 hover:bg-gray-100 cursor-pointer flex items-center justify-between gap-2"
-                      onClick={() => handleSearch(item.title, item.id)}
-                    >
+                      onClick={() => handleSearch(item.title, item.id, item.category)}                    >
                       <div className="flex items-center flex-1 min-w-0 gap-2">
                         <i className="fas fa-search text-gray-400 text-xs"></i>
                         {Array.isArray(item.imageUrls) && item.imageUrls.length > 0 && (
