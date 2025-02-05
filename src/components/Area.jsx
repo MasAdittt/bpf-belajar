@@ -2,11 +2,12 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { ref, onValue, off, set } from 'firebase/database';
 import { database } from '../config/firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Star, Heart, MapPin } from 'lucide-react';
+import { Star, Heart, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAuth } from 'firebase/auth';
 import LoginNotificationModal from '../kebutuhan/LoginNotif';
 import '../style/Area.css';
 import Loading from './Loading';
+import ResponsivePagination from '../components/ui/Page';
 
 const GoogleLogo = () => (
   <div className="ml-1">
@@ -118,7 +119,7 @@ function Area() {
     if (!googleData) return null;
     
     return (
-      <div className="flex items-center gap-1 ml-auto ">
+      <div className="flex items-center gap-1 ml-auto">
         <Star className="w-4 h-4 text-yellow-400 fill-current" />
         <span className="font-medium text-gray-600 font-lexend">{googleData.rating}</span>
         <span className="text-gray-600 font-lexend">
@@ -153,6 +154,7 @@ function Area() {
   };
 
   const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
     const queryParams = new URLSearchParams(location.search);
     queryParams.set('page', page);
@@ -195,14 +197,13 @@ function Area() {
               </button>
             ))}
           </div>
-
           <div className="Area-list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-6">
             {paginatedListings.map((listing) => (
               <div
                 className="kotak relative bg-transparent rounded-lg overflow-hidden cursor-pointer"
                 key={listing.id}
                 onClick={() => navigate(`/${listing.category}/${listing.title.toLowerCase().replace(/\s+/g, '-')}/${listing.id}`)}              
-                >
+              >
                 <div className="absolute left-4 z-10" style={{ marginTop: '15px' }}>
                   <span className="px-2 py-1 rounded-md font-['Lexend']" style={{ color: '#3A3A3A', backgroundColor: '#F2F2F2', fontSize: '12px' }}>
                     {listing.category}
@@ -227,15 +228,14 @@ function Area() {
                 </div>
 
                 <div className="overflow-hidden group rounded-lg">
-  <img
-    src={listing.imageUrls?.[0] || 'default-image-url.jpg'}
-    alt={listing.title}
-    className="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110 rounded-lg"
-    onError={(e) => e.target.src = 'default-image-url.jpg'}
-  />
-</div>
+                  <img
+                    src={listing.imageUrls?.[0] || 'default-image-url.jpg'}
+                    alt={listing.title}
+                    className="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110 rounded-lg"
+                    onError={(e) => e.target.src = 'default-image-url.jpg'}
+                  />
+                </div>
 
-              
                 <div className="flex flex-col">
                   <div className="flex items-center justify-between mt-2">
                     <h6 className="font-['Lexend'] text-base md:text-lg flex-1 p-0 m-0">
@@ -255,22 +255,11 @@ function Area() {
           </div>
 
           {totalPages > 1 && (
-            <div className="flex justify-center items-center flex-wrap gap-3 mt-8 mb-6">
-              {[...Array(totalPages)].map((_, index) => (
-                <button
-                  key={index + 1}
-                  onClick={() => handlePageChange(index + 1)}
-                  className={`w-[40px] h-[33px] rounded-md transition-colors duration-200 font-['Quicksand'] text-[14px] flex items-center justify-center ${
-                    currentPage === index + 1
-                      ? 'bg-[#1DA19E] text-white border-0'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-[1px] border-[#6B6B6B33]'
-                  }`}
-                  style={{ fontWeight: 600 }}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
+            <ResponsivePagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
           )}
         </div>
       </section>

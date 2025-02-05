@@ -3,11 +3,12 @@ import React, { useEffect, useState, useMemo } from 'react';
   import { ref, onValue } from "firebase/database";
   import { database } from '../config/firebase';
   import { getAuth, onAuthStateChanged } from 'firebase/auth';
-  import { Star, MapPin, Menu, X } from 'lucide-react';
+  import { Star, MapPin, Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import Navbaru from '../components/Navbaru';
   import Loading from '../components/Loading';
   import FilterCategory from '../components/FilterCategory';
   import pet from '../assets/image/pet.svg';
+  import ResponsivePagination from '../components/ui/Page';
 
   function AllListings() {
     const [listings, setListings] = useState([]);
@@ -113,6 +114,149 @@ const paginatedListings = useMemo(() => {
     // Pagination handler
     const handlePageChange = (pageNumber) => {
       setCurrentPage(pageNumber);
+    };
+
+    const renderPaginationButtons = () => {
+      if (totalPages <= 1) return null;
+  
+      const buttons = [];
+      const showEllipsis = totalPages > 5;
+      
+      // Always show first page
+      buttons.push(
+        <button
+          key={1}
+          onClick={() => handlePageChange(1)}
+          className={`w-[40px] h-[33px] rounded-md transition-colors duration-200 font-['Quicksand'] text-[14px] flex items-center justify-center ${
+            currentPage === 1
+              ? 'bg-[#1DA19E] text-white border-0'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-[1px] border-[#6B6B6B33]'
+          }`}
+          style={{ fontWeight: 600 }}
+        >
+          1
+        </button>
+      );
+  
+      if (showEllipsis) {
+        let leftEllipsis = currentPage > 4;
+        let rightEllipsis = currentPage < totalPages - 3;
+  
+        if (leftEllipsis) {
+          buttons.push(
+            <span key="left-ellipsis" className="px-2 text-gray-700">
+              ...
+            </span>
+          );
+        }
+  
+        // Show pages around current page
+        let start, end;
+      
+        if (currentPage <= 3) {
+          start = 2;
+          end = 3;
+        } else if (currentPage >= totalPages - 2) {
+          start = totalPages - 2;
+          end = totalPages - 1;
+        } else {
+          start = currentPage;
+          end = currentPage + 1;
+        }
+    
+        for (let i = start; i <= end; i++) {
+          buttons.push(
+            <button
+              key={i}
+              onClick={() => handlePageChange(i)}
+              className={`w-[40px] h-[33px] rounded-md transition-colors duration-200 font-['Quicksand'] text-[14px] flex items-center justify-center ${
+                currentPage === i
+                  ? 'bg-[#1DA19E] text-white border-0'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-[1px] border-[#6B6B6B33]'
+              }`}
+              style={{ fontWeight: 600 }}
+            >
+              {i}
+            </button>
+          );
+        }
+  
+        if (rightEllipsis) {
+          buttons.push(
+            <span key="right-ellipsis" className="px-2 text-gray-700">
+              ...
+            </span>
+          );
+        }
+      } else {
+        // If few pages, show all
+        for (let i = 2; i < totalPages; i++) {
+          buttons.push(
+            <button
+              key={i}
+              onClick={() => handlePageChange(i)}
+              className={`w-[40px] h-[33px] rounded-md transition-colors duration-200 font-['Quicksand'] text-[14px] flex items-center justify-center ${
+                currentPage === i
+                  ? 'bg-[#1DA19E] text-white border-0'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-[1px] border-[#6B6B6B33]'
+              }`}
+              style={{ fontWeight: 600 }}
+            >
+              {i}
+            </button>
+          );
+        }
+      }
+  
+      // Always show last page
+      if (totalPages > 1) {
+        buttons.push(
+          <button
+            key={totalPages}
+            onClick={() => handlePageChange(totalPages)}
+            className={`w-[40px] h-[33px] rounded-md transition-colors duration-200 font-['Quicksand'] text-[14px] flex items-center justify-center ${
+              currentPage === totalPages
+                ? 'bg-[#1DA19E] text-white border-0'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-[1px] border-[#6B6B6B33]'
+            }`}
+            style={{ fontWeight: 600 }}
+          >
+            {totalPages}
+          </button>
+        );
+      }
+  
+      return (
+        <div className="flex justify-center items-center flex-wrap gap-3 mt-8 mb-6">
+          {/* Previous Button */}
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className={`w-[40px] h-[33px] rounded-md transition-colors duration-200 flex items-center justify-center ${
+              currentPage === 1
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-[1px] border-[#6B6B6B33]'
+            }`}
+          >
+            <ChevronLeft size={20} />
+          </button>
+          
+          {buttons}
+          
+          {/* Next Button */}
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className={`w-[40px] h-[33px] rounded-md transition-colors duration-200 flex items-center justify-center ${
+              currentPage === totalPages
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-[1px] border-[#6B6B6B33]'
+            }`}
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
+      );
     };
 
     if (isLoading) return <Loading />;
@@ -279,23 +423,12 @@ const paginatedListings = useMemo(() => {
                                   ))}
                                   
                                   {totalPages > 1 && (
-                                      <div className="flex justify-center items-center mt-6 space-x-2">
-                                          {[...Array(totalPages)].map((_, index) => (
-                                              <button
-                                                  key={index}
-                                                  onClick={() => handlePageChange(index + 1)}
-                                                  className={`px-3 py-1 md:px-4 md:py-2 rounded-lg transition-colors text-sm ${
-                                                      currentPage === index + 1 
-                                                          ? 'bg-[#1DA19E] text-white' 
-                                                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                                  }`}
-                                                  style={{fontFamily: 'Lexend'}}
-                                              >
-                                                  {index + 1}
-                                              </button>
-                                          ))}
-                                      </div>
-                                  )}
+  <ResponsivePagination 
+    currentPage={currentPage}
+    totalPages={totalPages}
+    onPageChange={handlePageChange}
+  />
+)}
                               </div>
                           )}
                       </div>

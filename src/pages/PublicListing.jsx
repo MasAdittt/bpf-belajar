@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { ref, onValue, off, set } from 'firebase/database';
 import { database } from '../config/firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Star, Menu, Phone, Instagram, Globe, X, Heart, MapPin } from 'lucide-react';
+import { Star, Menu, Phone, Instagram, Globe, X, Heart, MapPin, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAuth } from 'firebase/auth';
 import Navbaru from '../components/Navbaru';
 import Bawah from '../components/Bawah';
@@ -13,6 +13,7 @@ import FeaturedPlace from '../components/Featured';
 import LoginNotificationModal from '../kebutuhan/LoginNotif';
 import LatestPlaces from '../components/Latest';
 import pet from '../assets/image/pet.svg';
+import ResponsivePagination from '../components/ui/Page';
 
 const GoogleLogo = () => (
   <div className="ml-1">
@@ -208,35 +209,36 @@ function PublicListing() {
   }, [auth.currentUser]);
 
   const [currentPage, setCurrentPage] = useState(1);
-const cardsPerPage = 6;
+  const cardsPerPage = 6;
 
-const getCurrentCards = (cards) => {
-const indexOfLastCard = currentPage * cardsPerPage;
-const indexOfFirstCard = indexOfLastCard - cardsPerPage;
-return cards.slice(indexOfFirstCard, indexOfLastCard);
-};
-const PaginationButtons = ({ totalCards }) => {
-const totalPages = Math.ceil(totalCards / cardsPerPage);
+  const filteredListings = useMemo(() => {
+    return listings.filter(listing => {
+      const matchesCategories = selectedCategories.length === 0 || 
+        selectedCategories.includes(listing.city) || 
+        selectedCategories.includes(listing.category);
 
-return (
-  <div className="flex justify-center items-center mt-6 space-x-2">
-    {[...Array(totalPages)].map((_, index) => (
-      <button
-        key={index}
-        onClick={() => setCurrentPage(index + 1)}
-        className={`px-3 py-1 md:px-4 md:py-2 rounded-lg transition-colors text-sm ${
-          currentPage === index + 1 
-            ? 'bg-[#1DA19E] text-white' 
-            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-        }`}
-        style={{fontFamily: 'Lexend'}}
-      >
-        {index + 1}
-      </button>
-    ))}
-  </div>
-);
-};
+      const matchesSearch = searchTerm === '' || 
+        listing.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        listing.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        listing.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        listing.category?.toLowerCase().includes(searchTerm.toLowerCase());
+
+      return matchesCategories && matchesSearch;
+    });
+  }, [listings, selectedCategories, searchTerm]);
+
+  const totalPages = Math.ceil(filteredListings.length / cardsPerPage);
+
+  const getCurrentCards = (cards) => {
+    const indexOfLastCard = currentPage * cardsPerPage;
+    const indexOfFirstCard = indexOfLastCard - cardsPerPage;
+    return cards.slice(indexOfFirstCard, indexOfLastCard);
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo(0, 0);
+  };
 
   const handleToggleFavorite = async (listingId) => {
     if (!auth.currentUser) {
@@ -346,22 +348,6 @@ return (
     const totalRating = Object.values(reviews).reduce((sum, review) => sum + review.rating, 0);
     return totalRating / Object.keys(reviews).length;
   };
-
-  const filteredListings = useMemo(() => {
-    return listings.filter(listing => {
-      const matchesCategories = selectedCategories.length === 0 || 
-        selectedCategories.includes(listing.city) || 
-        selectedCategories.includes(listing.category);
-
-      const matchesSearch = searchTerm === '' || 
-        listing.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        listing.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        listing.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        listing.category?.toLowerCase().includes(searchTerm.toLowerCase());
-
-      return matchesCategories && matchesSearch;
-    });
-  }, [listings, selectedCategories, searchTerm]);
 
   if (isLoading) {
     return <Loading />;
@@ -477,8 +463,13 @@ return (
                     />
                   ))}
                 </div>
-                <PaginationButtons totalCards={filteredListings.length} />
-              </>
+                {totalPages > 1 && (
+  <ResponsivePagination 
+    currentPage={currentPage}
+    totalPages={totalPages}
+    onPageChange={handlePageChange}
+  />
+)}              </>
             )}
             </div>
           </main>
