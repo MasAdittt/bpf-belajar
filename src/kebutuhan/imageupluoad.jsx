@@ -1,13 +1,12 @@
 import React, { useRef, useState, useImperativeHandle, forwardRef } from 'react';
 import { ImagePlus, Trash2 } from 'lucide-react';
 
-const ImageUpload = ({ onFileSelect, ref }) => {
+const ImageUpload = forwardRef(({ onFileSelect }, ref) => {
   const [images, setImages] = useState(Array(5).fill(null));
   const [imageFiles, setImageFiles] = useState(Array(5).fill(null));
   const fileInputRefs = useRef(Array(5).fill(null).map(() => React.createRef()));
 
-  // Existing useImperativeHandle logic remains the same
-  React.useImperativeHandle(ref, () => ({
+  useImperativeHandle(ref, () => ({
     resetImages: () => {
       setImages(Array(5).fill(null));
       setImageFiles(Array(5).fill(null));
@@ -20,16 +19,14 @@ const ImageUpload = ({ onFileSelect, ref }) => {
 
       if (onFileSelect) {
         onFileSelect({
-          file: null,
-          preview: null,
-          index: null,
+          files: Array(5).fill(null),
+          previews: Array(5).fill(null),
           isReset: true
         });
       }
     }
   }));
 
-  // Existing handler methods remain the same
   const handleBoxClick = (index) => {
     fileInputRefs.current[index].current.click();
   };
@@ -51,8 +48,8 @@ const ImageUpload = ({ onFileSelect, ref }) => {
 
       if (onFileSelect) {
         onFileSelect({
-          file,
-          preview: URL.createObjectURL(file),
+          files: newImageFiles,
+          previews: [...images],
           index
         });
       }
@@ -73,8 +70,8 @@ const ImageUpload = ({ onFileSelect, ref }) => {
 
     if (onFileSelect) {
       onFileSelect({
-        file: null,
-        preview: null,
+        files: newImageFiles,
+        previews: newImages,
         index
       });
     }
@@ -140,6 +137,6 @@ const ImageUpload = ({ onFileSelect, ref }) => {
       </div>
     </div>
   );
-};
+});
 
 export default ImageUpload;

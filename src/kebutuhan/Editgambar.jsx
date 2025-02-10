@@ -10,17 +10,15 @@ const Editimage = forwardRef(({ listingUid, onFileSelect, existingImages = [] },
   const [existingImageUrls, setExistingImageUrls] = useState([]);
   const [originalImages, setOriginalImages] = useState([]);
   const fileInputRefs = useRef(Array(5).fill(null).map(() => React.createRef()));
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    // Referensi ke listing spesifik di database
     const listingRef = databaseRef(database, `listings/${listingUid}`);
-
-    // Listener untuk perubahan data
+    
     const unsubscribe = onValue(listingRef, (snapshot) => {
       const listingData = snapshot.val();
       
       if (listingData && listingData.imageUrls) {
-        // Proses gambar yang sudah ada dari database
         const dbImageUrls = listingData.imageUrls;
         const initialImages = [...dbImageUrls, ...Array(5 - dbImageUrls.length).fill(null)];
         
@@ -28,74 +26,65 @@ const Editimage = forwardRef(({ listingUid, onFileSelect, existingImages = [] },
         setExistingImageUrls(dbImageUrls);
         setOriginalImages(dbImageUrls);
       }
-    }, (error) => {
-      console.error("Error fetching listing images:", error);
     });
 
-    // Cleanup listener saat komponen unmount
     return () => unsubscribe();
   }, [listingUid]);
-  // Gunakan useImperativeHandle untuk membuat method reset
+
   useImperativeHandle(ref, () => ({
     resetImages: () => {
-      // Reset to original images from database
       const resetImages = [...originalImages, ...Array(5 - originalImages.length).fill(null)];
       setImages(resetImages);
       setImageFiles(Array(5).fill(null));
       setExistingImageUrls(originalImages);
       
-      // Reset file inputs
       fileInputRefs.current.forEach(inputRef => {
         if (inputRef.current) {
           inputRef.current.value = '';
         }
       });
-  
-      // Notify parent component about reset
+
       if (onFileSelect) {
         onFileSelect({
-          file: null,
-          preview: null,
-          index: null,
+          files: Array(5).fill(null),
+          previews: resetImages,
           isReset: true
         });
       }
     },
     uploadImages: async () => {
-      const uploadPromises = imageFiles.map(async (file, index) => {
-        if (file) {
-          const imageStorageRef = storageRef(storage, `listings/${listingUid}/images/${Date.now()}_${file.name}`);
+      const uploadPromises = images.map(async (image, index) => {
+        if (imageFiles[index]) {
+          const imageStorageRef = storageRef(storage, `listings/${listingUid}/images/${Date.now()}_${imageFiles[index].name}`);
           try {
-            const snapshot = await uploadBytes(imageStorageRef, file);
-            const downloadURL = await getDownloadURL(snapshot.ref);
-            return downloadURL;
+            const snapshot = await uploadBytes(imageStorageRef, imageFiles[index]);
+            return await getDownloadURL(snapshot.ref);
           } catch (error) {
             console.error(`Error uploading image ${index}:`, error);
             return null;
           }
         }
-        // Return existing image URL if no new file is uploaded for this slot
-        return images[index];
+        return image; // Return existing image URL if no new file
       });
     
       const results = await Promise.all(uploadPromises);
-      return results.filter(url => url !== null); // Filter out null values
+      return results.filter(url => url !== null);
     }
   }));
 
   const handleBoxClick = (index) => {
-    fileInputRefs.current[index].current.click();
+    if (!isDeleting) {
+      fileInputRefs.current[index].current.click();
+    }
   };
 
   const handleFileChange = (event, index) => {
     const file = event.target.files[0];
     if (file) {
-      // Store the actual file
       const newImageFiles = [...imageFiles];
       newImageFiles[index] = file;
       setImageFiles(newImageFiles);
 
-      // Create preview
       const reader = new FileReader();
       reader.onload = (e) => {
         const newImages = [...images];
@@ -104,100 +93,96 @@ const Editimage = forwardRef(({ listingUid, onFileSelect, existingImages = [] },
       };
       reader.readAsDataURL(file);
 
-      // Pass the file to parent component
       if (onFileSelect) {
         onFileSelect({
+          files: newImageFiles,
+          previews: [...images],
+          index,
           file,
-          preview: URL.createObjectURL(file),
-          index
+          preview: URL.createObjectURL(file)
         });
       }
     }
   };
 
-  const handleRemoveImage = async (index) => {
-    const newImages = [...images];
-    const newImageFiles = [...imageFiles];
-    const newExistingImageUrls = [...existingImageUrls];
-  
-    // If dealing with an existing image in Firebase
-    if (existingImageUrls[index]) {
-      try {
-        // Convert full URL to storage path
-        const fullUrl = existingImageUrls[index];
-        // Extract the path after '/o/' and before '?'
-        const urlPath = fullUrl.split('/o/')[1]?.split('?')[0];
-        
-        if (!urlPath) {
-          console.error('Invalid storage URL format');
-          return;
-        }
-        
-        // Decode the URL-encoded path
-        const storagePath = decodeURIComponent(urlPath);
-        const imageRef = storageRef(storage, storagePath);
-        
-        try {
-          await deleteObject(imageRef);
-          console.log('Image deleted successfully from path:', storagePath);
-        } catch (error) {
-          if (error.code === 'storage/object-not-found') {
-            console.log('Image already deleted or does not exist');
-          } else {
-            console.error('Error deleting image:', error);
-            return;
-          }
-        }
-        
-        // Update the existing URLs array
-        newExistingImageUrls.splice(index, 1);
-        setExistingImageUrls(newExistingImageUrls);
-      } catch (error) {
-        console.error('Error in image deletion process:', error);
-        return;
-      }
-    }
-  
-    // Update UI state
-    newImages[index] = null;
-    newImageFiles[index] = null;
+  const handleRemoveImage = async (event, index) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDeleting(true);
     
-    setImages(newImages);
-    setImageFiles(newImageFiles);
-  
-    // Reset file input
-    if (fileInputRefs.current[index]?.current) {
-      fileInputRefs.current[index].current.value = '';
-    }
-  
-    // Notify parent component
-    if (onFileSelect) {
-      onFileSelect({
-        file: null,
-        preview: null,
-        index
-      });
+    try {
+      const newImages = [...images];
+      const newImageFiles = [...imageFiles];
+      const newExistingImageUrls = [...existingImageUrls];
+
+      if (existingImageUrls[index]) {
+        try {
+          const fullUrl = existingImageUrls[index];
+          const urlPath = fullUrl.split('/o/')[1]?.split('?')[0];
+          
+          if (urlPath) {
+            const storagePath = decodeURIComponent(urlPath);
+            const imageRef = storageRef(storage, storagePath);
+            
+            try {
+              await deleteObject(imageRef);
+            } catch (error) {
+              // Only log the error if it's not a "not found" error
+              if (error.code !== 'storage/object-not-found') {
+                console.error('Error deleting image:', error);
+              }
+            }
+          }
+          
+          newExistingImageUrls.splice(index, 1);
+          setExistingImageUrls(newExistingImageUrls);
+        } catch (error) {
+          console.error('Error in image deletion process:', error);
+        }
+      }
+
+      newImages[index] = null;
+      newImageFiles[index] = null;
+      
+      setImages(newImages);
+      setImageFiles(newImageFiles);
+
+      if (fileInputRefs.current[index]?.current) {
+        fileInputRefs.current[index].current.value = '';
+      }
+
+      if (onFileSelect) {
+        onFileSelect({
+          files: newImageFiles,
+          previews: newImages,
+          index,
+          isRemoved: true
+        });
+      }
+    } finally {
+      setIsDeleting(false);
     }
   };
+
   const uploadedImagesCount = images.filter(img => img !== null).length;
 
   return (
     <div className="w-full">
       <p className="font-lexend text-sm text-gray-500 mb-3">
-        Upload Places Photo* (Max 5 images)
+        Upload Places Photo*
       </p>
-      <div className="grid grid-cols-5 gap-4 w-full">
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 sm:gap-4 w-full">
         {images.map((image, i) => (
           <div
             key={i}
-            onClick={() => !image && handleBoxClick(i)}
+            onClick={() => !isDeleting && handleBoxClick(i)}
             className="relative aspect-square group"
           >
             <div className={`
               w-full h-full rounded-lg border border-gray-200
               flex flex-col items-center justify-center
               overflow-hidden transition-all duration-200
-              ${!image && 'hover:bg-gray-50 cursor-pointer'}
+              ${!image && !isDeleting && 'hover:bg-gray-50 cursor-pointer'}
             `}>
               {image ? (
                 <>
@@ -206,13 +191,10 @@ const Editimage = forwardRef(({ listingUid, onFileSelect, existingImages = [] },
                     alt={`Upload ${i + 1}`}
                     className="w-full h-full object-cover"
                   />
-                  {/* Overlay saat hover */}
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
                     <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveImage(i);
-                      }}
+                      onClick={(e) => handleRemoveImage(e, i)}
+                      disabled={isDeleting}
                       className="p-2 bg-red-500 rounded-full hover:bg-red-600 transform hover:scale-110 transition-all duration-200"
                     >
                       <Trash2 className="w-5 h-5 text-white" />

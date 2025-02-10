@@ -65,7 +65,8 @@ const EditListing = () => {
     const imageComponentRef = useRef();
     const [placeDetails, setPlaceDetails] = useState(null);
     const [addressFieldFocusHandler, setAddressFieldFocusHandler] = useState(null);
-
+    const [uploadedImages, setUploadedImages] = useState([]);
+    const [currentImages, setCurrentImages] = useState([]);
 
     const handleAddressFieldFocus = useCallback((handler) => {
         setAddressFieldFocusHandler(handler);
@@ -280,26 +281,21 @@ const EditListing = () => {
         };
 
         const handleImageSelect = (imageData) => {
-            setImageFiles(prev => [...prev, imageData.file]);
-        };
-
-        const removeImage = async (index) => {
-            const urlToRemove = formData.imageUrls[index];
-            const storage = getStorage();
-            const imageRef = storageRef(storage, urlToRemove);
-        
-            try {
-                await deleteObject(imageRef);
-                const newImageUrls = formData.imageUrls.filter((_, i) => i !== index);
+            if (imageData.files) {
+                setImageFiles(imageData.files.filter(file => file !== null));
+                // Update current images without triggering a save
+                setCurrentImages(imageData.previews.filter(preview => preview !== null));
+                
+                // Update form data only with image URLs, not preview URLs
                 setFormData(prev => ({
                     ...prev,
-                    imageUrls: newImageUrls
+                    imageUrls: imageData.isRemoved ? imageData.previews.filter(url => url !== null) : prev.imageUrls
                 }));
-            } catch (error) {
-                console.error("Error deleting image:", error);
-                toast.error("Failed to remove image");
             }
         };
+        
+
+       
 
         useEffect(() => {
             if (formData.latitude && formData.longitude) {
@@ -364,11 +360,19 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
         };
 
         const handleCloseSuccessModal = () => {
-          setIsSuccessModalOpen(false);
-          navigate(`/personal/${user.uid}`);
-        };
+            setIsSuccessModalOpen(false);
+            // Get the current authenticated user
+            const currentUser = auth.currentUser;
+            if (currentUser) {
+              navigate(`/personal/${currentUser.uid}`);
+            } else {
+              // Fallback if user is not authenticated
+              navigate('/');
+            }
+          };
 
-      const handleSubmitChanges = async (e) => {
+     // Update the handleSubmitChanges function to include proper image handling:
+     const handleSubmitChanges = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
@@ -387,59 +391,62 @@ const currentEditHistory = originalData && Array.isArray(originalData.editHistor
                 });
             }
 
-            const locationData = {
-                latitude: location.latitude,
-                longitude: location.longitude,
-                placeId: formData.placeId,
-                googleData: {
-                    rating: placeDetails?.rating || 0,
-                    user_ratings_total: placeDetails?.user_ratings_total || 0,
-                    google_url: placeDetails?.url || '',
-                    last_updated: serverTimestamp()
-                }
-            };
-            const updateData = {
-                title: formData.placeName,
-                category: formData.category,
-                description: formData.description,
-                shortDescription: formData.shortDescription,
-                businessHours: {
-                    opening: formData.openingHours,
-                    closing: formData.closingHours
-                },
-                foodCategory: formData.foodCategory,
-                halalStatus: formData.halalStatus,
-                menuLink: formData.menuLink,
-                address: formData.address,
-                city: formData.city,
-                district: formData.district,
-                phone: formData.phone,
-                instagram: formData.instagram,
-                website: formData.website,
-                Gmaps: formData.Gmaps,
-                location: locationData,
-                imageUrls: updatedImageUrls,
-                lastModified: Date.now(),
-                status: 'approved',
-                isEdited: false,
-                editStatus: 'approved'
-            };
-    
-            const listingRef = ref(database, `listings/${id}`);
-            await update(listingRef, updateData);
-    
-            setIsSuccessModalOpen(true);
-            setTimeout(() => {
-                navigate(`/personal/${user.uid}`);
-            }, 2000);
-    
-        } catch (error) {
-            console.error("Update failed:", error);
-            toast.error(`Update failed: ${error.message}`);
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+        const locationData = {
+            latitude: location.latitude,
+            longitude: location.longitude,
+            placeId: formData.placeId,
+            googleData: {
+                rating: placeDetails?.rating || 0,
+                user_ratings_total: placeDetails?.user_ratings_total || 0,
+                google_url: placeDetails?.url || '',
+                last_updated: serverTimestamp()
+            }
+        };
+
+        const updateData = {
+            title: formData.placeName,
+            category: formData.category,
+            description: formData.description,
+            shortDescription: formData.shortDescription,
+            businessHours: {
+                opening: formData.openingHours,
+                closing: formData.closingHours
+            },
+            foodCategory: formData.foodCategory,
+            halalStatus: formData.halalStatus,
+            menuLink: formData.menuLink,
+            address: formData.address,
+            city: formData.city,
+            district: formData.district,
+            phone: formData.phone,
+            instagram: formData.instagram,
+            website: formData.website,
+            Gmaps: formData.Gmaps,
+            location: locationData,
+            imageUrls: updatedImageUrls,
+            lastModified: Date.now(),
+            status: 'approved',
+            isEdited: false,
+            editStatus: 'approved'
+        };
+
+        const listingRef = ref(database, `listings/${id}`);
+        await update(listingRef, updateData);
+
+        setIsSuccessModalOpen(true);
+        
+        // Use a delay before navigation to show the success modal
+        setTimeout(() => {
+            navigate(`/personal/${user.uid}`);
+        }, 2000);
+
+    } catch (error) {
+        console.error("Update failed:", error);
+        toast.error(`Update failed: ${error.message}`);
+    } finally {
+        setIsSubmitting(false);
+    }
+};
         if (isLoading) {
             return <Typography>Loading...</Typography>;
         }

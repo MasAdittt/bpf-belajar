@@ -103,11 +103,14 @@ import React, { useState, useEffect,useCallback } from 'react';
         };
 
         
-        const handleImageSelect = (imageData) => {
-            setImageFiles(prev => [...prev, imageData.file]);
-            setUploadedImages(prev => [...prev, imageData.preview]);
-        };
-
+      // Di ListingForm.js
+const handleImageSelect = (imageData) => {
+    // Update untuk menyimpan semua file gambar
+    if (imageData.files) {
+        setImageFiles(imageData.files.filter(file => file !== null));
+        setUploadedImages(imageData.previews.filter(preview => preview !== null));
+    }
+};
         const handleDistrictChange = (event) => {
             const { value } = event.target;
             setFormData(prev => ({
