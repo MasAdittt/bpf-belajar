@@ -179,7 +179,7 @@ function Navbaru() {
                 )}
               </div>
             ) : (
-              <button className="Sign" onClick={() => navigate('/Coba')}>
+              <button className="Sign" onClick={() => navigate('/Login')}>
                 Sign In
               </button>
             )}
@@ -207,7 +207,7 @@ function Navbaru() {
                   <UserMenuContent />
                 ) : (
                   <button className="Sign w-full" onClick={() => {
-                    navigate('/Coba');
+                    navigate('/Login');
                     setIsSidebarOpen(false);
                   }}>
                     Sign In

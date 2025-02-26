@@ -37,7 +37,7 @@ const NotifListing = ({ isOpen, onClose }) => {
             </button>
             <button
               onClick={() => {
-                window.location.href = '/Coba';
+                window.location.href = '/Login';
               }}
               className="bg-[#1DA19E] text-white px-6 py-2 rounded-lg hover:bg-emerald-600 transition-colors duration-200 font-lexend"
             >

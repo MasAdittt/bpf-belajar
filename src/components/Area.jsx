@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { ref, onValue, off, set } from 'firebase/database';
 import { database } from '../config/firebase';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -8,7 +8,9 @@ import LoginNotificationModal from '../kebutuhan/LoginNotif';
 import '../style/Area.css';
 import Loading from './Loading';
 import ResponsivePagination from '../components/ui/Page';
+import ScrollToTop from './ui/Hook';
 
+// Google Logo component unchanged
 const GoogleLogo = () => (
   <div className="ml-1">
     <svg viewBox="0 0 24 24" width="16" height="16">
@@ -44,9 +46,11 @@ function Area() {
   const location = useLocation();
   const auth = getAuth();
   const [showLoginNotification, setShowLoginNotification] = useState(false);
+  const areaRef = useRef(null);
 
   const categories = ['All', 'Hotel & Villa', 'Cafe', 'Mall', 'Restaurant', 'Bar'];
 
+  // Favorites handling
   useEffect(() => {
     if (!auth.currentUser) return;
 
@@ -59,12 +63,19 @@ function Area() {
     return () => off(favoritesRef, 'value', favoritesListener);
   }, [auth.currentUser]);
 
+  // URL parameters and listings fetch
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const categoryFromQuery = queryParams.get('category');
     const pageFromQuery = parseInt(queryParams.get('page')) || 1;
-    setSelectedCategory(categoryFromQuery || 'All');
-    setCurrentPage(pageFromQuery);
+    
+    if (categoryFromQuery) {
+      setSelectedCategory(categoryFromQuery);
+    }
+    
+    if (pageFromQuery) {
+      setCurrentPage(pageFromQuery);
+    }
 
     const listingsRef = ref(database, 'listings/');
     setIsLoading(true);
@@ -148,17 +159,50 @@ function Area() {
   const paginatedListings = filteredListings.slice(startIndex, startIndex + itemsPerPage);
 
   const handleCategoryClick = (category) => {
-    const encodedCategory = encodeURIComponent(category);
-    navigate(`?category=${encodedCategory}&page=1`);
+    // Update the URL with the new category and page without full navigation
+    const newCategory = encodeURIComponent(category);
+    const newUrl = `?category=${newCategory}&page=1`;
+    
+    // Use window.history to change URL without page reload
+    window.history.pushState(
+      { category: category, page: 1 }, 
+      '', 
+      newUrl
+    );
+    
+    // Update the state directly
+    setSelectedCategory(category);
     setCurrentPage(1);
   };
 
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
+    
+    // Update URL without page reload
     const queryParams = new URLSearchParams(location.search);
     queryParams.set('page', page);
-    navigate(`?${queryParams.toString()}`);
+    const newUrl = `?${queryParams.toString()}`;
+    
+    window.history.pushState(
+      { category: selectedCategory, page: page }, 
+      '', 
+      newUrl
+    );
+    
+    // Update state directly
+    setCurrentPage(page);
+  };
+
+  const handleListingClick = (listing) => {
+    window.scrollTo(0, 0);
+    // Navigate to the listing detail page with state info
+    navigate(`/${listing.category}/${listing.title.toLowerCase().replace(/\s+/g, '-')}/${listing.id}`, {
+      state: { 
+        fromArea: true,
+        category: selectedCategory,
+        page: currentPage
+      }
+    });
   };
 
   if (isLoading) {
@@ -171,7 +215,8 @@ function Area() {
 
   return (
     <>
-      <section className="w-full" style={{ backgroundColor: '#F2F2F2' }}>
+    <ScrollToTop />
+      <section ref={areaRef} className="w-full" style={{ backgroundColor: '#F2F2F2' }}>
         <div className="container mx-auto max-w-7xl px-4 md:px-6 lg:px-8 py-4 md:py-8">
           <div className="text-center max-w-[772px] mx-auto pt-8 pb-6 md:pb-[24px]">
             <h3 className="font-[ADELIA] text-[28px] md:text-[39px] text-[#3A3A3A] font-normal leading-[36px] md:leading-[48px] pb-4 md:pb-[24px]">
@@ -186,7 +231,7 @@ function Area() {
             {categories.map(category => (
               <button
                 key={category}
-                onClick={() => handleCategoryClick(category)}
+                onClick={() => handleCategoryClick(category)}           
                 className={`px-3 py-1 md:px-4 md:py-2 text-sm md:text-base rounded-full transition-all h-[33px] flex items-center justify-center ${
                   selectedCategory === category
                     ? 'active bg-[#1DA19E] text-white'
@@ -202,7 +247,7 @@ function Area() {
               <div
                 className="kotak relative bg-transparent rounded-lg overflow-hidden cursor-pointer"
                 key={listing.id}
-                onClick={() => navigate(`/${listing.category}/${listing.title.toLowerCase().replace(/\s+/g, '-')}/${listing.id}`)}              
+                onClick={() => handleListingClick(listing)}              
               >
                 <div className="absolute left-4 z-10" style={{ marginTop: '15px' }}>
                   <span className="px-2 py-1 rounded-md font-['Lexend']" style={{ color: '#3A3A3A', backgroundColor: '#F2F2F2', fontSize: '12px' }}>

@@ -132,7 +132,7 @@ function Register() {
           htmlContainer: 'text-gray-600 !font-lexend'
         }
       }).then(() => {
-        navigate('/Coba');
+        navigate('/Login');
       });
   
     } catch (error) {
@@ -140,7 +140,7 @@ function Register() {
       Swal.fire({
         icon: 'error',
         title: 'Registration Failed',
-        text: error.message,
+        text: 'This email address is already registered. Please use a different email or login to your existing account.',
         confirmButtonText: 'OK'
       });
     } finally {
@@ -393,7 +393,7 @@ function Register() {
               >
                 <Typography sx={{fontFamily:'Lexend',color:'#6B6B6B'}}>Already Registered? </Typography>
                 <Link
-                  href="/Coba"
+                  href="/Login"
                   sx={{
                     fontFamily: 'Lexend',
                     color: '#6B6B6B',

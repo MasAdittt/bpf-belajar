@@ -26,6 +26,7 @@
         import orang from '../assets/image/orang.svg';
         import telpon from '../assets/image/telpon.svg';
         import titik from '../assets/image/titik.svg';
+        import ScrollToTop from '../components/ui/Hook';
 
 
         function Personal() {
@@ -659,6 +660,7 @@
 
         return (
             <>
+             <ScrollToTop />
                 <Navbaru />
                 <div className="bg-gray-100 min-h-screen" style={{paddingTop:'90px'}}>
                     <div className="w-full h-48 md:h-80 bg-cover bg-center"

@@ -40,7 +40,7 @@ function Lupa() {
           font-family: 'Lexend', sans-serif;
         `
       }).then(() => {
-        navigate('/Coba');
+        navigate('/Login');
       });
       setLoading(false);
     }
@@ -207,7 +207,7 @@ function Lupa() {
                 }}
               >
                 <Link
-                  href="/Coba"
+                  href="/Login"
                   sx={{
                     fontFamily: 'Lexend',
                     color: '#6B6B6B',
@@ -222,7 +222,7 @@ function Lupa() {
                   Login
                 </Link>
                 <Link
-                  href="/Daftar"
+                  href="/Register"
                   sx={{
                     fontFamily: 'Lexend',
                     color: '#6B6B6B',

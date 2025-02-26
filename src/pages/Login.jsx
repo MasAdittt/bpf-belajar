@@ -114,14 +114,12 @@ function Login() {
       password: '',
     },
     validationSchema: yup.object().shape({
-      email: yup.string().required('Username atau email diperlukan'),
+      email: yup.string().required('Username or Email required'),
       password: yup
         .string()
-        .required('Password diperlukan')
-        .matches(
-          /^(?=.*[a-z])(?=.*[A-Z])(?=.{8,})/,
-          'Password harus mengandung setidaknya 8 karakter, termasuk huruf kapital dan kecil'
-        ),
+        .required('Password required')
+        .min(8, 'Password must be at least 8 characters'),
+        
     }),
     onSubmit: loginUser,
   });
@@ -134,7 +132,7 @@ function Login() {
       });
       setAlertMessage('Akun Anda telah dinonaktifkan oleh admin. Anda telah dikeluarkan dari sistem.');
       setShowAlert(true);
-      navigate('/Coba');
+      navigate('/Login');
     } catch (error) {
       console.error("Logout error:", error);
       trackEvent('logout_error', {
@@ -424,7 +422,7 @@ function Login() {
               <div className="flex justify-center items-center mt-5 w-full max-w-md mx-auto">
                 <div className="flex flex-col sm:flex-row sm:gap-20 gap-4">
                   <Link
-                    href="/Lupa"
+                    href="/ForgotPassword"
                     className="hover:text-[#158784] hover:underline font-lexend text-center sm:text-left"
                     style={{
                       fontFamily:'Lexend',
@@ -435,7 +433,7 @@ function Login() {
                     Forgot password?
                   </Link>
                   <Link
-                    href="/Daftar"
+                    href="/Register"
                     className="text-zinc-500 hover:text-[#158784] hover:underline text-center sm:text-left"
                     style={{
                       fontFamily:'Lexend',

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Star, Menu, Phone, Instagram, Globe,Map } from 'lucide-react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { Star, Menu, Phone, Instagram, Globe, Map, ChevronLeft } from 'lucide-react';
 import Navbaru from '../components/Navbaru';
 import { ref, onValue, off, get, set, serverTimestamp } from 'firebase/database';
 import { database } from '../config/firebase';
@@ -12,13 +12,36 @@ import ExploreAreaMap from '../kebutuhan/Explore';
 
 const PublicTemplate = () => {
   const { category, title, id } = useParams();
-    const [listing, setListing] = useState(null);
+  const [listing, setListing] = useState(null);
   const [ratings, setRatings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Handler untuk tombol kembali
+  const handleBack = () => {
+    // Cek apakah navigasi berasal dari Area component
+    const fromArea = location.state?.fromArea;
+    
+    if (fromArea) {
+      // Kembali ke home dengan state preserveScroll agar posisi scroll dipertahankan
+      navigate('/', { 
+        state: { 
+          preserveScroll: true 
+        } 
+      });
+    } else {
+      // Kembali ke halaman sebelumnya seperti biasa
+      navigate(-1);
+    }
+  };
 
   useEffect(() => {
+    // Scroll ke atas saat halaman detail dibuka
+    window.scrollTo(0, 0);
+    
     const listingRef = ref(database, `listings/${id}`);
     const ratingsRef = ref(database, `ratings/${id}`);
     
@@ -119,6 +142,8 @@ const PublicTemplate = () => {
       <Navbaru />
       <div className="min-h-full bg-[#F2F2F2] flex flex-col pt-[90px]">
         <div className="w-full max-w-6xl mx-auto p-4">
+         
+
           {/* Mobile Image Carousel */}
           <div className="relative block md:hidden mb-6">
             <div
@@ -202,22 +227,22 @@ const PublicTemplate = () => {
                 </div>
                 <p className='text-lg text-[#3A3A3A] font-lexend font-bold'>Open in:</p>
                 <div className="flex flex-wrap gap-3">
-          {listing.Gmaps && (
-            <a 
-              href={listing.Gmaps}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors duration-200 border border-gray-200"
-            >
-              <img 
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Google_Maps_icon_%282020%29.svg/1428px-Google_Maps_icon_%282020%29.svg.png" 
-                alt="Google Maps"
-                className="w-5 h-5 object-contain"
-              />
-              <span className="font-lexend text-sm text-[#3A3A3A] font-semibold ">Google Maps</span>
-            </a>
-          )}
-        </div>
+                  {listing.Gmaps && (
+                    <a 
+                      href={listing.Gmaps}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm hover:bg-gray-50 transition-colors duration-200 border border-gray-200"
+                    >
+                      <img 
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Google_Maps_icon_%282020%29.svg/1428px-Google_Maps_icon_%282020%29.svg.png" 
+                        alt="Google Maps"
+                        className="w-5 h-5 object-contain"
+                      />
+                      <span className="font-lexend text-sm text-[#3A3A3A] font-semibold ">Google Maps</span>
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
 

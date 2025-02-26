@@ -36,9 +36,9 @@ function App() {
           {/* Public Routes */}
           
           <Route path='/' element={<Home />}/>
-          <Route path='/Coba' element={<Login />}/>
-          <Route path='/Daftar' element={<Register />}/>
-          <Route path='/Lupa' element={<Lupa />}/>
+          <Route path='/Login' element={<Login />}/>
+          <Route path='/Register' element={<Register />}/>
+          <Route path='/ForgotPassword' element={<Lupa />}/>
           <Route path='/Public' element={<PublicListing />} />
           <Route path='/public-listing' element={<PublicListing />} />
           <Route path='/pubtemplate/:id' element={<PublicTemplate />} />

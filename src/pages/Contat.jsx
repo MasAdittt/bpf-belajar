@@ -10,6 +10,7 @@ import Cat1 from '../assets/image/Cat1.svg';
 import Cat2 from '../assets/image/Cat2.svg';
 import Bawah1 from '../assets/image/Bawah1.svg';
 import Bawah2 from '../assets/image/Bawah2.svg';
+import ScrollToTop from '../components/ui/Hook';
 
 
 const ContactForm = () => {
@@ -96,7 +97,7 @@ Pesan: ${formData.message}
 
   return (
     <>
-    {/* Notification */}
+    <ScrollToTop />
     <NotifContact 
       isOpen={notification.show} 
       onClose={() => setNotification({ show: false, type: '', message: '' })}

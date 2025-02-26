@@ -11,6 +11,7 @@ import parse from 'html-react-parser';
 import '../style/Home.css';
 import { analytics } from '../config/firebase';
 import { logEvent } from 'firebase/analytics';
+import ScrollToTop from '../components/ui/Hook';
 
 // Import data section
 import { StartSection, StartList } from '../data/StartSection';
@@ -118,6 +119,9 @@ function Home() {
     }
     return null;
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Track section visibility
   const handleSectionView = (sectionName) => {
@@ -128,6 +132,8 @@ function Home() {
   };
 
   return (
+    <>
+    <ScrollToTop />
     <div className={`home-container ${isLoaded ? 'loaded' : ''}`}>
       <Navbar />
       <main className="content-wrapper">
@@ -152,6 +158,7 @@ function Home() {
         
       </main>
     </div>
+    </>
   );
 }
 
