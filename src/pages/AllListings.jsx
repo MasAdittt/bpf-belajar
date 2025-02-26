@@ -410,7 +410,7 @@ const paginatedListings = useMemo(() => {
                                               
                                               <div className="flex justify-end">
                                                 <button 
-                                                  onClick={() => navigate(`/baru/${listing.id}`)}
+                                                  onClick={() => navigate(`/Private/${listing.id}`)}
                                                   className="bg-[#1DA19E] text-white px-4 py-2 rounded-lg hover:bg-[#178784] transition-colors text-sm"
                                                   style={{fontFamily: "Lexend"}}
                                                 >

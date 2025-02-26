@@ -82,7 +82,7 @@ function App() {
               <Personal />
             </PrivateRoute>
           }/>
-          <Route path="/baru/:id" element={
+          <Route path="/Private/:id" element={
             <PrivateRoute>
               <Listingbaru />
             </PrivateRoute>

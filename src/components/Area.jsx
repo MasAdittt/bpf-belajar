@@ -48,7 +48,7 @@ function Area() {
   const [showLoginNotification, setShowLoginNotification] = useState(false);
   const areaRef = useRef(null);
 
-  const categories = ['All', 'Hotel & Villa', 'Cafe', 'Mall', 'Restaurant', 'Bar'];
+  const categories = ['All', 'Hotel & Villa', 'Cafe', 'Mall', 'Restaurant',];
 
   // Favorites handling
   useEffect(() => {

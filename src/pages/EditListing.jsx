@@ -72,7 +72,7 @@ const EditListing = () => {
         setAddressFieldFocusHandler(handler);
     }, []);
 
-    const categories = ["Cafe", "Villa", "Bar", "Restaurant", "Hotel"];
+    const categories = ["Cafe", "Villa","Restaurant", "Hotel"];
     const districtMapping = {
         Badung: ['Kuta', 'North Kuta', 'South Kuta', 'Mengwi', 'Abiansemal', 'Petang'],
         Buleleng: ['Buleleng', 'Gerokgak', 'Seririt', 'Busungbiu', 'Banjar', 'Sukasada', 'Kubutambahan', 'Tejakula'],

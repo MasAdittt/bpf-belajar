@@ -4,8 +4,8 @@ import Checkbox from '../data/Checkbox';
 
 const FilterCategory = ({ categories, selectedCategories, onCategoryChange }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const locations = ['Badung', 'Bangli', 'Buleleng', 'Denpasar', 'Gianyar', 'Jembrana', 'Karangasem', 'Klungkung', 'Tabanan','jimbaran','uluwatu'];
-  const places = ['Cafe', 'Restaurant', 'Mall', 'Hotel', 'Villa', 'Bar'];
+  const locations = ['Badung', 'Bangli', 'Buleleng', 'Denpasar', 'Gianyar', 'Jembrana', 'Karangasem', 'Klungkung', 'Tabanan'];
+  const places = ['Cafe', 'Restaurant', 'Mall', 'Hotel', 'Villa',];
 
   // Handle body scroll lock
   useEffect(() => { 
